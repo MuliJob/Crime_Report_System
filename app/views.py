@@ -9,17 +9,17 @@ def home_page():
     '''
     View root page function that returns the index page and its data
     '''
-    return render_template('base.html')
+    return render_template('home.html')
 
-@app.route('/signin')
+@app.route('/signin', methods=['GET', 'POST'])
 def sign_in():
     return render_template('signin.html')
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     return render_template('signup.html')
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     return render_template('register.html')
 
