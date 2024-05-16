@@ -1,5 +1,40 @@
 {% extends "base.html" %}
 {% block title %}
+    HOME PAGE
 {% endblock %}
 {% block content %}
+<header class="container">
+    <h1>Crime Reporting System</h1>
+  </header>
+
+  <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-dark" style="color:white">
+    <main class="container">
+        <section class="hero mt-5">
+          <h2 class="display-4">Report a Crime. Make Your Community Safer.</h2>
+          <p class="lead">This online system allows you to report a crime to the authorities quickly and easily. Reporting suspicious activity can help prevent future crimes and keep your community safe.</p>
+          <a href="{{ url_for('sign_in') }}" class="btn btn-primary">Report a Crime Now</a>
+        </section>
+    
+        <section class="benefits mt-5">
+          <h3>Benefits of Online Crime Reporting:</h3>
+          <ul class="list-group">
+            <li class="list-group-item">Report a crime 24/7 from any device.</li>
+            <li class="list-group-item">Save time by avoiding a trip to the police station.</li>
+            <li class="list-group-item">Remain anonymous if you prefer (depending on your system's functionalities).</li>
+            <li class="list-group-item">Track the progress of your report (optional).</li>
+          </ul>
+        </section>
+    
+        <section class="how-it-works mt-5">
+          <h3>How it Works:</h3>
+          <ol class="list-group list-group-numbered">
+            <li class="list-group-item">Click "Report a Crime Now" to create an account or login as a returning user (depending on your system).</li>
+            <li class="list-group-item">Fill out the online form with details about the crime.</li>
+            <li class="list-group-item">Submit your report and receive a confirmation.</li>
+            <li class="list-group-item">(Optional) You may be contacted by the authorities for further information.</li>
+          </ol>
+        </section>
+      </main>
+  </div>
+
 {% endblock %}
