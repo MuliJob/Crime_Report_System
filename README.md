@@ -1,0 +1,6 @@
+#WEB BASED CRIME REPORTING SYSTEM
+
+#TECHNOLOGIES
+    Python(Flask)
+    Javascript
+    CSS
