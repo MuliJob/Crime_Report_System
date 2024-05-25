@@ -8,40 +8,37 @@ SignUp
 		<div>
 			<div class="row justify-content-md-center h-100">
 				<div class="card-wrapper">
-					<div class="brand">
-						<img src="{{url_for('static', filename='img/logo.jpg')}}" alt="bootstrap 4 login page">
-					</div>
 					<div class="card fat">
 						<div class="card-body">
-							<h4 class="card-title" align="center">Sign Up</h4>
+							<h4 class="card-title" align="center">Register</h4>
 							<form method="POST">			
 								<div class="form-group">
 									<label for="username">Username</label>
-									<input id="username" type="text" class="form-control" name="username" required>
+									<input id="username" type="text" class="form-control" name="username" placeholder="Username" required>
 								</div>
-                                <br>
+                <br>
 								<div class="form-group">
 									<label for="email">Email Address</label>
-									<input id="email" type="email" class="form-control" name="email" required>
+									<input id="email" type="email" class="form-control" name="email" placeholder="Email Address" required>
 								</div>
-                                <br>
+                <br>
 								<div class="form-group">
 									<label for="password1">Password</label>
-									<input id="password1" type="password" class="form-control" name="password1" required data-eye>
+									<input id="password1" type="password" class="form-control" name="password1" placeholder="Password" required data-eye>
 								</div>
-                                <br>
-                                <div class="form-group">
+                <br>
+                <div class="form-group">
 									<label for="password2">Confirm Password</label>
-									<input id="password2" type="password" class="form-control" name="password2" required data-eye>
+									<input id="password2" type="password" class="form-control" name="password2" placeholder="Confirm Password" required data-eye>
 								</div>
-                                <br>
+                <br>
 								<div class="form-group m-0" align="center">
 									<button type="submit" class="btn btn-primary btn-block"  href="{{ url_for('register') }}">
-									Sign Up
+									Register
 									</button>
 								</div>
 								<div class="mt-4 text-center">
-									Already have an account? <a href="{{ url_for('sign_in') }}">SignIn</a>
+									Already have an account? <a href="{{ url_for('sign_in') }}">Login</a>
 								</div>
 							</form>
 						</div>
@@ -49,6 +46,6 @@ SignUp
 				</div>
 			</div>
 		</div>
-	</section>
-
+	</section>	
+</body>
 {% endblock %}
