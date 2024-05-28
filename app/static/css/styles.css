@@ -1,7 +1,13 @@
 html,body {
 	height: 100%;
 }
-
+/*
+#search-bar {
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}
+*/
 body.my-login-page {
 	background-color: #979797;
 	font-size: 14px;
