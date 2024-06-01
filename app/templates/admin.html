@@ -17,8 +17,22 @@ DASHBOARD
   </aside>
   <main class="main-content">
     <section id="dashboard" class="content-section active">
-      <h1>Dashboard</h1>
-      <p>Welcome to your dashboard.</p>
+      {% if articles %}
+        <h3>Latest News</h3>
+          <div class="article-grid">
+          {% for article in articles %}
+            <div class="article-column">
+                <a href="{{ article['url'] }}" target="_blank">
+                    <img src="{{ article['urlToImage'] }}" alt="{{ article['title'] }}">
+                </a>
+                <h2>{{ article['title'] }}</h2>
+                <p>{{ article['description'] }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No News found.</p>
+      {% endif %}
     </section>
     <section id="report-crime" class="content-section">
       <h1>Report Crime</h1>

@@ -75,158 +75,164 @@ html,body {
 	}
 }
 
-  
-  header h1 {
-	text-align: center;
-	color: #333;
-  }
-  
-  .hero {
-	padding-top: 50px;
-	padding-bottom: 50px;
-  }
-  
-  .benefits,
-  .how-it-works {
-	padding-top: 30px;
-	padding-bottom: 30px;
-  }
-  
-  footer p {
-	color: #666;
-  }
-  
-  .container {
+
+header h1 {
+text-align: center;
+color: #333;
+}
+
+.hero {
+padding-top: 50px;
+padding-bottom: 50px;
+}
+
+.benefits,
+.how-it-works {
+padding-top: 30px;
+padding-bottom: 30px;
+}
+
+footer p {
+color: #666;
+}
+
+.container {
+display: flex;
+position: relative;
+height: 100%;
+width: 100%;
+}
+.nbar {
+position: fixed;
+}
+
+
+.sidebar {
+width: 200px;
+background-color: #a9b3b6;
+color: white;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 20px 0;
+}
+
+
+.sidebar nav ul {
+list-style-type: none;
+padding: 0;
+}
+
+
+.sidebar nav ul li {
+width: 100%;
+}
+
+
+.sidebar nav ul li a {
+display: block;
+width: 100%;
+padding: 15px;
+color: #34495e;
+text-decoration: none;
+text-align: center;
+}
+
+
+.sidebar nav ul li a:hover {
+background-color: rgb(145, 183, 252);
+}
+
+.main-content {
+flex-grow: 1;
+padding: 20px;
+background-color: #ecf0f1;
+overflow-y: auto;
+}
+
+.content-section {
+display: none;
+}
+
+.content-section.active {
+display: block;
+}
+
+form label {
+display: block;
+margin-top: 10px;
+}
+
+form input, form textarea {
+width: 100%;
+padding: 10px;
+margin-top: 5px;
+}
+
+form button {
+margin-top: 10px;
+padding: 10px 20px;
+background-color: #2c3e50;
+color: white;
+border: none;
+cursor: pointer;
+}
+
+
+form button:hover {
+background-color: #34495e;
+}
+
+
+ul {
+list-style-type: none;
+padding:10;
+}
+
+.header {
 	display: flex;
-	position: relative;
-	height: 100%;
-	width: 100%;
-  }
-  .nbar {
-	position: fixed;
-  }
-  
-  
-  .sidebar {
-	width: 200px;
-	background-color: #a9b3b6;
-	color: white;
-	display: flex;
-	flex-direction: column;
+	justify-content: space-between;
 	align-items: center;
-	padding: 20px 0;
-  }
-  
-  
-  .sidebar nav ul {
-	list-style-type: none;
-	padding: 0;
-  }
-  
-  
-  .sidebar nav ul li {
-	width: 100%;
-  }
-  
-  
-  .sidebar nav ul li a {
-	display: block;
-	width: 100%;
-	padding: 15px;
-	color: #34495e;
-	text-decoration: none;
-	text-align: center;
-  }
-  
-  
-  .sidebar nav ul li a:hover {
-	background-color: rgb(145, 183, 252);
-  }
-  
-  .main-content {
-	flex-grow: 1;
-	padding: 20px;
-	background-color: #ecf0f1;
-	overflow-y: auto;
-  }
-  
-  .content-section {
-	display: none;
-  }
-  
-  .content-section.active {
-	display: block;
-  }
-  
-  form label {
-	display: block;
-	margin-top: 10px;
-  }
-  
-  form input, form textarea {
-	width: 100%;
-	padding: 10px;
-	margin-top: 5px;
-  }
-  
-  form button {
-	margin-top: 10px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #ccc;
+}
+
+.navigation {
+	display: flex;
+	justify-content: space-around;
+}
+
+.navigation button {
+	background-color: #eee;
+	border: 1px solid #ccc;
 	padding: 10px 20px;
-	background-color: #2c3e50;
-	color: white;
-	border: none;
+	border-radius: 5px;
 	cursor: pointer;
-  }
-  
-  
-  form button:hover {
-	background-color: #34495e;
-  }
-  
+}
 
-  ul {
-	list-style-type: none;
-	padding:10;
-  }
+.navigation button.active {
+	background-color: #4CAF50;
+	color: white;
+}
 
-  .header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding-bottom: 20px;
-		border-bottom: 1px solid #ccc;
-	}
-	
-	.navigation {
-		display: flex;
-		justify-content: space-around;
-	}
-	
-	.navigation button {
-		background-color: #eee;
-		border: 1px solid #ccc;
-		padding: 10px 20px;
-		border-radius: 5px;
-		cursor: pointer;
-	}
-	
-	.navigation button.active {
-		background-color: #4CAF50;
-		color: white;
-	}
-	
-	.main-content {
-		padding: 20px;
-	}
-	
-	.content-section {
-		display: none;
-		padding: 20px;
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		margin-bottom: 20px;
-	}
-	
-	.content-section.active {
-		display: block;
-	}
+.main-content {
+	padding: 20px;
+}
+
+.content-section {
+	display: none;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 20px;
+}
+
+.content-section.active {
+	display: block;
+}
+
+.article-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 20px;
+}
