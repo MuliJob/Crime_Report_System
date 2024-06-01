@@ -44,4 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
+const navigationButtons = document.querySelectorAll('.navigation button');
+const contentSections = document.querySelectorAll('.content-section');
+
+navigationButtons.forEach(button => {
+  button.addEventListener('click', (event) => {
+    const targetSectionId = event.target.dataset.target;
+    const targetSection = document.getElementById(targetSectionId);
+
+    // Remove active class from all sections
+    contentSections.forEach(section => section.classList.remove('active'));
+
+    // Add active class to the clicked section
+    targetSection.classList.add('active');
+
+    // Update navigation button styles (optional)
+    navigationButtons.forEach(button => button.classList.remove('active'));
+    event.target.classList.add('active');
+  });
+});
+  
+
   

@@ -8,8 +8,8 @@ html,body {
   align-items: center;
 }
 */
-body.my-login-page {
-	background-color: #979797;
+.my-login-page {
+	background-color: #ffffff;
 	font-size: 14px;
 }
 
@@ -35,6 +35,7 @@ body.my-login-page {
 .my-login-page .card {
 	border-color: transparent;
 	box-shadow: 0 4px 8px rgba(0,0,0,.05);
+	background-color: lavender;
 }
 
 .my-login-page .card.fat {
@@ -188,4 +189,44 @@ body.my-login-page {
 	padding:10;
   }
 
-  
+  .header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: 20px;
+		border-bottom: 1px solid #ccc;
+	}
+	
+	.navigation {
+		display: flex;
+		justify-content: space-around;
+	}
+	
+	.navigation button {
+		background-color: #eee;
+		border: 1px solid #ccc;
+		padding: 10px 20px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	
+	.navigation button.active {
+		background-color: #4CAF50;
+		color: white;
+	}
+	
+	.main-content {
+		padding: 20px;
+	}
+	
+	.content-section {
+		display: none;
+		padding: 20px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		margin-bottom: 20px;
+	}
+	
+	.content-section.active {
+		display: block;
+	}

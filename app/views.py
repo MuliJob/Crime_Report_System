@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, request, flash
 from app import app, db
-from app.models import User, Register
+from app.models import User, Register, Crime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
 
@@ -29,7 +29,7 @@ def sign_in():
         
         if user:
             if check_password_hash(user.password, password):
-                flash(f'Logged in successfully!, Hello {username}', category='success')
+                flash(f'Logged in successfully! Hello {username}', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('user_dashboard'))
             else: 
@@ -79,26 +79,26 @@ def sign_up():
 def register():
     if request.method == 'POST':
         idno = request.form.get('idno')
-        fullname = request.form.get('fullname')
-        phonenumber = request.form.get('phonenumber')
-        residence = request.form.get('residence')
-        gender = request.form.get('gender')
+        crime_location = request.form.get('crime_location')
+        reporter_location = request.form.get('reporter_location')
+        police_station = request.form.get('police_station')
+        files = request.form.get('files')
 
         if len(idno) < 8:
             flash('Identification Number must be equal to 8 characters.', category='danger')
-        elif len(fullname) < 4:
+        elif len(crime_location) < 4:
             flash('Full Name must be more than 4 characters.', category='danger')
-        elif len(phonenumber) < 10:
+        elif len(reporter_location) < 10:
             flash('Phone Number must be equal to 10 characters', category='danger')
         else:
             personal_details = User(idno=idno, 
-                                    fullname=fullname, 
-                                    phonenumber=phonenumber, 
-                                    residence=residence, 
-                                    gender=gender)
+                                    crime_location=crime_location, 
+                                    reporter_location=reporter_location, 
+                                    police_station=police_station, 
+                                    files=files)
             db.session.add(personal_details)
             db.session.commit()
-            flash(f"Hello, {fullname}, welcome to the most secure website for reporting crimes", category='success')
+            flash(f"Hello, {crime_location}", category='success')
             return redirect(url_for('user_dashboard'))
 
     return render_template('register.html')
@@ -110,8 +110,28 @@ def sign_out():
     flash('You have been logged out.', category='info')
     return redirect(url_for('sign_in'))
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 def user_dashboard():
+    if request.method == 'post':
+        description = request.form.get('description')
+        crime_location = request.form.get('crime_location')
+        reporter_location = request.form.get('reporter_location')
+        police_station = request.form.get('police_station')
+        files = request.form.get('files')
+
+        crime = Crime(description=description, 
+                      crime_location=crime_location,
+                      reporter_location=reporter_location,
+                      police_station=police_station,
+                      files=files
+                    )
+        print(description)
+        print(crime_location)
+        print(reporter_location)
+        print(police_station)
+        print(files)
+        flash("Your crime was reported successfully")
+
     return render_template('userdashboard.html')
 
 @app.route('/admin')

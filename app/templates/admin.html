@@ -1,6 +1,87 @@
-{% extends "base.html" %}
+
+{% extends 'base.html' %}
 {% block title %}
+DASHBOARD
 {% endblock %}
 {% block content %}
-    <h1>Admin Dashboard</h1>
+<div class="container">
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#report-crime">Report Crime</a></li>
+        <li><a href="#report-stolen-property">Report Stolen Property</a></li>
+        <li><a href="#crime-reported">Crimes Reported</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <section id="dashboard" class="content-section active">
+      <h1>Dashboard</h1>
+      <p>Welcome to your dashboard.</p>
+    </section>
+    <section id="report-crime" class="content-section">
+      <h1>Report Crime</h1>
+      <form id="crimeForm">
+        <label for="crime-description">Crime Description:</label>
+        <textarea id="crime-description" name="crime-description" rows="5" required></textarea>
+    
+        <label for="crime-location">Crime Location:</label>
+        <input type="text" id="crime-location" name="crime-location" required>
+    
+        <label for="current-location">Your Current Location:</label>
+        <input type="text" id="current-location" name="current-location" required>
+    
+        <label for="police-station">Nearest Police Station:</label>
+        <select id="police-station" name="police-station" required>
+          <option value="">Select Police Station</option>
+          <option value="central">Central Police Station</option>
+          <option value="buruburu">Buruburu Police Station</option>
+          <option value="gigiri">Gigiri Police Station</option>
+        </select>
+    
+        <div class="file-upload">
+          <label for="file">Attach Evidence:</label>
+          <input type="file" id="file" name="file">
+        </div>
+        <div align="center">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </section>
+    <section id="report-stolen-property" class="content-section">
+      <h1>Report Stolen Property</h1>
+        <form id="stolenPropertyForm">
+          <label for="name">Your Name:</label>
+          <input type="text" id="name" name="name" required>
+
+          <label for="description">Description of Lost Property:</label>
+          <textarea id="description" name="description" rows="5" required></textarea>
+
+          <label for="value">Value (Ksh):</label>
+          <input type="number" min="0" id="value" name="value" required>
+
+          <label for="police-station">Police Station:</label>
+          <select id="police-station" name="police-station" required>
+            <option value="" disabled>Select Police Station</option>
+            <option value="central">Central Police Station</option>
+            <option value="buruburu">Buruburu Police Station</option>
+            <option value="gigiri">Gigiri Police Station</option>
+          </select>
+
+          <div class="file-upload">
+            <label for="file">Attach File:</label>
+            <input type="file" id="file" name="file">
+          </div>
+          <div align="center">
+            <button type="submit">Submit</button>
+          </div> 
+        </form>
+    </section>
+    <section id="crime-reported" class="content-section">
+      <h1>Crimes Reported</h1>
+      <ul id="reportedCrimesList"></ul>
+    </section>
+  </main>
+</div>
 {% endblock %}
