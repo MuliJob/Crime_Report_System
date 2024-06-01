@@ -3,7 +3,7 @@
 {% endblock %}
 {% block content %}
     <header class="header">
-        <h1>E-Security</h1>
+        <h1>Dashboard</h1>
         <nav class="navigation">
           <div>
             <button data-target="profile">Dashboard</button>
@@ -24,7 +24,7 @@
                 {% for article in articles %}
                   <div class="article-column">
                       <a href="{{ article['url'] }}" target="_blank">
-                          <img src="{{ article['urlToImage'] }}" alt="{{ article['title'] }}">
+                          <img src="{{ article['urlToImage'] }}" alt="{{ article['title'] }}" class="article-image">
                       </a>
                       <h2>{{ article['title'] }}</h2>
                       <p>{{ article['description'] }}</p>

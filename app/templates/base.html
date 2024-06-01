@@ -16,21 +16,22 @@
     </title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand nav-link active" href="{{ url_for('home_page') }}">Home <span class="sr-only"></span></a>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand nav-link active" href="{{ url_for('home_page') }}">E-Security <span class="sr-only"></span></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         {% if current_user.is_authenticated %}
-        <form method="POST" action="/search" class="d-flex" role="search">
-          <input class="form-control me-2" type="text" placeholder="Search news" name="query" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
         <ul class="navbar-nav">
+          <li class="new-item active">
+            <a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link">Welcome, {{ current_user.username }}</a>
+            <a class="nav-link" href="#">Welcome, {{ current_user.username }}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('sign_out') }}">Logout</a>

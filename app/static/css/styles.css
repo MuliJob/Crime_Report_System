@@ -1,5 +1,7 @@
 html,body {
 	height: 100%;
+	width: 100%;
+	padding-top: 30px;
 }
 /*
 #search-bar {
@@ -231,8 +233,23 @@ padding:10;
 	display: block;
 }
 
-.article-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: 20px;
+.article-column {
+  width: 600px;  /* Adjust as needed */
+  display: inline-block;  /* Ensures side-by-side layout */
+  margin: 10px;  /* Optional spacing between columns */
+}
+
+.article-image {
+  width: 100%;  /* Image fills the container */
+  height: auto;  /* Maintains aspect ratio */
+}
+
+@media (max-width: 768px) {
+  .article-column {
+    width: 45%;  /* Adjust for smaller screens */
+  }
+}
+
+.navbar {
+  padding: 10px 20px;  /* Adjust padding as needed */
 }
