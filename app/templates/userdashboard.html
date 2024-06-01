@@ -19,11 +19,20 @@
     <main class="main-content">
         <section id="profile" class="content-section active" >
             <h2>Dashboard</h2>
-            <ul>
-            {% for top_headline_news in top-headlines %}
-            <li>top_headline_news.title</li>
-            {% endfor %}
-          </ul>
+            {% if articles %}
+              <h3>Latest News</h3>
+              <ul>
+                {% for article in articles %}
+                <li>
+                  <h2>{{ article.title }}</h2>
+                  <p>{{ article.description }}</p>
+                  <a href="{{ article.url }}">Read more</a>
+              </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+                <p>No News found.</p>
+            {% endif %}
         </section>
 
         <section id="report-crime" class="content-section">

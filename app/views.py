@@ -1,9 +1,10 @@
 from flask import render_template, redirect, url_for, request, flash
-from app import app, db
+from app import app, db, api_key
 from app.models import User, Register, Crime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
-from .request import get_news
+import requests
+
 
 
 # Views
@@ -113,34 +114,12 @@ def sign_out():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def user_dashboard():
-    if request.method == 'post':
-        description = request.form.get('description')
-        crime_location = request.form.get('crime_location')
-        reporter_location = request.form.get('reporter_location')
-        police_station = request.form.get('police_station')
-        files = request.form.get('files')
+    url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
+    response = requests.get(url)
+    news_data = response.json()
+    articles = news_data.get('articles', [])
 
-        crime = Crime(description=description, 
-                      crime_location=crime_location,
-                      reporter_location=reporter_location,
-                      police_station=police_station,
-                      files=files
-                    )
-        print(description)
-        print(crime_location)
-        print(reporter_location)
-        print(police_station)
-        flash("Your crime was reported successfully")
-
-    return render_template('userdashboard.html')
-
-
-@app.route('/dashboard')
-def news():
-    top_headline_news = get_news('top-headlines')
-    print(top_headline_news)
-    title = 'Top News'
-    return render_template('userdashboard.html', title=title, top_headline_news = top_headline_news)
+    return render_template('userdashboard.html', articles=articles)
 
 
 @app.route('/admin')
