@@ -3,6 +3,7 @@ from app import app, db
 from app.models import User, Register, Crime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
+from .request import get_news
 
 
 # Views
@@ -129,10 +130,18 @@ def user_dashboard():
         print(crime_location)
         print(reporter_location)
         print(police_station)
-        print(files)
         flash("Your crime was reported successfully")
 
     return render_template('userdashboard.html')
+
+
+@app.route('/dashboard')
+def news():
+    top_headline_news = get_news('top-headlines')
+    print(top_headline_news)
+    title = 'Top News'
+    return render_template('userdashboard.html', title=title, top_headline_news = top_headline_news)
+
 
 @app.route('/admin')
 def admin_dashboard():

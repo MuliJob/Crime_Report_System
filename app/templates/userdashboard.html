@@ -19,12 +19,16 @@
     <main class="main-content">
         <section id="profile" class="content-section active" >
             <h2>Dashboard</h2>
-            <p>Welcome to your dashboard.</p>
+            <ul>
+            {% for top_headline_news in top-headlines %}
+            <li>top_headline_news.title</li>
+            {% endfor %}
+          </ul>
         </section>
 
         <section id="report-crime" class="content-section">
             <h2>Report Crime</h2>
-            <form id="crimeForm" method="POST">
+            <form id="crimeForm" method="POST" action="/dashboard">
               <label for="crime-description">Crime Description:</label>
               <textarea id="description" name="crime-description" rows="5" required></textarea>
           
