@@ -253,3 +253,60 @@ padding:10;
 .navbar {
   padding: 10px 20px;  /* Adjust padding as needed */
 }
+
+/*About section*/
+.about-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;  /* Adjust width as needed */
+  margin: 0 auto;  /* Center the container horizontally */
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;  /* Allow columns to wrap if needed */
+  width: 100%;
+  padding: 20px;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+.column {
+  flex: 1 0 50%;  /* Divide available space equally between two columns */
+  padding: 10px;
+}
+
+.privacy {
+  width: 100%;
+  padding: 20px;@media screen and (max-width: 600px) {
+		.column {
+			width: 50%;
+			display: block;
+			margin-bottom: 20px;
+		}
+	}
+}
+
+
+/* Responsive columns - one column layout (vertical) on small screens */
+@media screen and (max-width: 768px) {
+	.row {
+		flex-direction: column;  /* Stack columns on top of each other */
+	}
+
+	.column {
+		flex: 1 0 100%;  /* Each column takes full width */
+	}
+}
