@@ -250,10 +250,6 @@ padding:10;
   }
 }
 
-.navbar {
-  padding: 10px 20px;  /* Adjust padding as needed */
-}
-
 /*About section*/
 .about-container {
   display: flex;
@@ -310,3 +306,43 @@ padding:10;
 		flex: 1 0 100%;  /* Each column takes full width */
 	}
 }
+
+/*datetime field*/
+.datetime-fields {
+  display: flex; /* Make the container a flexbox */
+}
+
+.datetime-field {
+  display: flex; /* Make the datetime field a flexbox */
+  flex-direction: column; /* Stack elements vertically */
+  margin-right: 10px; /* Add margin for spacing between fields */
+}
+
+.datetime-field label {
+  margin-bottom: 5px; /* Add spacing between label and input container */
+}
+
+.input-container {
+  display: flex; /* Make the input container a flexbox */
+  align-items: center; /* Align input and dropdown vertically */
+}
+
+.datetime-field input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  flex: 1; /* Allow input to take most available space */
+}
+
+.datetime-field select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-left: 5px; /* Add spacing between input and dropdown */
+}
+
+.datetime-field select:focus {
+  outline: none; /* Remove outline on focus (optional) */
+}
+
+

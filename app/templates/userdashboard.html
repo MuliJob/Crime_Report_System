@@ -39,27 +39,39 @@
         <section id="report-crime" class="content-section">
             <h2>Report Crime</h2>
             <form id="crimeForm" method="POST" action="/dashboard">
-              <label for="crime-description">Crime Description:</label>
+              <div class="datetime-fields">
+                <div class="datetime-field">
+                  <label for="datetime">Date and time when incident occurred:</label>
+                  <div class="input-container">
+                    <input type="datetime-local" id="datetime" name="datetime">
+                    <select id="ampm" name="ampm">
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+          
+              <label for="crime-location">Incident Location (Please provide specific details):</label>
+              <textarea id="description" name="crime-description" rows="5" required></textarea>
+
+              <label for="crime-location">Nature of incident:</label>
+              <textarea id="description" name="crime-description" rows="5" required></textarea>
+
+              <label for="crime-location">Incident details:</label>
+              <textarea id="description" name="crime-description" rows="5" required></textarea>
+
+              <label for="crime-location">Has anyone been arrested so far in relation to the incident?</label>
               <textarea id="description" name="crime-description" rows="5" required></textarea>
           
-              <label for="crime-location">Crime Location:</label>
-              <input type="text" id="crime_location" name="crime-location" required>
-          
-              <label for="current-location">Your Location:</label>
-              <input type="text" id="reporter_location" name="current-location" required>
-          
-              <label for="police-station">Nearest Police Station:</label>
-              <select id="police_station" name="police-station" required>
-                <option value="">Select Police Station</option>
-                <option value="central">Central Police Station</option>
-                <option value="buruburu">Buruburu Police Station</option>
-                <option value="gigiri">Gigiri Police Station</option>
-              </select>
+              <label for="current-location">Further Comments</label>
+              <textarea id="description" name="crime-description" rows="5" required></textarea>
           
               <div class="file-upload">
                 <label for="file">Attach Evidence:</label>
                 <input type="file" id="files" name="file">
               </div>
+              
               <div class="form-group">
                 <button type="submit" class="btn btn-success" href="{{ url_for('user_dashboard') }}">
                   Submit
