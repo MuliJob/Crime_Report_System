@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}
+  CRIME REPORT
+{% endblock %}
+{% block content %}
+  <h2>Report Crime</h2>
+  <form id="crimeForm">
+    <div class="datetime-fields">
+      <div class="datetime-field">
+        <label for="datetime">Date and time when incident occurred:</label>
+        <div class="input-container">
+          <input type="datetime-local" id="datetime" name="datetime">
+          <select id="ampm" name="ampm">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <label for="incident_location">Incident Location (Please provide specific details):</label>
+    <textarea type="text" id="incident_location" name="crime_location" rows="5" required></textarea>
+
+    <label for="incident_nature">Nature of incident:</label>
+    <textarea type="text" id="incident_nature" name="incident_nature" rows="5" required></textarea>
+
+    <label for="incident_details">Incident details:</label>
+    <textarea type="text" id="incident_details" name="incident_details" rows="5" required></textarea>
+
+    <label for="incident_arrest">Has anyone been arrested so far in relation to the incident?</label>
+    <textarea type="text" id="incident_arrest" name="incident_arrest" rows="5" required></textarea>
+
+    <label for="comments">Further Comments</label>
+    <textarea type="text" id="comments" name="comments" rows="5" required></textarea>
+
+    <div class="file-upload">
+      <label for="files">Attach Evidence:</label>
+      <input type="file" id="files" name="files">
+    </div>
+    
+    <div class="form-group">
+      <button type="submit" class="btn btn-success">
+        Submit
+      </button>
+      <button type="submit" class="btn btn-danger">Cancel</button>
+    </div>
+  </form>
+{% endblock %}

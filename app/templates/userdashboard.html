@@ -2,21 +2,6 @@
 {% block title %}
 {% endblock %}
 {% block content %}
-    <header class="header">
-        <h1>Dashboard</h1>
-        <nav class="navigation">
-          <div>
-            <button data-target="profile">Dashboard</button>
-            <button data-target="report-crime">Report</button>
-            <button data-target="report-stolen-property">Theft</button>
-            <button data-target="crime-reported">History</button>
-            <button data-target="status">Status</button>
-            <button data-target="settings">Settings</button>
-          </div>
-          
-        </nav>
-      </header>
-    <main class="main-content">
         <section id="profile" class="content-section active" >
             {% if articles %}
               <h3>Latest News</h3>
@@ -35,98 +20,6 @@
                 <p>No News found.</p>
             {% endif %}
         </section>
-
-        <section id="report-crime" class="content-section">
-            <h2>Report Crime</h2>
-            <form id="crimeForm" method="POST" action="/dashboard">
-              <div class="datetime-fields">
-                <div class="datetime-field">
-                  <label for="datetime">Date and time when incident occurred:</label>
-                  <div class="input-container">
-                    <input type="datetime-local" id="datetime" name="datetime">
-                    <select id="ampm" name="ampm">
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-          
-              <label for="crime-location">Incident Location (Please provide specific details):</label>
-              <textarea id="description" name="crime-description" rows="5" required></textarea>
-
-              <label for="crime-location">Nature of incident:</label>
-              <textarea id="description" name="crime-description" rows="5" required></textarea>
-
-              <label for="crime-location">Incident details:</label>
-              <textarea id="description" name="crime-description" rows="5" required></textarea>
-
-              <label for="crime-location">Has anyone been arrested so far in relation to the incident?</label>
-              <textarea id="description" name="crime-description" rows="5" required></textarea>
-          
-              <label for="current-location">Further Comments</label>
-              <textarea id="description" name="crime-description" rows="5" required></textarea>
-          
-              <div class="file-upload">
-                <label for="file">Attach Evidence:</label>
-                <input type="file" id="files" name="file">
-              </div>
-              
-              <div class="form-group">
-                <button type="submit" class="btn btn-success" href="{{ url_for('user_dashboard') }}">
-                  Submit
-                </button>
-                <button type="submit" class="btn btn-danger">Cancel</button>
-              </div>
-            </form>
-        </section>
-
-        <section id="report-stolen-property" class="content-section">
-            <h2>Report Stolen Property</h2>
-              <form id="stolenPropertyForm">
-                <label for="name">Your Name:</label>
-                <input type="text" id="name" name="name" required>
-      
-                <label for="description">Description of Lost Property:</label>
-                <textarea id="description" name="description" rows="5" required></textarea>
-      
-                <label for="value">Value (Ksh):</label>
-                <input type="number" min="0" id="value" name="value" required>
-      
-                <label for="police-station">Police Station:</label>
-                <select id="police-station" name="police-station" required>
-                  <option value="" disabled>Select Police Station</option>
-                  <option value="central">Central Police Station</option>
-                  <option value="buruburu">Buruburu Police Station</option>
-                  <option value="gigiri">Gigiri Police Station</option>
-                </select>
-      
-                <div class="file-upload">
-                  <label for="file">Attach File:</label>
-                  <input type="file" id="file" name="file">
-                </div>
-                <div>
-                  <button type="submit" class="btn btn-success">Submit</button>
-                  <button type="submit" class="btn btn-danger">Cancel</button>
-                </div> 
-              </form>
-        </section>
-
-        <section id="crime-reported" class="content-section">
-            <h2>Crimes Reported</h2>
-            <ul id="reportedCrimesList"></ul>
-        </section>
-
-        <section id="status" class="content-section">
-            <h2>Crime Status</h2>
-            <p>View and manage your received and sent messages.</p>
-        </section>
-
-        <section id="settings" class="content-section">
-          <h2>Account Settings</h2>
-          <p>Change your password, email, or other settings here.</p>
-        </section>
-      </main>
 {% endblock %}
 
 

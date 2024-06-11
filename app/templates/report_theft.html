@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}
+  THEFT REPORT
+{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Assignment</title>
+    <link rel="stylesheet" href="./include/footer.css">
+
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-bottom: 60px; /* Adjust for footer height
+        }*/
+
+        form {
+            max-width: 800px;
+            margin: 20px auto; /* Adjust margin */
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Prevent button overlap */
+        }
+
+        .form-column {
+            float: left;
+            width: 50%;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+
+        .form-row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        input[type="date"],
+        button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 150px; 
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 8px 16px;
+            font-size: 16px; 
+            width: auto; 
+            display: block; 
+            margin: 0 auto;
+            float: right; /* Align to right */
+        }
+
+        button.cancel {
+            background-color: #dc3545;
+            float: left; /* Align to left */
+            margin-right: 10px; /* Add margin between buttons */
+        }
+
+        button.cancel:hover {
+            background-color: #e20a20;
+        }
+        button.submit:hover {
+            background-color: #056ad5;
+        }
+    </style>
+</head>
+<body>
+
+<form action="process_assignment.php" method="POST">
+    <div class="form-row">
+        <div class="form-column">
+            <label for="course_code">Place of Theft:</label>
+            <input type="text" id="course_code" name="course_code" value="" placeholder="Ex: House, Car etc. " required>
+
+            <label for="course_title">Street Address:</label>
+            <input type="text" id="course_title" name="course_title" value="" required>
+
+            <label for="credits">City:</label>
+            <input type="text" id="credits" name="credits" value="">
+
+            <label for="due_date">Date of Theft:</label>
+            <input type="date" id="due_date" name="due_date" required>
+        </div>
+
+        <div class="form-column">
+            <label for="assignment_name">Reported By:</label>
+            <input type="text" id="assignment_name" name="assignment_name" placeholder="Full Name" required>
+
+            <label for="assignment">Phone Number:</label>
+            <input type="text" id="assignment_name" name="assignment_name" placeholder="Please enter a valid phone number" required>
+
+
+            <label for="marks_out_of">Value of Stolen Properties:</label>
+            <input type="number" id="marks_out_of" name="marks_out_of" placeholder="Ksh" required>
+
+            <label for="due_date">Time of Theft:</label>
+            <input type="time" id="marks_out_of" name="marks_out_of" placeholder="Ksh" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="marking_scheme">Stolen Properties:</label>
+        <textarea id="marking_scheme" name="marking_scheme" style="width: calc(100% - 22px);" required></textarea>
+    </div>
+
+    <div class="form-row">
+        <label for="instruction">Further Details:</label>
+        <textarea id="instruction" name="instruction" style="height: 80px;" required></textarea>
+    </div>
+
+    <div class="form-row">
+        <button type="submit" name="add_assignment" class="submit">Submit</button>
+        <a href=""><button type="button" class="cancel">Cancel</button></a>
+    </div>
+</form>
+</body>
+</html>
+{% endblock %}

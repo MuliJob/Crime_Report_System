@@ -102,7 +102,8 @@ def register():
             db.session.commit()
             flash(f"Hello, {crime_location}", category='success')
             return redirect(url_for('user_dashboard'))
-
+    else:
+        flash("An error has occurred when updating your details", category='danger')
     return render_template('register.html')
 
 @app.route('/signout')
@@ -120,6 +121,10 @@ def user_dashboard():
     articles = news_data.get('articles', [])
 
     return render_template('userdashboard.html', articles=articles)
+
+@app.route('/crime_report', methods=['GET', 'POST'])
+def report_crime():    
+    return render_template('report_theft.html')
 
 
 @app.route('/admin')
