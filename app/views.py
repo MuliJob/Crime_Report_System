@@ -150,6 +150,11 @@ def report_theft():
     return render_template('report_theft.html')
 
 
+@app.route('/crime_report')
+def report_crime():
+    return render_template('report_crime.html')
+
+
 @app.route('/admin')
 def admin_dashboard():
     return render_template('admin.html')
