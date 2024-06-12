@@ -9,8 +9,8 @@ class Register(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
-    crimes = db.relationship('Crime', backref='reporter', lazy=True)
-    thefts = db.relationship('Theft', backref='victim', lazy=True)
+    crimes = db.relationship('Crime', backref='crimes', lazy=True)
+    thefts = db.relationship('Theft', backref='thefts', lazy=True)
     
 
 class User(db.Model, UserMixin):
@@ -29,10 +29,10 @@ class Crime(db.Model, UserMixin):
     police_station = db.Column(db.String(40), nullable=False)
     files = db.Column(db.LargeBinary)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('register.id'), nullable=False)
+    reporter = db.Column(db.Integer(), db.ForeignKey('register.id'))
 
 class Theft(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    theft_id = db.Column(db.Integer, primary_key=True)
     place_of_theft = db.Column(db.String(50), nullable=False)
     street_address = db.Column(db.String(30), nullable=False)
     city = db.Column(db.String(10), nullable=False)
@@ -43,4 +43,4 @@ class Theft(db.Model, UserMixin):
     stolen_property = db.Column(db.String(500), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('register.id'), nullable=False)
+    reporter = db.Column(db.Integer(), db.ForeignKey('register.id'))

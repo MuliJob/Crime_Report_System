@@ -147,8 +147,6 @@ def report_crime():
         db.session.commit()
         flash(f"Your theft report was sent successfully", category='success')
         return redirect(url_for('user_dashboard'))
-    else:
-        flash('An error has occurred while sending your report', category='danger')
     return render_template('report_theft.html')
 
 
