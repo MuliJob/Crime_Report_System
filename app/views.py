@@ -121,8 +121,8 @@ def user_dashboard():
 
     return render_template('userdashboard.html', articles=articles)
 
-@app.route('/crime_report', methods=['GET', 'POST'])
-def report_crime():   
+@app.route('/theft_report', methods=['GET', 'POST'])
+def report_theft():   
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
         street_address = request.form.get('street_address')
