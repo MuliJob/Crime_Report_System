@@ -1,3 +1,5 @@
 virtual/
 *.pyc
-instance/
+app/__pycache__
+instance/system.db
+.vscode

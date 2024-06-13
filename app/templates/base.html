@@ -19,7 +19,7 @@ CRIME REPORTING SYSTEM
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-<a class="navbar-brand nav-link active" href="{{ url_for('home_page') }}">E-Security <span class="sr-only"></span></a>
+<a class="navbar-brand nav-link active" href="{{ url_for('views.home_page') }}">E-Security <span class="sr-only"></span></a>
 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 <span class="navbar-toggler-icon"></span>
 </button>
@@ -27,36 +27,36 @@ CRIME REPORTING SYSTEM
 {% if current_user.is_authenticated %}
 <ul class="navbar-nav">
 <li class="new-item active">
-<a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+<a class="nav-link" href="{{ url_for('views.user_dashboard') }}">Dashboard</a>
 </li>
 <li class="nav-item dropdown">
 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 Report
 </a>
 <ul class="dropdown-menu">
-<li><a class="dropdown-item" href="{{ url_for('report_crime') }}">Crime</a></li>
-<li><a class="dropdown-item" href="{{ url_for('report_theft') }}">Theft</a></li>
+<li><a class="dropdown-item" href="{{ url_for('views.report_crime') }}">Crime</a></li>
+<li><a class="dropdown-item" href="{{ url_for('views.report_theft') }}">Theft</a></li>
 </ul>
 </li>
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('history') }}">History</a>
+<a class="nav-link" href="{{ url_for('views.history') }}">History</a>
 </li>
 <li class="nav-item dropdown">
 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 Updates
 </a>
 <ul class="dropdown-menu">
-<li><a class="dropdown-item" href="{{ url_for('status') }}">Status</a></li>
-<li><a class="dropdown-item" href="{{ url_for('status') }}">Recovered Items</a></li>
+<li><a class="dropdown-item" href="{{ url_for('views.status') }}">Status</a></li>
+<li><a class="dropdown-item" href="{{ url_for('views.status') }}">Recovered Items</a></li>
 </ul>
 </li>
 </ul>
 <ul class="navbar-nav ms-auto">
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('settings') }}"><i class="bi bi-person-circle"></i></a>
+<a class="nav-link" href="{{ url_for('views.settings') }}"><i class="bi bi-person-circle"></i></a>
 </li>
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('sign_out') }}"><i class="bi bi-box-arrow-right"></i></a>
+<a class="nav-link" href="{{ url_for('auth.sign_out') }}"><i class="bi bi-box-arrow-right"></i></a>
 </li>
 </ul>
 {% else %}
@@ -66,15 +66,15 @@ Updates
 Login
 </a>
 <ul class="dropdown-menu">
-<li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Admin</a></li>
-<li><a class="dropdown-item" href="{{ url_for('sign_in') }}">User</a></li>
+<li><a class="dropdown-item" href="{{ url_for('views.admin_dashboard') }}">Admin</a></li>
+<li><a class="dropdown-item" href="{{ url_for('auth.sign_in') }}">User</a></li>
 </ul>
 </li>
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('sign_up') }}">Register</a>
+<a class="nav-link" href="{{ url_for('auth.sign_up') }}">Register</a>
 </li>
 <li>
-<a class="nav-link" href="{{ url_for('about') }}">About</a>
+<a class="nav-link" href="{{ url_for('views.about') }}">About</a>
 </li>
 </ul>
 {% endif %}

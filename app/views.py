@@ -1,16 +1,14 @@
-from flask import render_template, redirect, url_for, request, flash
-from app import app, db, api_key
-from app.models import User, Register, Crime, Theft
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user
+from flask import render_template, redirect, url_for, request, flash, Blueprint
+from . import db, api_key
+from .models import User, Crime, Theft
 from requests.exceptions import RequestException
 import requests
 
+views = Blueprint('views', __name__)
 
 
 # Views
-@app.route('/')
-@app.route('/home')
+@views.route('/home')
 def home_page():
 
     '''
@@ -18,67 +16,11 @@ def home_page():
     '''
     return render_template('home.html')
 
-@app.route('/about')
+@views.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/signin', methods=['GET', 'POST'])
-def sign_in():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        user = Register.query.filter_by(username=username).first()
-        
-        if user:
-            if check_password_hash(user.password, password):
-                flash(f'Logged in successfully! Hello {username}', category='success')
-                login_user(user, remember=True)
-                return redirect(url_for('user_dashboard'))
-            else: 
-                flash('Incorrect password, try again.', category='danger')
-        else:
-            flash('Username does not exist.', category='danger')
-    
-    return render_template('signin.html')
-    
-
-@app.route('/signup', methods=['GET', 'POST'])
-def sign_up():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-
-        user = Register.query.filter_by(username=username, email=email).first()
-
-        if user:
-            flash('Username already exists.', category='danger')
-        elif len(username) < 2:
-            flash('Username must be more than 1 characters.', category='danger')
-        elif len(email) < 4:
-            flash('Email must be more than 4 characters.', category='danger')
-        elif password1 != password2:
-            flash('Password don\'t match.', category='danger')
-        elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='danger')
-        else:
-            # add user to database
-            new_user = Register(username=username, 
-                                email=email, 
-                                password=generate_password_hash(
-                                password1, 
-                                method='pbkdf2:sha256'))
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user, remember=True)
-            flash('Account created!', category='success')
-            return redirect(url_for('register'))
-    
-    return render_template('signup.html')
-
-@app.route('/register', methods=['GET', 'POST'])
+@views.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         idno = request.form.get('idno')
@@ -102,18 +44,11 @@ def register():
             db.session.add(personal_details)
             db.session.commit()
             flash(f"Hello, {fullname}, welcome to the most secure website for reporting crimes", category='success')
-            return redirect(url_for('user_dashboard'))
+            return redirect(url_for('views.user_dashboard'))
 
     return render_template('register.html')
 
-@app.route('/signout')
-@login_required
-def sign_out():
-    logout_user()
-    flash('You have been logged out.', category='info')
-    return redirect(url_for('sign_in'))
-
-@app.route('/dashboard', methods=['GET', 'POST'])
+@views.route('/dashboard', methods=['GET', 'POST'])
 def user_dashboard():
     url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
     try:
@@ -127,7 +62,7 @@ def user_dashboard():
 
     return render_template('userdashboard.html', articles=articles)
 
-@app.route('/theft_report', methods=['GET', 'POST'])
+@views.route('/theft_report', methods=['GET', 'POST'])
 def report_theft():   
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -156,22 +91,22 @@ def report_theft():
     return render_template('report_theft.html')
 
 
-@app.route('/crime_report')
+@views.route('/crime_report')
 def report_crime():
     return render_template('report_crime.html')
 
-@app.route('/history')
+@views.route('/history')
 def history():
     return render_template('history.html')
 
-@app.route('/status')
+@views.route('/status')
 def status():
     return render_template('status.html')
 
-@app.route('/settings')
+@views.route('/settings')
 def settings():
     return render_template('settings.html')
 
-@app.route('/admin')
+@views.route('/admin')
 def admin_dashboard():
     return render_template('admin.html')

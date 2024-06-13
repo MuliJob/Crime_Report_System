@@ -1,7 +1,5 @@
 from . import db
 from flask_login import UserMixin
-from flask_bcrypt import bcrypt
-from datetime import datetime
 from sqlalchemy.sql import func
 
 class Register(db.Model, UserMixin):

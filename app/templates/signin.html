@@ -25,12 +25,12 @@ Login
 								</div>
                 <br>
 								<div class="form-group m-0" align="center">
-									<button type="submit" class="btn btn-primary btn-block" href="{{ url_for('user_dashboard') }}">
+									<button type="submit" class="btn btn-primary btn-block" href="{{ url_for('views.user_dashboard') }}">
 										Login
 									</button>
 								</div>
 								<div class="mt-4 text-center">
-									Don't have an account? <a href="{{ url_for('sign_up') }}">Register</a>
+									Don't have an account? <a href="{{ url_for('auth.sign_up') }}">Register</a>
 								</div>
 							</form>
 						</div>
