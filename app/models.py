@@ -21,11 +21,17 @@ class User(db.Model, UserMixin):
 
 class Crime(db.Model, UserMixin):
     crime_id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(10000), nullable=False)
-    crime_location = db.Column(db.String(30), nullable=False)
-    reporter_location = db.Column(db.String(30), nullable=False)
-    police_station = db.Column(db.String(40), nullable=False)
-    files = db.Column(db.LargeBinary)
+    date_of_incident = db.Column(db.String(10), nullable=False)
+    issued_by = db.Column(db.String(20), nullable=False)
+    time_of_incident = db.Column(db.String(10), nullable=False)
+    incident_location = db.Column(db.String(20), nullable=False)
+    incident_nature = db.Column(db.String(10000), nullable=False)
+    incident_details = db.Column(db.String(10000), nullable=False)
+    suspect_details = db.Column(db.String(255), nullable=False)
+    arrested_for_incident = db.Column(db.String(255), nullable=False)
+    suspect_name = db.Column(db.String(10))
+    comments = db.Column(db.String(255))
+    file_upload = db.Column(db.LargeBinary)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
     reporter = db.Column(db.Integer(), db.ForeignKey('register.id'))
 
@@ -41,4 +47,4 @@ class Theft(db.Model, UserMixin):
     stolen_property = db.Column(db.String(500), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    reporter = db.Column(db.Integer(), db.ForeignKey('register.id'))
+    victim = db.Column(db.Integer(), db.ForeignKey('register.id'))

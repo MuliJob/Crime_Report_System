@@ -93,6 +93,30 @@ def report_theft():
 
 @views.route('/crime_report')
 def report_crime():
+    if request.method == 'POST':
+        date_of_incident = request.form.get('date_of_incident')
+        issued_by = request.form.get('issued_by')
+        time_of_incident = request.form.get('time_of_incident')
+        incident_location = request.form.get('incident_location')
+        incident_nature = request.form.get('phone_number')
+        value = request.form.get('value')
+        time_of_theft = request.form.get('time_of_theft')
+        stolen_property = request.form.get('stolen_property')
+        description = request.form.get('description')
+
+        theft_report = Theft(place_of_theft=place_of_theft, 
+                                street_address=street_address,
+                                city=city, 
+                                date_of_theft=date_of_theft,
+                                phone_number=phone_number, 
+                                value=value,
+                                time_of_theft=time_of_theft, 
+                                stolen_property=stolen_property,
+                                description=description)
+        db.session.add(theft_report)
+        db.session.commit()
+        flash(f"Your theft report was sent successfully", category='success')
+        return redirect(url_for('user_dashboard'))
     return render_template('report_crime.html')
 
 @views.route('/history')
