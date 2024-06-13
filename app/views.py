@@ -154,6 +154,17 @@ def report_theft():
 def report_crime():
     return render_template('report_crime.html')
 
+@app.route('/history')
+def history():
+    return render_template('history.html')
+
+@app.route('/status')
+def status():
+    return render_template('status.html')
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
 
 @app.route('/admin')
 def admin_dashboard():

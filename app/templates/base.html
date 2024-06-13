@@ -39,23 +39,23 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('sign_out') }}">History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('sign_out') }}">Status</a>
+            <a class="nav-link" href="{{ url_for('history') }}">History</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Profile
+              Updates
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Settings</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('status') }}">Recovered Items</a></li>
+            </ul>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('status') }}">Status</a></li>
             </ul>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#">Welcome, {{ current_user.username }}</a>
+            <a class="nav-link" href="{{ url_for('settings') }}">Welcome, {{ current_user.username }}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('sign_out') }}">Logout</a>
