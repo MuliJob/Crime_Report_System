@@ -3,6 +3,7 @@ from app import app, db, api_key
 from app.models import User, Register, Crime, Theft
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
+from requests.exceptions import RequestException
 import requests
 
 
@@ -115,9 +116,14 @@ def sign_out():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def user_dashboard():
     url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
-    response = requests.get(url)
-    news_data = response.json()
-    articles = news_data.get('articles', [])
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        news_data = response.json()
+        articles = news_data.get('articles', [])
+    except RequestException:
+        flash("Error fetching news. Try connecting to internet", category='danger')
+        articles = []
 
     return render_template('userdashboard.html', articles=articles)
 
