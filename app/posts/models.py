@@ -1,23 +1,6 @@
-from . import db
+from app import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-
-class Register(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
-    crimes = db.relationship('Crime', backref='crimes', lazy=True)
-    thefts = db.relationship('Theft', backref='thefts', lazy=True)
-    
-
-class User(db.Model, UserMixin):
-    idno = db.Column(db.Integer, primary_key=True, nullable=False)
-    fullname = db.Column(db.String(100), nullable=False)
-    phonenumber = db.Column(db.String(20), nullable=False)
-    residence = db.Column(db.String(200), nullable=False)
-    gender = db.Column(db.String(10), nullable=False)
-    
 
 class Crime(db.Model, UserMixin):
     crime_id = db.Column(db.Integer, primary_key=True)
@@ -28,12 +11,12 @@ class Crime(db.Model, UserMixin):
     incident_nature = db.Column(db.String(10000), nullable=False)
     incident_details = db.Column(db.String(10000), nullable=False)
     suspect_details = db.Column(db.String(255), nullable=False)
-    arrested_for_incident = db.Column(db.String(255), nullable=False)
+    arrest_history = db.Column(db.String(255), nullable=False)
     suspect_name = db.Column(db.String(10))
     comments = db.Column(db.String(255))
     file_upload = db.Column(db.LargeBinary)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    reporter = db.Column(db.Integer(), db.ForeignKey('register.id'))
+    reporter_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 
 class Theft(db.Model, UserMixin):
     theft_id = db.Column(db.Integer, primary_key=True)
@@ -47,4 +30,4 @@ class Theft(db.Model, UserMixin):
     stolen_property = db.Column(db.String(500), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    victim = db.Column(db.Integer(), db.ForeignKey('register.id'))
+    victim_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
