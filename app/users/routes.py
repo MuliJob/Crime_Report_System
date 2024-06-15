@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
+from app.posts.models import Crime, Theft
 from app import db, api_key
 from requests.exceptions import RequestException
 import requests
@@ -122,7 +123,12 @@ def user_dashboard():
 
 @users.route('/history')
 def history():
-    return render_template('history.html')
+    user = current_user
+    
+    crimes = Crime.query.filter_by(reporter_id=user.id).all()
+    print(crimes)  # Print the list of crimes
+
+    return render_template('history.html', crimes=crimes)
 
 @users.route('/status')
 def status():
