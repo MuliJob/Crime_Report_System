@@ -122,10 +122,9 @@ def user_dashboard():
 
 
 @users.route('/history')
-def history():
-    user = current_user
-    
-    crimes = Crime.query.filter_by(reporter_id=user.id).all()
+def history(crime_id):
+
+    crimes = Crime.query.get_or_404(crime_id)
     print(crimes)  # Print the list of crimes
 
     return render_template('history.html', crimes=crimes)
