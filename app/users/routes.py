@@ -153,7 +153,13 @@ def status():
 
 @users.route('/users/settings')
 def settings():
-    return render_template('settings.html')
+    if not session.get('user_id'):
+        return redirect('/users/')
+    if session.get('user_id'):
+        id=session.get('user_id')
+    users=User().query.filter_by(id=id).first()
+    return render_template('settings.html',title="User Dashboard",users=users)
+    
 
 @users.route('/users/change-password',methods=["POST","GET"])
 def userChangePassword():
@@ -184,5 +190,33 @@ def userChangePassword():
 
     else:
         return render_template('change-password.html',title="Change Password")
+
+# user update profile
+@users.route('/users/update-profile', methods=["POST","GET"])
+def userUpdateProfile():
+    if not session.get('user_id'):
+        return redirect('/users/')
+    if session.get('user_id'):
+        id=session.get('user_id')
+    users=User.query.get(id)
+    if request.method == 'POST':
+        # get all input field name
+        fullname=request.form.get('fullname')
+        username=request.form.get('username')
+        email=request.form.get('email')
+        phonenumber=request.form.get('phonenumber')
+        residence=request.form.get('residence')
+        if fullname =="" or username=="" or email=="" or phonenumber=="" or residence=="":
+            flash('Please fill all the field','danger')
+            return redirect('/users/update-profile')
+        else:
+            session['username']=None
+            User.query.filter_by(id=id).update(dict(fullname=fullname,username=username,email=email,phonenumber=phonenumber,residence=residence))
+            db.session.commit()
+            session['username']=username
+            flash('Profile update Successfully','success')
+            return redirect('/users/dashboard')
+    else:
+        return render_template('update-profile.html',title="Update Profile",users=users)
 
 
