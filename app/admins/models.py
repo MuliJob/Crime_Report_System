@@ -14,4 +14,4 @@ class Admin(db.Model, UserMixin):
 #create table
 
 #insert admin data onetime
-admin=Admin(username='admin', password=generate_password_hash('87654321', method='pbkdf2:sha256'))
+#admin=Admin(username='admin', password=generate_password_hash('87654321', method='pbkdf2:sha256'))

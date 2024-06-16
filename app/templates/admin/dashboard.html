@@ -1,4 +1,41 @@
-
-{% block content %}
-<h1>Admin Dashboard</h1>
-{% endblock content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Report System - Admin Dashboard</title>
+    </head>
+<body>
+    <header>
+        <h1>Crime Report System - Admin Dashboard</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Crime Types</a></li>
+            <li><a href="#">Users</a></li>
+            <li><a href="#">Locations</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Sign Out</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="quick-access">
+            <h2>Quick Access</h2>
+            <ul>
+                <li><span>Open Cases:</span> {{ open_cases }}</li>
+                <li><span>New Reports (Today):</span> {{ new_reports_today }}</li>
+            </ul>
+        </section>
+        <section class="data-visualization">
+            <h2>Crime Report Activity</h2>
+            </section>
+        <section class="recent-reports">
+            <h2>Recent Reports</h2>
+            <ul>
+                </ul>
+        </section>
+    </main>
+</body>
+</html>

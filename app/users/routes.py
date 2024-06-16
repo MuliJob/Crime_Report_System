@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -7,12 +7,12 @@ from app import db, api_key
 from requests.exceptions import RequestException
 import requests
 
-
 users = Blueprint('users', __name__)
-
 
 @users.route('/users/signin', methods=['GET', 'POST'])
 def sign_in():
+    if  session.get('user_id'):
+        return redirect('/users/dashboard')
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -21,6 +21,8 @@ def sign_in():
         
         if user:
             if check_password_hash(user.password, password):
+                session['user_id']=user.id
+                session['username']=user.username
                 flash(f'Logged in successfully! Hello {username}', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('users.user_dashboard'))
@@ -34,6 +36,8 @@ def sign_in():
 
 @users.route('/users/signup', methods=['GET', 'POST'])
 def sign_up():
+    if  session.get('user_id'):
+        return redirect('/users/dashboard')
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
@@ -72,6 +76,8 @@ def sign_up():
 
 @users.route('/users/register', methods=['GET', 'POST'])
 def register():
+    if  session.get('user_id'):
+        return redirect('/users/dashboard')
     if request.method == 'POST':
         idno = request.form.get('idno')
         fullname = request.form.get('fullname')
@@ -101,12 +107,23 @@ def register():
 @users.route('/users/signout')
 @login_required
 def sign_out():
-    logout_user()
-    flash('You have been logged out.', category='info')
+    if not session.get('user_id'):
+        return redirect(url_for('users.sign_in'))
+    
+    if session.get('user_id'):
+        session['user_id'] = None
+        session['username'] = None
+        flash('You have been logged out.', category='info')
+        logout_user()
     return redirect(url_for('users.sign_in'))
+    
+
+
 
 @users.route('/users/dashboard', methods=['GET', 'POST'])
-def user_dashboard():
+def user_dashboard(): 
+    if not session.get('user_id'):
+        return redirect('/users/signin')   
     url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
     try:
         response = requests.get(url)
@@ -137,5 +154,35 @@ def status():
 @users.route('/users/settings')
 def settings():
     return render_template('settings.html')
+
+@users.route('/users/change-password',methods=["POST","GET"])
+def userChangePassword():
+    if not session.get('user_id'):
+        return redirect('/users/')
+    if request.method == 'POST':
+        email=request.form.get('email')
+        password=request.form.get('password')
+        if email == "" or password == "":
+            flash('Please fill the field','danger')
+            return redirect('/users/change-password')
+        elif len(password) < 8:
+            flash('Password should not be less than 8 characters', 'danger')
+            return redirect('/users/change-password')
+        else:
+            users=User.query.filter_by(email=email).first()
+            if users:
+               password=generate_password_hash(
+                                password, 
+                                method='pbkdf2:sha256')
+               User.query.filter_by(email=email).update(dict(password=password))
+               db.session.commit()
+               flash('Password Change Successfully','success')
+               return redirect('/users/settings')
+            else:
+                flash('Invalid Email','danger')
+                return redirect('/users/change-password')
+
+    else:
+        return render_template('change-password.html',title="Change Password")
 
 

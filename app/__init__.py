@@ -2,7 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.config import NEWS_API, SECRET_KEY
-from flask_admin import Admin
+from flask_session import Session
+#from flask_admin import Admin
 
 api_key = NEWS_API
 
@@ -10,9 +11,11 @@ app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///system.db'
+app.config["SESSION_PERMANENT"]=False
+app.config['SESSION_TYPE']='filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-admin = Admin(app)
+Session(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'users.sign_in'
