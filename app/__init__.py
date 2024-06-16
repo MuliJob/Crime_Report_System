@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.config import NEWS_API, SECRET_KEY
 from flask_admin import Admin
-from flask_bcrypt import Bcrypt
 
 api_key = NEWS_API
 
@@ -13,7 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///system.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
 admin = Admin(app)
 
 login_manager = LoginManager(app)

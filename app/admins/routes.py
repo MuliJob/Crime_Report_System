@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, flash, session
-from app import bcrypt
 from app.admins.models import Admin 
+from werkzeug.security import check_password_hash
 
 admins = Blueprint('admins', __name__)
 
@@ -18,7 +18,7 @@ def adminIndex():
         else:
             # login admin by username
             admins = Admin().query.filter_by(username=username).first()
-            if admins and bcrypt.check_password_hash(admins.password,password):
+            if admins and check_password_hash(admins.password,password):
                 session['admin_id']=admins.id
                 session['admin_name']=admins.username
                 flash('Login Successfully', category='success')
@@ -30,3 +30,6 @@ def adminIndex():
         return render_template('admin/index.html', 
         title='Admin Login')
 
+@admins.route('/admin/dashboard')
+def adminDashboard():
+    return render_template('admin/dashboard.html')

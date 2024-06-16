@@ -12,9 +12,6 @@ class Admin(db.Model, UserMixin):
     return f'Admin("{self.username}", "{self.id}")'
   
 #create table
-db.create_all()
 
 #insert admin data onetime
-admin=Admin(username='admin', password=generate_password_hash(
-                                '12345', 
-                                method='pbkdf2:sha256'))
+admin=Admin(username='admin', password=generate_password_hash('87654321', method='pbkdf2:sha256'))
