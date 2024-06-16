@@ -11,7 +11,7 @@ import requests
 users = Blueprint('users', __name__)
 
 
-@users.route('/signin', methods=['GET', 'POST'])
+@users.route('/users/signin', methods=['GET', 'POST'])
 def sign_in():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -32,7 +32,7 @@ def sign_in():
     return render_template('signin.html')
     
 
-@users.route('/signup', methods=['GET', 'POST'])
+@users.route('/users/signup', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -70,7 +70,7 @@ def sign_up():
     
     return render_template('signup.html')
 
-@users.route('/register', methods=['GET', 'POST'])
+@users.route('/users/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         idno = request.form.get('idno')
@@ -98,14 +98,14 @@ def register():
 
     return render_template('register.html')
 
-@users.route('/signout')
+@users.route('/users/signout')
 @login_required
 def sign_out():
     logout_user()
     flash('You have been logged out.', category='info')
     return redirect(url_for('users.sign_in'))
 
-@users.route('/dashboard', methods=['GET', 'POST'])
+@users.route('/users/dashboard', methods=['GET', 'POST'])
 def user_dashboard():
     url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
     try:
@@ -121,23 +121,21 @@ def user_dashboard():
 
 
 
-@users.route('/history')
-def history(crime_id):
+@users.route('/users/history')
+def history():
+    user = current_user
 
-    crimes = Crime.query.get_or_404(crime_id)
+    crimes = Crime.query.all()
     print(crimes)  # Print the list of crimes
 
     return render_template('history.html', crimes=crimes)
 
-@users.route('/status')
+@users.route('/users/status')
 def status():
     return render_template('status.html')
 
-@users.route('/settings')
+@users.route('/users/settings')
 def settings():
     return render_template('settings.html')
 
-@users.route('/admin')
-def admin_dashboard():
-    return render_template('admin.html')
 

@@ -2,6 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.config import NEWS_API, SECRET_KEY
+from flask_admin import Admin
+from flask_bcrypt import Bcrypt
 
 api_key = NEWS_API
 
@@ -11,6 +13,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///system.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+admin = Admin(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'users.sign_in'
@@ -22,8 +26,10 @@ def load_user(id):
 from app.users.routes import users
 from app.posts.routes import posts
 from app.main.routes import main
+from app.admins.routes import admins
 from app.users import models
 
 app.register_blueprint(users)
 app.register_blueprint(posts)
 app.register_blueprint(main)
+app.register_blueprint(admins)

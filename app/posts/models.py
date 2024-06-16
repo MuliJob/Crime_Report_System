@@ -18,6 +18,10 @@ class Crime(db.Model, UserMixin):
     date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
     reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    #def __repr__(self):
+    #    return f'<Crime "{self.crime_id}", "{self.date_of_incident}", "{self.issued_by}",
+    #    "{self.time_of_incident}", "{self.incident_location}">'
+
 class Theft(db.Model, UserMixin):
     theft_id = db.Column(db.Integer, primary_key=True)
     place_of_theft = db.Column(db.String(50), nullable=False)
