@@ -140,7 +140,10 @@ def user_dashboard():
 
 @users.route('/users/history')
 def history():
-    user = current_user
+    if not session.get('user_id'):
+        return redirect('/users/dashboard')
+    #crimes = Crime.query.filter_by(reporter_id).first()
+
 
     crimes = Crime.query.all()
     print(crimes)  # Print the list of crimes
@@ -154,11 +157,15 @@ def status():
 @users.route('/users/settings')
 def settings():
     if not session.get('user_id'):
-        return redirect('/users/')
+        return redirect('/users/dashboard')
     if session.get('user_id'):
         id=session.get('user_id')
+        idno=session.get('user_id')
     users=User().query.filter_by(id=id).first()
-    return render_template('settings.html',title="User Dashboard",users=users)
+    register=Register().query.filter_by(idno=idno).first()
+    return render_template('settings.html',title="User Dashboard",users=users, register=register)
+
+
     
 
 @users.route('/users/change-password',methods=["POST","GET"])
@@ -198,7 +205,9 @@ def userUpdateProfile():
         return redirect('/users/')
     if session.get('user_id'):
         id=session.get('user_id')
+        idno=session.get('user_id')
     users=User.query.get(id)
+    register=Register.query.get(idno)
     if request.method == 'POST':
         # get all input field name
         fullname=request.form.get('fullname')
@@ -211,12 +220,13 @@ def userUpdateProfile():
             return redirect('/users/update-profile')
         else:
             session['username']=None
-            User.query.filter_by(id=id).update(dict(fullname=fullname,username=username,email=email,phonenumber=phonenumber,residence=residence))
+            User.query.filter_by(id=id).update(dict(username=username,email=email))
+            Register.query.filter_by(idno=idno).update(dict(fullname=fullname,phonenumber=phonenumber,residence=residence))
             db.session.commit()
             session['username']=username
             flash('Profile update Successfully','success')
             return redirect('/users/dashboard')
     else:
-        return render_template('update-profile.html',title="Update Profile",users=users)
+        return render_template('update-profile.html',title="Update Profile",users=users, register=register)
 
 
