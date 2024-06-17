@@ -33,7 +33,7 @@ def adminIndex():
 
 @admins.route('/admin/dashboard')
 def adminDashboard():
-    return render_template('admin/dashboard.html')
+    return render_template('admin/admin-dashboard.html')
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
