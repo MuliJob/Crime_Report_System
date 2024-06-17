@@ -21,8 +21,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'users.sign_in'
 
 @login_manager.user_loader
-def load_user(id):
-  return models.User.query.get(int(id))
+def load_user(user_id):
+    return models.User.query.get(user_id)
+#@login_manager.user_loader
+#def load_user(id):
+#  return models.User.query.get(int(id))
 
 from app.users.routes import users
 from app.posts.routes import posts

@@ -67,6 +67,7 @@ def sign_up():
                                 password1, 
                                 method='pbkdf2:sha256'))
             db.session.add(new_user)
+            db.session.close_all()
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
@@ -98,8 +99,9 @@ def register():
                                     residence=residence, 
                                     gender=gender)
             db.session.add(personal_details)
+            db.session.close_all()
             db.session.commit()
-            flash(f"Hello, {fullname}, welcome to the most secure website for reporting crimes", category='success')
+            flash(f"Hello, {fullname}, Login to Access the Dashboard", category='success')
             return redirect(url_for('users.user_dashboard'))
 
     return render_template('register.html')
