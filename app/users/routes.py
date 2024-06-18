@@ -124,7 +124,7 @@ def sign_out():
 def user_dashboard(): 
     if not session.get('user_id'):
         return redirect('/users/signin')   
-    url = f'https://newsapi.org/v2/everything?q=apple&from=2024-05-31&to=2024-05-31&sortBy=popularity&apiKey={api_key}'
+    url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -153,6 +153,10 @@ def history():
 @users.route('/users/status')
 def status():
     return render_template('user/status.html')
+
+@users.route('/users/recovered')
+def recovered():
+    return render_template('user/recovered.html')
 
 @users.route('/users/settings')
 def settings():

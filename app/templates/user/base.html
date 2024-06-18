@@ -41,16 +41,16 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('users.status') }}">Status</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('users.status') }}">Recovered Items</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('users.recovered') }}">Recovered Items</a></li>
                         </ul>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('users.settings') }}"><i class="bi bi-person-circle"></i></a>
+                        <a class="nav-link" href="{{ url_for('users.settings') }}"><i class="bi bi-person-circle h4"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('users.sign_out') }}"><i class="bi bi-box-arrow-right"></i></a>
+                        <a class="nav-link" href="{{ url_for('users.sign_out') }}"><i class="bi bi-box-arrow-right h4"></i></a>
                     </li>
                 </ul>
                 {% else %}

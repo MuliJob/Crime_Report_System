@@ -107,6 +107,31 @@
         h1 {
           text-align: center;
         }
+        #imagePreview {
+        max-width: 100%;
+        height: auto;
+        margin-top: 15px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 5px;
+        }
+        .image-container {
+            position: relative;
+            max-width: 50%;
+            height: auto;
+        }
+
+        #imagePreview, #videoPreview {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #cancelButton {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -153,11 +178,50 @@
         <textarea id="description" name="description" style="height: 80px;" required></textarea>
     </div>
 
+    <div class="form-group">
+        <label for="mediaUpload">Attach Evidence:</label>
+        <input type="file" class="form-control-file" id="mediaUpload" name="file_upload accept="image/*, video/*">
+    </div>
+    <div class="form-group image-container">
+        <button type="button" id="cancelButton" class="btn btn-danger" style="display: none;">Cancel</button>
+        <img id="imagePreview" src="#" alt="Image preview" style="display: none;">
+        <video id="videoPreview" controls style="display: none;"></video>
+    </div>
+    <hr>
     <div class="form-row">
         <button type="submit" name="report_theft" class="submit">Submit</button>
         <a href="{{ url_for('users.user_dashboard') }}"><button type="button" class="cancel">Cancel</button></a>
     </div>
 </form>
+<script>
+    document.getElementById('mediaUpload').addEventListener('change', function(event) {
+              var file = event.target.files[0];
+              var reader = new FileReader();
+              reader.onload = function() {
+                  var mediaType = file.type.split('/')[0]; // Get the media type (image or video)
+                  if (mediaType === 'image') {
+                      document.getElementById('imagePreview').src = reader.result;
+                      document.getElementById('imagePreview').style.display = 'block';
+                      document.getElementById('videoPreview').style.display = 'none';
+                  } else if (mediaType === 'video') {
+                      document.getElementById('videoPreview').src = reader.result;
+                      document.getElementById('videoPreview').style.display = 'block';
+                      document.getElementById('imagePreview').style.display = 'none';
+                  }
+                  document.getElementById('cancelButton').style.display = 'inline-block';
+              }
+              reader.readAsDataURL(file);
+          });
+  
+          document.getElementById('cancelButton').addEventListener('click', function() {
+              document.getElementById('mediaUpload').value = "";
+              document.getElementById('imagePreview').style.display = 'none';
+              document.getElementById('videoPreview').style.display = 'none';
+              document.getElementById('imagePreview').src = "#";
+              document.getElementById('videoPreview').src = "";
+              this.style.display = 'none';
+          });
+  </script>
 </body>
 </html>
 {% endblock %}

@@ -3,17 +3,164 @@
 Dashboard
 {% endblock %}
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  .content-section {
+    margin: 20px 0;
+}
+
+#top-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+}
+
+.top-column {
+    flex: 1;
+    text-align: center;
+    padding: 20px; /* Increased padding for larger size */
+    box-sizing: border-box;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.title-line {
+    width: 50%;
+    height: 2px;
+    background-color: #ccc;
+    margin-bottom: 20px;
+}
+
+.top-image {
+    width: 100%;
+    height: auto;
+    max-width: 200px; /* Increased max width for larger images */
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+#profile-container {
+    max-height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+#profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.article-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.article-column {
+    box-sizing: border-box;
+}
+
+.article-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+p {
+    font-size: 1em;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    #top-content, .article-grid {
+        display: block;
+    }
+
+    .top-column, .article-column {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .article-grid {
+        grid-template-columns: 1fr; /* Single column for smaller screens */
+    }
+}
+
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
   <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       {{ message }}
   </div>
 {% endfor %} {% endif%} {% endwith %}
-        <section id="profile" class="content-section active" >
-            {% if articles %}
-              <h3>Latest News</h3>
-                <div class="article-grid">
-                {% for article in articles %}
+<section id="top-content" class="content-section">
+  <div class="top-column card">
+      <h3 class="card-title">What You Can Report</h3>
+      <div class="title-line"></div>
+      <img src="https://www.cid.go.ke/images/criminal-investigation-security-services.jpg" alt="Image 1" class="top-image">
+      <a href="">Terrorism</a>
+      <a href="">Cyber Crime</a>
+      <a href="">Land Fraud</a>
+      <a href="">Serious Crime</a>
+      <a href="">Drug Related Issues</a>
+  </div>
+  <div class="top-column card">
+      <h3 class="card-title">Our Services</h3>
+      <div class="title-line"></div>
+      <img src="https://www.cid.go.ke/images/photo-0581.jpg" alt="Image 2" class="top-image">
+      <a href="{{ url_for('posts.report_crime') }}">Crime Reporting</a>
+      <a href="{{ url_for('posts.report_theft') }}">Theft Reporting</a>
+      <a href="">Recovered Items</a>
+  </div>
+  <div class="top-column card">
+      <h3 class="card-title">Reporting Crime</h3>
+      <div class="title-line"></div>
+      <img src="https://www.cid.go.ke/images/special_agent_adam_deem_of_air_force_office_of_special_investigation_detachment_219.jpg" alt="Image 3" class="top-image">
+      <a href="{{ url_for('posts.report_crime') }}">Report Crime Online</a>
+      <a href="{{ url_for('posts.report_theft') }}">Report Theft Online</a>
+      <a href="">Contact Your Local Police Station</a>
+      <a href="">Contact Your Nearest Security Office</a>
+  </div>
+</section>
+
+<section id="profile-container" class="content-section">
+  <div id="profile">
+      {% if articles %}
+          <h3>Latest News</h3>
+          <div class="article-grid">
+              {% for article in articles %}
                   <div class="article-column">
                       <a href="{{ article['url'] }}" target="_blank">
                           <img src="{{ article['urlToImage'] }}" alt="{{ article['title'] }}" class="article-image">
@@ -21,12 +168,15 @@ Dashboard
                       <h2>{{ article['title'] }}</h2>
                       <p>{{ article['description'] }}</p>
                   </div>
-                {% endfor %}
-              </div>
-            {% else %}
-                <p>No News found! Please try again later</p>
-            {% endif %}
-        </section>
+              {% endfor %}
+          </div>
+      {% else %}
+          <p>No News found! Please try again later</p>
+      {% endif %}
+  </div>
+</section>
+</body>
+</html>
 {% endblock %}
 
 
