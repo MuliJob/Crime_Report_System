@@ -1,0 +1,53 @@
+{% extends 'admin/layout.html' %}
+{% block content %}
+<div class="container">
+  <table class="table table-hover table-dark">
+    <h2 style="text-align: center;">Crimes Reported</h2>
+    <thead>
+        <tr>
+            <th scope="col">Date of Incident</th>
+            <th scope="col">Reporter</th>
+            <th scope="col">Location</th>
+            <th scope="col">Time</th>
+            <th scope="col">Time Reported</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for crime in crimes %}
+            <tr>
+                <td>{{ crime.date_of_incident }}</td>
+                <td>{{ crime.issued_by }}</td>
+                <td>{{ crime.incident_location }}</td>
+                <td>{{ crime.time_of_incident }}</td>
+                <td>{{ crime.date_received }}</td>
+            </tr>
+        {% endfor %}    
+    </tbody>
+  </table>
+  <hr>
+  <table class="table table-hover table-dark">
+    <h2 style="text-align: center;">Thefts Reported</h2>
+    <thead>
+        <tr>
+            <th scope="col">Date of Incident</th>
+            <th scope="col">Reporter</th>
+            <th scope="col">Location</th>
+            <th scope="col">Time</th>
+            <th scope="col">Time Reported</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for crime in crimes %}
+            <tr>
+                <td>{{ crime.date_of_incident }}</td>
+                <td>{{ crime.issued_by }}</td>
+                <td>{{ crime.incident_location }}</td>
+                <td>{{ crime.time_of_incident }}</td>
+                <td>{{ crime.date_received }}</td>
+            </tr>
+        {% endfor %}    
+    </tbody>
+  </table>
+</div>
+
+{% endblock content %}

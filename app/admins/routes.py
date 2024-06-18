@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, request, flash, session,
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
+from app.posts.models import Crime, Theft
+from app.users.models import User
 
 admins = Blueprint('admins', __name__)
 
@@ -33,7 +35,16 @@ def adminIndex():
 
 @admins.route('/admin/dashboard')
 def adminDashboard():
-    return render_template('admin/admin-dashboard.html')
+    user_count = User.query.count()
+    crime_count = Crime.query.count()
+    theft_count = Theft.query.count()
+    #recovered_count = Recovered.query.count()
+    
+    # Fetch trend data for the graph (e.g., monthly counts)
+    crime_trends = [30, 50, 70, 60, 90, 100, 120]  # Example data
+    theft_trends = [20, 40, 60, 50, 80, 90, 110]   # Example data
+
+    return render_template('admin/dashboard.html', user_count=user_count, crime_count=crime_count, theft_count=theft_count, crime_trends=crime_trends, theft_trends=theft_trends)
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
@@ -55,6 +66,15 @@ def adminChangePassword():
     else:
         return render_template('admin/admin-change-password.html',title='Admin Change Password',admin=admin)
 
+
+@admins.route('/admin/reports')
+def reports():
+    crimes = Crime.query.all()
+    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
+
+@admins.route('/admin/analytics')
+def analytics():
+    return render_template('admin/analytics.html', title='Analytics Dashboard')
 
 @admins.route('/admin/dashboard')
 def adminLogout():    

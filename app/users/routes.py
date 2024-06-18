@@ -31,7 +31,7 @@ def sign_in():
         else:
             flash('Username does not exist.', category='danger')
     
-    return render_template('signin.html')
+    return render_template('user/signin.html')
     
 
 @users.route('/users/signup', methods=['GET', 'POST'])
@@ -67,13 +67,12 @@ def sign_up():
                                 password1, 
                                 method='pbkdf2:sha256'))
             db.session.add(new_user)
-            db.session.close_all()
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('users.register'))
     
-    return render_template('signup.html')
+    return render_template('user/signup.html')
 
 @users.route('/users/register', methods=['GET', 'POST'])
 def register():
@@ -99,12 +98,11 @@ def register():
                                     residence=residence, 
                                     gender=gender)
             db.session.add(personal_details)
-            db.session.close_all()
             db.session.commit()
             flash(f"Hello, {fullname}, Login to Access the Dashboard", category='success')
             return redirect(url_for('users.user_dashboard'))
 
-    return render_template('register.html')
+    return render_template('user/register.html')
 
 @users.route('/users/signout')
 @login_required
@@ -136,7 +134,7 @@ def user_dashboard():
         flash("Error fetching news. Try connecting to internet", category='danger')
         articles = []
 
-    return render_template('userdashboard.html', articles=articles)
+    return render_template('user/userdashboard.html', articles=articles)
 
 
 
@@ -150,11 +148,11 @@ def history():
     crimes = Crime.query.all()
     print(crimes)  # Print the list of crimes
 
-    return render_template('history.html', crimes=crimes)
+    return render_template('user/history.html', crimes=crimes)
 
 @users.route('/users/status')
 def status():
-    return render_template('status.html')
+    return render_template('user/status.html')
 
 @users.route('/users/settings')
 def settings():
@@ -165,7 +163,7 @@ def settings():
         idno=session.get('user_id')
     users=User().query.filter_by(id=id).first()
     register=Register().query.filter_by(idno=idno).first()
-    return render_template('settings.html',title="User Dashboard",users=users, register=register)
+    return render_template('user/settings.html',title="User Dashboard",users=users, register=register)
 
 
     
@@ -198,7 +196,7 @@ def userChangePassword():
                 return redirect('/users/change-password')
 
     else:
-        return render_template('change-password.html',title="Change Password")
+        return render_template('user/change-password.html',title="Change Password")
 
 # user update profile
 @users.route('/users/update-profile', methods=["POST","GET"])
@@ -229,6 +227,6 @@ def userUpdateProfile():
             flash('Profile update Successfully','success')
             return redirect('/users/dashboard')
     else:
-        return render_template('update-profile.html',title="Update Profile",users=users, register=register)
+        return render_template('user/update-profile.html',title="Update Profile",users=users, register=register)
 
 

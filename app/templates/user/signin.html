@@ -1,4 +1,7 @@
-{% extends 'base.html' %}
+{% extends "user/base.html" %}
+{% block title %}
+SignIn
+{% endblock %}
 {% block content %}
 <body class="my-login-page">
 	<section class="h-100">
@@ -13,23 +16,27 @@
 					{% endfor %} {% endif%} {% endwith %}
 					<div class="card fat">
 						<div class="card-body">
-							<h4 class="card-title" align="center">User Change Password</h4>
+							<h4 class="card-title" align="center">User Login</h4>
 							<form method="POST">
 								<div id="msg">{{ msg }}</div>
 								<div class="form-group">
-									<label for="">Enter Email:</label>
-									<input id="email" type="text" class="form-control" placeholder="Email" name="email">
+									<label for="username">User Name</label>
+									<input id="username" type="username" class="form-control" name="username" value="" required>
 								</div>
                 <br>
 								<div class="form-group">
-									<label for="">Enter New Password:
+									<label for="password">Password
 									</label>
-									<input id="password" type="password" class="form-control" name="password" placeholder="New password" data-eye>
+									<input id="password" type="password" class="form-control" name="password" required data-eye>
 								</div>
                 <br>
-								<div class="form-group m-0">
-									<button class="btn btn-success" name="userChangePassword">Submit</button>
-                                    <a href="{{ url_for('users.settings') }}"><button type="button" class="btn btn-primary">Back</button></a>
+								<div class="form-group m-0" align="center">
+									<button type="submit" class="btn btn-primary btn-block" href="{{ url_for('users.user_dashboard') }}">
+										Login
+									</button>
+								</div>
+								<div class="mt-4 text-center">
+									Don't have an account? <a href="{{ url_for('users.sign_up') }}">Register</a>
 								</div>
 							</form>
 						</div>
@@ -39,4 +46,4 @@
 		</div>
 	</section>
 </body>
-{% endblock content %}
+{% endblock %}

@@ -10,8 +10,8 @@ def home_page():
     '''
     View root page function that returns the index page and its data
     '''
-    return render_template('home.html')
+    return render_template('main/home.html')
 
 @main.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('main/about.html')

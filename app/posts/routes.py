@@ -30,7 +30,7 @@ def report_theft():
         db.session.commit()
         flash(f"Your theft report was sent successfully", category='success')
         return redirect(url_for('users.user_dashboard'))
-    return render_template('report_theft.html')
+    return render_template('user/report_theft.html')
 
 
 @posts.route('/crime_report', methods=['GET', 'POST'])
@@ -74,5 +74,5 @@ def report_crime():
         except Exception as e:
             # Handle database errors gracefully (e.g., log the error)
             flash(f"An error occurred: {str(e)}", category='error')
-            return render_template('report_crime.html')
-    return render_template('report_crime.html')
+            return render_template('user/report_crime.html')
+    return render_template('user/report_crime.html')
