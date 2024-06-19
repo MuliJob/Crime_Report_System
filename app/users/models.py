@@ -10,7 +10,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(128), nullable=False)
     crimes = db.relationship('Crime', backref='reporter', lazy=True)
     thefts = db.relationship('Theft', backref='victim', lazy=True)
-    user = db.relationship('Register', backref='users', uselist=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('register.idno'))
 
 class Register(db.Model, UserMixin):
     idno = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -18,5 +18,5 @@ class Register(db.Model, UserMixin):
     phonenumber = db.Column(db.String(20), nullable=False)
     residence = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    users_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='users', uselist=False)
     
