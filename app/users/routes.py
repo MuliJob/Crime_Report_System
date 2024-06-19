@@ -38,6 +38,7 @@ def sign_in():
 def sign_up():
     if  session.get('user_id'):
         return redirect('/users/dashboard')
+
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
@@ -78,6 +79,9 @@ def sign_up():
 def register():
     if  session.get('user_id'):
         return redirect('/users/dashboard')
+    
+    user = current_user.id
+
     if request.method == 'POST':
         idno = request.form.get('idno')
         fullname = request.form.get('fullname')
@@ -96,7 +100,8 @@ def register():
                                     fullname=fullname, 
                                     phonenumber=phonenumber, 
                                     residence=residence, 
-                                    gender=gender)
+                                    gender=gender,
+                                    users_id=user)
             db.session.add(personal_details)
             db.session.commit()
             flash(f"Hello, {fullname}, Login to Access the Dashboard", category='success')
