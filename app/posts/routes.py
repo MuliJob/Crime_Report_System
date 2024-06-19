@@ -1,11 +1,15 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask_login import current_user
 from app.posts.models import Crime, Theft
 from app import db
 
 posts = Blueprint('posts', __name__)
 
 @posts.route('/theft_report', methods=['GET', 'POST'])
-def report_theft():   
+def report_theft(): 
+
+    victim = current_user.id
+
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
         street_address = request.form.get('street_address')
@@ -25,16 +29,26 @@ def report_theft():
                                 value=value,
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
-                                description=description)
-        db.session.add(theft_report)
-        db.session.commit()
-        flash(f"Your theft report was sent successfully", category='success')
-        return redirect(url_for('users.user_dashboard'))
+                                description=description,
+                                victim_id=victim)
+        try:
+            db.session.add(theft_report)
+            db.session.commit()
+            flash(f"Your theft report was sent successfully", category='success')
+            return redirect(url_for('users.user_dashboard'))
+        except Exception:
+            # Handle database errors gracefully (e.g., log the error)
+            flash(f"An error occurred! Please try again", category='danger')
+            return render_template('user/report_theft.html')
+
     return render_template('user/report_theft.html')
 
 
 @posts.route('/crime_report', methods=['GET', 'POST'])
 def report_crime():
+
+    reporter = current_user.id
+
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')
         issued_by = request.form.get('issued_by')
@@ -64,15 +78,15 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
-                                file_upload=file_content
-                                )
+                                file_upload=file_content,
+                                reporter_id=reporter)
         try:
             db.session.add(crime_report)
             db.session.commit()
             flash(f"Your crime report was sent successfully", category='success')
             return redirect(url_for('users.user_dashboard'))
-        except Exception as e:
+        except Exception:
             # Handle database errors gracefully (e.g., log the error)
-            flash(f"An error occurred: {str(e)}", category='error')
+            flash(f"An error occurred! Please try again", category='danger')
             return render_template('user/report_crime.html')
     return render_template('user/report_crime.html')

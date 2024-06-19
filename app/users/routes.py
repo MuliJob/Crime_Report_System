@@ -147,11 +147,11 @@ def user_dashboard():
 def history():
     if not session.get('user_id'):
         return redirect('/users/dashboard')
-    #crimes = Crime.query.filter_by(reporter_id).first()
-
-
-    crimes = Crime.query.all()
-    print(crimes)  # Print the list of crimes
+    
+    reporter = current_user.id
+    
+    #filter with current user log in
+    crimes = Crime.query.filter_by(reporter_id=reporter).all()
 
     return render_template('user/history.html', crimes=crimes)
 

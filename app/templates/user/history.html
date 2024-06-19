@@ -3,15 +3,34 @@
   History
 {% endblock %}
 {% block content %}
-<h2>Crimes Reported</h2>
-    <ul>
+  <table class="table table-striped">
+    <h2 style="text-align: center;">Crimes</h2>
+    <thead>
+        <tr>
+          <th scope="col">No.</th>
+          <th scope="col">Date of Incident</th>
+          <th scope="col">Reporter</th>
+          <th scope="col">Location</th>
+          <th scope="col">Time</th>
+          <th scope="col">Time Reported</th>
+          <th scope="col">Description</th>
+          <th scope="col"><a href="">View Details<i class="bi bi-arrow-down-up"></i></a></th>
+        </tr>
+    </thead>
+    <tbody>
+      {% set count = 1 %}
       {% for crime in crimes %}
-        <li>
-          <b>Issued By</b> {{ crime.issued_by }}<br>
-          <b>Incident Date:</b> {{ crime.date_of_incident }}<br>
-          <b>Incident Location:</b> {{ crime.incident_location }}<br>
-          <b>Incident Nature:</b> {{ crime.incident_nature }}<br>
-        </li>
-      {% endfor %}
-    </ul>
+          <tr>
+            <td>{{ count }}</td>
+            <td>{{ crime.date_of_incident }}</td>
+            <td>{{ crime.issued_by }}</td>
+            <td>{{ crime.incident_location }}</td>
+            <td>{{ crime.time_of_incident }}</td>
+            <td>{{ crime.date_received }}</td>
+            <td>{{ crime.incident_nature }}</td>
+            <td></td>
+          </tr>
+      {% endfor %}    
+    </tbody>
+  </table>
 {% endblock %}
