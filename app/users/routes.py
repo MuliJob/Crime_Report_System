@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, session, url_for, request, flash
+from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -155,6 +155,13 @@ def history():
 
     return render_template('user/history.html', crimes=crimes)
 
+@users.route('/users/details')
+def crime_details():
+  crime = Crime.query.all()
+  if not crime:
+    return abort(404)
+  return render_template('user/crime_details.html', crime=crime)
+
 @users.route('/users/status')
 def status():
     return render_template('user/status.html')
@@ -169,10 +176,8 @@ def settings():
         return redirect('/users/dashboard')
     if session.get('user_id'):
         id=session.get('user_id')
-        idno=session.get('user_id')
     users=User().query.filter_by(id=id).first()
-    register=Register().query.filter_by(idno=idno).first()
-    return render_template('user/settings.html',title="User Dashboard",users=users, register=register)
+    return render_template('user/settings.html',title="User Dashboard",users=users)
 
 
     
@@ -214,9 +219,7 @@ def userUpdateProfile():
         return redirect('/users/')
     if session.get('user_id'):
         id=session.get('user_id')
-        idno=session.get('user_id')
     users=User.query.get(id)
-    register=Register.query.get(idno)
     if request.method == 'POST':
         # get all input field name
         fullname=request.form.get('fullname')
@@ -230,12 +233,11 @@ def userUpdateProfile():
         else:
             session['username']=None
             User.query.filter_by(id=id).update(dict(username=username,email=email))
-            Register.query.filter_by(idno=idno).update(dict(fullname=fullname,phonenumber=phonenumber,residence=residence))
             db.session.commit()
             session['username']=username
             flash('Profile update Successfully','success')
             return redirect('/users/dashboard')
     else:
-        return render_template('user/update-profile.html',title="Update Profile",users=users, register=register)
+        return render_template('user/update-profile.html',title="Update Profile",users=users)
 
 
