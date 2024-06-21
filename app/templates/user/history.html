@@ -3,34 +3,94 @@
   History
 {% endblock %}
 {% block content %}
-  <table class="table table-striped">
-    <h2 style="text-align: center;">Crimes</h2>
-    <thead>
-        <tr>
-          <th scope="col">No.</th>
-          <th scope="col">Date of Incident</th>
-          <th scope="col">Reporter</th>
-          <th scope="col">Location</th>
-          <th scope="col">Time</th>
-          <th scope="col">Time Reported</th>
-          <th scope="col">Description</th>
-          <th scope="col"><a href="{{ url_for('users.crime_details') }}">View Details<i class="bi bi-arrow-down-up"></i></a></th>
-        </tr>
-    </thead>
-    <tbody>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .reduced-card-size {
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+    }
+    
+    .reduced-card-size .card-header {
+      padding: 5px 10px;
+      font-size: 1.1em;
+    }
+    
+    .reduced-card-size .card-body {
+      padding: 10px;
+    }
+    
+    .reduced-card-size .card-title {
+      font-size: 1.2em;
+    }
+    
+    .reduced-card-size .card-text {
+      font-size: 0.9em;
+    }
+    
+    .reduced-card-size .btn {
+      padding: 5px 10px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center">Crime Reports</h2>
+    <div class="row">
       {% set count = 1 %}
       {% for crime in crimes %}
-          <tr>
-            <td>{{ count }}</td>
-            <td>{{ crime.date_of_incident }}</td>
-            <td>{{ crime.issued_by }}</td>
-            <td>{{ crime.incident_location }}</td>
-            <td>{{ crime.time_of_incident }}</td>
-            <td>{{ crime.date_received }}</td>
-            <td>{{ crime.incident_nature }}</td>
-            <td></td>
-          </tr>
-      {% endfor %}    
-    </tbody>
-  </table>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div class="card mb-4 reduced-card-size">
+            <div class="card-header">
+              No. {{ count }}
+            </div>
+            <div class="card-body">
+              <h5 class="card-text"><strong>Incident:</strong> {{ crime.incident_nature }}</h5>
+              <p class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</p>
+              <p class="card-text"><strong>Reporter:</strong> {{ crime.issued_by }}</p>
+              <p class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</p>
+              <p class="card-text"><strong>Time:</strong> {{ crime.time_of_incident }}</p>
+              <p class="card-text"><strong>Time Reported:</strong> {{ crime.date_received }}</p>
+              <p class="card-text"><strong>Description:</strong> {{ crime.incident_nature }}</p>
+              <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
+            </div>
+          </div>
+        </div>
+      {% set count = count + 1 %}
+      {% endfor %}
+    </div>
+
+    <hr>
+
+    <h2 class="text-center">Theft Reports</h2>
+    <div class="row">
+      {% set count = 1 %}
+      {% for theft in thefts %}
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div class="card mb-4 reduced-card-size">
+            <div class="card-header">
+              No. {{ count }}
+            </div>
+            <div class="card-body">
+              <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
+              <p class="card-text"><strong>Street:</strong> {{ theft.street_address }}</p>
+              <p class="card-text"><strong>City:</strong> {{ theft.city }}</p>
+              <p class="card-text"><strong>Date of Occurrence:</strong> {{ theft.date_of_theft }}</p>
+              <p class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</p>
+              <p class="card-text"><strong>Time Stolen:</strong> {{ theft.time_of_theft }}</p>
+              <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
+            </div>
+          </div>
+        </div>
+      {% set count = count + 1 %}
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
 {% endblock %}

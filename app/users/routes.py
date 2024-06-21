@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash
+from flask import Blueprint, abort, app, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -145,15 +145,20 @@ def user_dashboard():
 
 @users.route('/users/history')
 def history():
-    if not session.get('user_id'):
-        return redirect('/users/dashboard')
-    
-    reporter = current_user.id
-    
-    #filter with current user log in
-    crimes = Crime.query.filter_by(reporter_id=reporter).all()
+    try:
+        reporter = current_user.id
+        victim = current_user.id
 
-    return render_template('user/history.html', crimes=crimes)
+        # filter with current user login
+        crimes = Crime.query.filter_by(reporter_id=reporter).all()
+        thefts = Theft.query.filter_by(victim_id=victim).all()
+
+        return render_template('user/history.html', crimes=crimes, thefts=thefts)
+    
+    except Exception:
+        flash('Unable to fetch your data. Please try again later.', 'danger')
+        app.logger.error('Unexpected error:')
+        return render_template('user/history.html', crimes=[], thefts=[])
 
 @users.route('/users/details')
 def crime_details():
