@@ -51,12 +51,8 @@
             </div>
             <div class="card-body">
               <h5 class="card-text"><strong>Incident:</strong> {{ crime.incident_nature }}</h5>
-              <p class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</p>
-              <p class="card-text"><strong>Reporter:</strong> {{ crime.issued_by }}</p>
-              <p class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</p>
-              <p class="card-text"><strong>Time:</strong> {{ crime.time_of_incident }}</p>
-              <p class="card-text"><strong>Time Reported:</strong> {{ crime.date_received }}</p>
-              <p class="card-text"><strong>Description:</strong> {{ crime.incident_nature }}</p>
+              <h5 class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</h5>
+              <h5 class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</h5>
               <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
             </div>
           </div>
@@ -78,11 +74,8 @@
             </div>
             <div class="card-body">
               <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
-              <p class="card-text"><strong>Street:</strong> {{ theft.street_address }}</p>
-              <p class="card-text"><strong>City:</strong> {{ theft.city }}</p>
-              <p class="card-text"><strong>Date of Occurrence:</strong> {{ theft.date_of_theft }}</p>
-              <p class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</p>
-              <p class="card-text"><strong>Time Stolen:</strong> {{ theft.time_of_theft }}</p>
+              <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
+              <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
               <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
             </div>
           </div>
