@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, app, render_template, redirect, session, url_for, request, flash
+from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -157,7 +157,6 @@ def history():
     
     except Exception:
         flash('Unable to fetch your data. Please try again later.', 'danger')
-        app.logger.error('Unexpected error:')
         return render_template('user/history.html', crimes=[], thefts=[])
 
 @users.route('/users/details')
