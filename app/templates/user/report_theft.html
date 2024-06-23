@@ -135,6 +135,12 @@
     </style>
 </head>
 <body>
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+</div>
+{% endfor %} {% endif%} {% endwith %}
 <h1>Report Stolen Property</h1>
 <form method="POST">
     <div class="form-row">

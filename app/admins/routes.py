@@ -80,6 +80,18 @@ def reportStatus():
 
     return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
 
+@admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
+def updateStatus(theft_id):
+    theft = Theft.query.get_or_404(theft_id)
+    status = request.form.get('status')
+    if status:
+        theft.status = status
+        db.session.commit()
+        flash(f'Status updated to {status}.', 'success')
+    else:
+        flash('Failed to update status.', 'danger')
+    return redirect(url_for('admins.reportStatus'))
+
 @admins.route('/admin/crime_details/<int:crime_id>')
 def crimeDetails(crime_id):
     # Finding crime by id

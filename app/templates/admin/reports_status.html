@@ -37,9 +37,25 @@
               <td>{{ theft.value }}</td>
               <td>{{ theft.status }}</td>
               <td>
-                  <button class="three-dots-btn"">
-                      <i class="bi bi-three-dots-vertical"></i>
-                  </button>
+                <div class="dropdown">
+                    <button class="three-dots-btn" type="button" id="dropdownMenuButton{{ theft.theft_id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ theft.theft_id }}">
+                        <li>
+                            <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
+                                <input type="hidden" name="status" value="Recovered">
+                                <button type="submit" class="dropdown-item">Recovered</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
+                                <input type="hidden" name="status" value="Under Investigation">
+                                <button type="submit" class="dropdown-item">Under Investigation</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
               </td>
           </tr>
       {% endfor %}    
@@ -48,6 +64,7 @@
 </div>
 
 <script>
-
+let script = document.createElement('script');
+document.head.appendChild(script);
 </script>
 {% endblock content %}

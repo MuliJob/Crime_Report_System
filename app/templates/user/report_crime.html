@@ -132,6 +132,12 @@
     </style>
 </head>
 <body>
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+</div>
+{% endfor %} {% endif%} {% endwith %}
 <h1>Police Crime Report Form</h1>
 <form method="POST">
   <p style="text-align: center;">To report a crime or incident, please provide the following information's</p>
