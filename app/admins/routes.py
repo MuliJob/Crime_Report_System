@@ -74,6 +74,12 @@ def reports():
     
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
 
+@admins.route('/admin/reports_status')
+def reportStatus():
+    thefts = Theft.query.all()
+
+    return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
+
 @admins.route('/admin/crime_details/<int:crime_id>')
 def crimeDetails(crime_id):
     # Finding crime by id

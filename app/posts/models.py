@@ -35,5 +35,6 @@ class Theft(db.Model, UserMixin):
     time_of_theft = db.Column(db.String(10), nullable=False)
     stolen_property = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(10), nullable=True)
     date_received = db.Column(db.DateTime, nullable=False, default=func.now())
     victim_id = db.Column(db.Integer, db.ForeignKey('user.id'))
