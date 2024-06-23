@@ -32,20 +32,31 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="new-item active">
-          <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
-      </li>
-        <li class="new-item">
+      {% if admin.is_authenticated %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="new-item active">
+            <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
+          </li>
+          <li class="new-item">
             <a class="nav-link" href="{{ url_for('admins.reports') }}">Reports</a>
-        </li>
-        <li>
-          <a class="nav-link" href="{{ url_for('admins.reportStatus') }}">Recovered</a>
-        </li>
-        <li>
-          <a class="nav-link" href="{{ url_for('admins.analytics') }}">Analytics</a>
-        </li>
-    </ul>
+          </li>
+          <li>
+            <a class="nav-link" href="{{ url_for('admins.reportStatus') }}">Recovered</a>
+          </li>
+          <li>
+            <a class="nav-link" href="{{ url_for('admins.analytics') }}">Analytics</a>
+          </li>
+          
+          <li class="ms-auto">
+            <a class="nav-link" href="{{ url_for('admins.adminChangePassword') }}"><i class="bi bi-person-circle h4" style="color: white;">account</i></a>
+          </li>
+
+          <li class="ms-auto">
+            <a class="nav-link" href="{{ url_for('admins.adminLogout') }}"><i class="bi bi-box-arrow-right h4" style="color: white;"></i></a>
+          </li>
+        </ul>
+      {% else %}
+      {% endif %}
     </div>
 </nav>
 <br>

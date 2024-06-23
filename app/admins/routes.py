@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, request, flash, session, url_for
+from flask_login import logout_user
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
@@ -129,11 +130,13 @@ def analytics():
                            crime_labels=crime_labels, crime_counts=crime_counts,
                            theft_labels=theft_labels, theft_counts=theft_counts)
 
-@admins.route('/admin/dashboard')
+@admins.route('/admin/logout')
 def adminLogout():    
     if not session.get('admin_id'):
         return redirect('/admin/')
     if session.get('admin_id'):
         session['admin_id']=None
         session['admin_name']=None
-        return redirect('/')
+        flash('You have been logged out.', category='info')
+        logout_user()
+    return redirect(url_for('admins.adminIndex'))
