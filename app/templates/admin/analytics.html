@@ -1,11 +1,9 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">Analytics Dashboard</h1>
-
+  <h2 style="text-align: center;">Crime Analysis By Location</h2>
   <div class="card mb-4">
       <div class="card-body">
-          <h2>Crime Analysis</h2>
           <div class="row">
               <div class="col-md-6">
                   <canvas id="crimeByLocation" height="150"></canvas>
@@ -13,10 +11,10 @@
           </div>
       </div>
   </div>
-
+<br>
+<h2 style="text-align: center;">Theft Analysis By Location</h2>
   <div class="card mb-4">
       <div class="card-body">
-          <h2>Theft Analysis</h2>
           <div class="row">
               <div class="col-md-6">
                   <canvas id="theftByLocation" height="150"></canvas>
