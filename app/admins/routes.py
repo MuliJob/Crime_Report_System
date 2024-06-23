@@ -70,7 +70,23 @@ def adminChangePassword():
 @admins.route('/admin/reports')
 def reports():
     crimes = Crime.query.all()
-    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
+    thefts = Theft.query.all()
+    
+    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
+
+@admins.route('/admin/crime_details/<int:crime_id>')
+def crimeDetails(crime_id):
+    # Finding crime by id
+    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+
+    return render_template('admin/crime_details.html', crime_details=crime_details)
+
+@admins.route('/admin/theft_details/<int:theft_id>')
+def theftDetails(theft_id):
+    #Finding theft by id 
+    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+
+    return render_template('admin/theft_details.html', theft_details=theft_details)
 
 @admins.route('/admin/analytics')
 def analytics():
