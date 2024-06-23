@@ -15,6 +15,7 @@ def report_theft():
         street_address = request.form.get('street_address')
         city = request.form.get('city')
         date_of_theft = request.form.get('date_of_theft')
+        reported_by = request.form.get('reported_by')
         phone_number = request.form.get('phone_number')
         value = request.form.get('value')
         time_of_theft = request.form.get('time_of_theft')
@@ -25,6 +26,7 @@ def report_theft():
                                 street_address=street_address,
                                 city=city, 
                                 date_of_theft=date_of_theft,
+                                reported_by=reported_by,
                                 phone_number=phone_number, 
                                 value=value,
                                 time_of_theft=time_of_theft, 

@@ -43,22 +43,17 @@
     <h2 class="text-center">Crime Reports</h2>
     {% if crimes %}
       <div class="row">
-        {% set count = 1 %}
         {% for crime in crimes %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
-              <div class="card-header">
-                No. {{ count }}
-              </div>
               <div class="card-body">
                 <h5 class="card-text"><strong>Incident:</strong> {{ crime.incident_nature }}</h5>
                 <h5 class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</h5>
                 <h5 class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</h5>
-                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
+                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
               </div>
             </div>
           </div>
-        {% set count = count + 1 %}
         {% endfor %}
       </div>
     {% else %}
@@ -68,7 +63,6 @@
     <h2 class="text-center">Theft Reports</h2>
     {% if thefts %}
       <div class="row">
-        {% set count = 1 %}
         {% for theft in thefts %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
@@ -79,11 +73,10 @@
                 <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
                 <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
                 <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details <i class="bi bi-arrow-down-up"></i></a>
+                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
               </div>
             </div>
           </div>
-        {% set count = count + 1 %}
         {% endfor %}
       </div>
     {% else %}
