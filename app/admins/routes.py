@@ -90,7 +90,26 @@ def theftDetails(theft_id):
 
 @admins.route('/admin/analytics')
 def analytics():
-    return render_template('admin/analytics.html', title='Analytics Dashboard')
+    # Fetch crime data grouped by location
+    crime_data = db.session.query(
+        Crime.incident_location, db.func.count(Crime.crime_id)
+    ).group_by(Crime.incident_location).all()
+
+    # Fetch theft data grouped by location
+    theft_data = db.session.query(
+        Theft.street_address, db.func.count(Theft.theft_id)
+    ).group_by(Theft.street_address).all()
+
+    # Prepare data for the charts
+    crime_labels = [row[0] for row in crime_data]
+    crime_counts = [row[1] for row in crime_data]
+    
+    theft_labels = [row[0] for row in theft_data]
+    theft_counts = [row[1] for row in theft_data]
+
+    return render_template('admin/analytics.html', title='Analytics Dashboard', 
+                           crime_labels=crime_labels, crime_counts=crime_counts,
+                           theft_labels=theft_labels, theft_counts=theft_counts)
 
 @admins.route('/admin/dashboard')
 def adminLogout():    
