@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, request, flash, session, url_for
+from flask_login import logout_user
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
@@ -70,17 +71,72 @@ def adminChangePassword():
 @admins.route('/admin/reports')
 def reports():
     crimes = Crime.query.all()
-    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
+    thefts = Theft.query.all()
+    
+    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
+
+@admins.route('/admin/reports_status')
+def reportStatus():
+    thefts = Theft.query.all()
+
+    return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
+
+@admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
+def updateStatus(theft_id):
+    theft = Theft.query.get_or_404(theft_id)
+    status = request.form.get('status')
+    if status:
+        theft.status = status
+        db.session.commit()
+        flash(f'Status updated to {status}.', 'success')
+    else:
+        flash('Failed to update status.', 'danger')
+    return redirect(url_for('admins.reportStatus'))
+
+@admins.route('/admin/crime_details/<int:crime_id>')
+def crimeDetails(crime_id):
+    # Finding crime by id
+    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+
+    return render_template('admin/crime_details.html', crime_details=crime_details)
+
+@admins.route('/admin/theft_details/<int:theft_id>')
+def theftDetails(theft_id):
+    #Finding theft by id 
+    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+
+    return render_template('admin/theft_details.html', theft_details=theft_details)
 
 @admins.route('/admin/analytics')
 def analytics():
-    return render_template('admin/analytics.html', title='Analytics Dashboard')
+    # Fetch crime data grouped by location
+    crime_data = db.session.query(
+        Crime.incident_location, db.func.count(Crime.crime_id)
+    ).group_by(Crime.incident_location).all()
 
-@admins.route('/admin/dashboard')
+    # Fetch theft data grouped by location
+    theft_data = db.session.query(
+        Theft.street_address, db.func.count(Theft.theft_id)
+    ).group_by(Theft.street_address).all()
+
+    # Prepare data for the charts
+    crime_labels = [row[0] for row in crime_data]
+    crime_counts = [row[1] for row in crime_data]
+    
+    theft_labels = [row[0] for row in theft_data]
+    theft_counts = [row[1] for row in theft_data]
+
+    return render_template('admin/analytics.html', title='Analytics Dashboard', 
+                           crime_labels=crime_labels, crime_counts=crime_counts,
+                           theft_labels=theft_labels, theft_counts=theft_counts)
+
+@admins.route('/admin/logout')
 def adminLogout():    
     if not session.get('admin_id'):
         return redirect('/admin/')
     if session.get('admin_id'):
         session['admin_id']=None
         session['admin_name']=None
-        return redirect('/')
+        flash('You have been logged out.', category='info')
+        logout_user()
+    return redirect(url_for('admins.adminIndex'))

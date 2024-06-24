@@ -1,0 +1,57 @@
+{% extends 'user/base.html' %}
+{% block title %}
+  Recovered Items
+{% endblock %}
+{% block content %}
+<style>
+  .reduced-card-size {
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+  }
+  
+  .reduced-card-size .card-header {
+    padding: 5px 10px;
+    font-size: 1.1em;
+  }
+  
+  .reduced-card-size .card-body {
+    padding: 10px;
+  }
+  
+  .reduced-card-size .card-title {
+    font-size: 1.2em;
+  }
+  
+  .reduced-card-size .card-text {
+    font-size: 0.9em;
+  }
+  
+  .reduced-card-size .btn {
+    padding: 5px 10px;
+    font-size: 0.85em;
+  }
+</style>
+<h2 style="text-align: center;">Recovered Items</h2>
+{% if thefts %}
+      <div class="row">
+        {% for theft in thefts %}
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card mb-4 reduced-card-size">
+              <div class="card-header">
+                No. {{ count }}
+              </div>
+              <div class="card-body">
+                <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
+                <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
+                <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
+                <h5 class="card-text"><strong>Status:</strong> {{ theft.value }}</h5>
+                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    {% endif %}
+{% endblock %}

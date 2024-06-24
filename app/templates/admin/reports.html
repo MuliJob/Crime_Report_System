@@ -1,53 +1,88 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
+<style>
+    .three-dots-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+</style>
 <div class="container">
-  <table class="table table-hover table-dark">
+  <table class="table table-striped table-hover">
     <h2 style="text-align: center;">Crimes Reported</h2>
     <thead>
         <tr>
-            <th scope="col">Date of Incident</th>
-            <th scope="col">Reporter</th>
-            <th scope="col">Location</th>
-            <th scope="col">Time</th>
-            <th scope="col">Time Reported</th>
+            <th scope="col">No. <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Date of Incident <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Reporter <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Location <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Time Reported <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Action <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
     <tbody>
         {% for crime in crimes %}
             <tr>
+                <td>{{ loop.index }}</td>
                 <td>{{ crime.date_of_incident }}</td>
                 <td>{{ crime.issued_by }}</td>
                 <td>{{ crime.incident_location }}</td>
                 <td>{{ crime.time_of_incident }}</td>
                 <td>{{ crime.date_received }}</td>
+                <td>
+                    <button class="three-dots-btn" onclick="crimeDetails('{{ crime.crime_id }}')">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                </td>
             </tr>
         {% endfor %}    
     </tbody>
   </table>
-  <hr>
-  <table class="table table-hover table-dark">
+</br>
+  <table class="table table-striped table-hover">
     <h2 style="text-align: center;">Thefts Reported</h2>
+
     <thead>
         <tr>
-            <th scope="col">Date of Incident</th>
-            <th scope="col">Reporter</th>
-            <th scope="col">Location</th>
-            <th scope="col">Time</th>
-            <th scope="col">Time Reported</th>
+            <th scope="col">No. <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Place of Theft <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Street <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Date Stolen <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Time Reported<i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Stolen Property <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Value <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Action <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
     <tbody>
-        {% for crime in crimes %}
+        {% for theft in thefts %}
             <tr>
-                <td>{{ crime.date_of_incident }}</td>
-                <td>{{ crime.issued_by }}</td>
-                <td>{{ crime.incident_location }}</td>
-                <td>{{ crime.time_of_incident }}</td>
-                <td>{{ crime.date_received }}</td>
+                <td>{{ loop.index }}</td>
+                <td>{{ theft.place_of_theft }}</td>
+                <td>{{ theft.street_address }}</td>
+                <td>{{ theft.date_of_theft }}</td>
+                <td>{{ theft.time_of_theft }}</td>
+                <td>{{ theft.stolen_property }}</td>
+                <td>{{ theft.value }}</td>
+                <td>
+                    <button class="three-dots-btn" onclick="theftDetails('{{ theft.theft_id }}')">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                </td>
             </tr>
         {% endfor %}    
     </tbody>
   </table>
 </div>
 
+<script>
+    function crimeDetails(crime_id) {
+        window.location.href = '/admin/crime_details/' + crime_id;
+    }
+
+    function theftDetails(theft_id) {
+        window.location.href = '/admin/theft_details/' + theft_id;
+    }
+</script>
 {% endblock content %}
