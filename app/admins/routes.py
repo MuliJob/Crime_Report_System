@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, request, flash, session, url_for
+from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -70,61 +70,122 @@ def adminChangePassword():
 
 @admins.route('/admin/reports')
 def reports():
-    crimes = Crime.query.all()
-    thefts = Theft.query.all()
+    try:
+        crimes = Crime.query.all()
+        thefts = Theft.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reports'))
     
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
 
 @admins.route('/admin/reports_status')
 def reportStatus():
-    thefts = Theft.query.all()
-
+    try:
+        thefts = Theft.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reportStatus'))
+    
     return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
 
 @admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
 def updateStatus(theft_id):
-    theft = Theft.query.get_or_404(theft_id)
-    status = request.form.get('status')
-    if status:
-        theft.status = status
-        db.session.commit()
-        flash(f'Status updated to {status}.', 'success')
-    else:
-        flash('Failed to update status.', 'danger')
+    try:
+        theft = Theft.query.get_or_404(theft_id)
+        status = request.form.get('status')
+        if status:
+            theft.status = status
+            db.session.commit()
+            flash(f'Status updated to {status}.', 'success')
+        else:
+            flash('Failed to update status.', 'danger')
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.updateStatus'))
+    
     return redirect(url_for('admins.reportStatus'))
 
 @admins.route('/admin/crime_details/<int:crime_id>')
 def crimeDetails(crime_id):
-    # Finding crime by id
-    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
-
+    try:
+        # Finding crime by id
+        crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports crime details. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reports'))
+    
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
 @admins.route('/admin/theft_details/<int:theft_id>')
 def theftDetails(theft_id):
-    #Finding theft by id 
-    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    try:
+        #Finding theft by id 
+        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports theft details. Please try again later.", "error")
+        
+        # Redirect to a safe page
+        return redirect(url_for('admins.reports'))
 
     return render_template('admin/theft_details.html', theft_details=theft_details)
 
 @admins.route('/admin/analytics')
 def analytics():
-    # Fetch crime data grouped by location
-    crime_data = db.session.query(
-        Crime.incident_location, db.func.count(Crime.crime_id)
-    ).group_by(Crime.incident_location).all()
+    try:
+        # Fetch crime data grouped by location
+        crime_data = db.session.query(
+            Crime.incident_location, db.func.count(Crime.crime_id)
+        ).group_by(Crime.incident_location).all()
 
-    # Fetch theft data grouped by location
-    theft_data = db.session.query(
-        Theft.street_address, db.func.count(Theft.theft_id)
-    ).group_by(Theft.street_address).all()
+        # Fetch theft data grouped by location
+        theft_data = db.session.query(
+            Theft.street_address, db.func.count(Theft.theft_id)
+        ).group_by(Theft.street_address).all()
 
-    # Prepare data for the charts
-    crime_labels = [row[0] for row in crime_data]
-    crime_counts = [row[1] for row in crime_data]
-    
-    theft_labels = [row[0] for row in theft_data]
-    theft_counts = [row[1] for row in theft_data]
+        # Prepare data for the charts
+        crime_labels = [row[0] for row in crime_data]
+        crime_counts = [row[1] for row in crime_data]
+        
+        theft_labels = [row[0] for row in theft_data]
+        theft_counts = [row[1] for row in theft_data]
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page
+        return redirect(url_for('admins.analytics'))
 
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
                            crime_labels=crime_labels, crime_counts=crime_counts,
