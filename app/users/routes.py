@@ -166,26 +166,41 @@ def status():
 
 @users.route('/users/recovered-items')
 def recovered():
-    # should query all theft data with recovered 
+    try:
+        # should query all theft data with recovered 
+        recovered_thefts = Theft.query.filter_by(status='Recovered').all()
+    except:
+        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.recovered'))
     
-    recovered_thefts = Theft.query.filter_by(status='Recovered').all()
-
     return render_template('user/recovered_items.html', thefts=recovered_thefts)
 
 # displaying crime details when button is clicked
 @users.route('/users/crime-details/<int:crime_id>')
 def crime_details(crime_id):
-    # Finding crime by id
-    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+    try:
+        # Finding crime by id
+        crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+    except:
+        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.history'))
 
     return render_template('user/crime-details.html', crime_details=crime_details)
 
 # displaying theft details when button is clicked
 @users.route('/users/theft-details/<int:theft_id>')
 def theft_details(theft_id):
-    #Finding theft by id 
-    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
-
+    try:
+        #Finding theft by id 
+        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    except:
+        flash("An error occurred while fetching theft details. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.history'))
+    
     return render_template('user/theft-details.html', theft_details=theft_details)
 
 @users.route('/users/settings')
@@ -194,7 +209,12 @@ def settings():
         return redirect('/users/dashboard')
     if session.get('user_id'):
         id=session.get('user_id')
-    users=User().query.filter_by(id=id).first()
+    try:
+        users=User().query.filter_by(id=id).first()
+    except:
+        flash('An error has occurred. Please try again later', 'error')
+        redirect(url_for('users.settings'))
+        
     return render_template('user/settings.html',title="User Dashboard",users=users)
 
 
