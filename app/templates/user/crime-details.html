@@ -1,4 +1,4 @@
-{% extends 'admin/layout.html' %}
+{% extends 'user/base.html' %}
 {% block content %}
 <head>
   <meta charset="UTF-8">
@@ -73,14 +73,14 @@
           float: right; /* Align to right */
       }
 
-      button.cancel {
-          background-color: #dc3545;
+      button.info {
+          background-color: #17a2b8;
           float: left; /* Align to left */
           margin-right: 10px; /* Add margin between buttons */
       }
 
-      button.cancel:hover {
-          background-color: #e20a20;
+      button.info:hover {
+          background-color: #137887;
       }
 
       button.submit:hover {
@@ -190,7 +190,7 @@
     </div>
   </br>
     <div class="form-row">
-        <a href="{{ url_for('admins.reports') }}"><button type="button" class="cancel"><i class="bi bi-arrow-return-left"></i> Back</button></a>
+        <a href="{{ url_for('users.history') }}"><button type="button" class="info"><i class="bi bi-arrow-left h4"></i></button></a>
     </div>
   </form>
 {% endfor %}

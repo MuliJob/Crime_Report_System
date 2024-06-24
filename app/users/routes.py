@@ -159,12 +159,6 @@ def history():
         flash('Unable to fetch your data. Please try again later.', 'danger')
         return render_template('user/history.html', crimes=[], thefts=[])
 
-@users.route('/users/details')
-def crime_details():
-  crime = Crime.query.all()
-  if not crime:
-    return abort(404)
-  return render_template('user/crime_details.html', crime=crime)
 
 @users.route('/users/status')
 def status():
@@ -177,6 +171,22 @@ def recovered():
     recovered_thefts = Theft.query.filter_by(status='Recovered').all()
 
     return render_template('user/recovered_items.html', thefts=recovered_thefts)
+
+# displaying crime details when button is clicked
+@users.route('/users/crime-details/<int:crime_id>')
+def crime_details(crime_id):
+    # Finding crime by id
+    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+
+    return render_template('user/crime-details.html', crime_details=crime_details)
+
+# displaying theft details when button is clicked
+@users.route('/users/theft-details/<int:theft_id>')
+def theft_details(theft_id):
+    #Finding theft by id 
+    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+
+    return render_template('user/theft-details.html', theft_details=theft_details)
 
 @users.route('/users/settings')
 def settings():
