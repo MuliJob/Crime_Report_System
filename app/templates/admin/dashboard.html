@@ -42,7 +42,7 @@
                 <div class="card text-white bg-success mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Theft and Recovered</h5>
-                        <p class="card-text">Theft: {{ theft_count }}, Recovered: 150</p>
+                        <p class="card-text">Theft: {{ theft_count }},  Recovered: {{ recovered_count }}</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
             datasets: [{
                 label: 'Crimes',
-                data: [30, 50, 70, 60, 90, 100, 120],
+                data: [30, 50, 70, 60, 90, 100, 200],
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1,
                 fill: false
