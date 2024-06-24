@@ -1,10 +1,8 @@
 {% extends 'user/base.html' %}
 {% block title %}
-  Theft Report
+  Crime Report
 {% endblock %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,7 +59,6 @@
             box-sizing: border-box;
             font-size: 16px;
         }
-
         textarea {
             height: 150px; 
         }
@@ -135,69 +132,66 @@
     </style>
 </head>
 <body>
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    {{ message }}
-</div>
-{% endfor %} {% endif%} {% endwith %}
-<h1>Report Stolen Property</h1>
-<form method="POST">
+<form>
     <div class="form-row">
         <div class="form-column">
-            <label for="place_of_theft">Place of Theft:</label>
-            <input type="text" id="place_of_theft" name="place_of_theft" placeholder="Ex: House etc. " required>
+            <label for="date_of_incident">Date when incident occurred:</label>
+            <input type="date" id="date_of_incident" name="date_of_incident" value="{{ crime.date_of_incident }}" readonly>
 
-            <label for="street_address">Street Address:</label>
-            <input type="text" id="street_address" name="street_address" placeholder="Street Address" required>
-
-            <label for="city">City or Town:</label>
-            <input type="text" id="city" name="city" placeholder="City" value="" required>
-
-            <label for="date_of_theft">Date of Theft:</label>
-            <input type="date" id="date_of_theft" name="date_of_theft" placeholder="Date of theft" required>
+            <label for="issued_by">Incident report issued by:</label>
+            <input type="text" id="issued_by" name="issued_by" value="{{ crime.issued_by }}" readonly>
         </div>
 
         <div class="form-column">
-            <label for="reported_by">Reported By:</label>
-            <input type="text" id="reported_by" name="reported_by" placeholder="Enter full name">
+            <label for="time_of_incident">Time when incident occurred:</label>
+            <input type="time" id="time_of_incident" name="time_of_incident" value="{{ crime.time_of_incident }}" readonly>
 
-            <label for="phone_number">Phone Number:</label>
-            <input type="text" id="phone_number" name="phone_number" placeholder="Please enter a valid phone number" required>
-
-            <label for="value">Value of Stolen Properties:</label>
-            <input type="number" id="value" name="value" placeholder="Ksh" required>
-
-            <label for="time_of_theft">Time of Theft:</label>
-            <input type="time" id="time_of_theft" name="time_of_theft"required>
         </div>
     </div>
 
     <div class="form-row">
-        <label for="stolen_property">Stolen Properties:</label>
-        <textarea id="stolen_property" name="stolen_property" style="width: calc(100% - 22px);" required></textarea>
+        <label for="incident_location">Incident location (Please provide specific details):</label>
+        <textarea id="incident_location" name="incident_location" style="width: calc(100% - 22px);" value="{{ crime.incident_location }}" readonly></textarea>
     </div>
 
     <div class="form-row">
-        <label for="description">Further Details:</label>
-        <textarea id="description" name="description" style="height: 80px;" required></textarea>
+        <label for="incident_nature">Nature of incident:</label>
+        <textarea id="incident_nature" name="incident_nature" style="width: calc(100% - 22px);" value="{{ crime.incident_nature }}" readonly></textarea>
     </div>
 
-    <div class="form-group">
-        <label for="mediaUpload">Attach Evidence:</label>
-        <input type="file" class="form-control-file" id="mediaUpload" name="file_upload accept="image/*, video/*">
+    <div class="form-row">
+      <label for="incident_details">Incident_details:</label>
+      <textarea id="incident_details" name="incident_details" style="width: calc(100% - 22px);" value="{{ crime.incident_details }}" readonly></textarea>
     </div>
+
+    <div class="form-row">
+      <label for="suspect_details">Was the suspect of the report of the incident wanted/have or had any charges on him/her? If so what?</label>
+      <textarea id="suspect_details" name="suspect_details" style="width: calc(100% - 22px);" value="{{ crime.suspect_details }}" readonly></textarea>
+    </div>
+
+    <div class="form-row">
+      <label for="arrest_history">Has anyone been arrested so far in relation to the incident?</label>
+      <textarea id="arrest_history" name="arrest_history" style="width: calc(100% - 22px);" value="{{ crime.arrest_history }}" readonly></textarea>
+    </div>
+    <hr>
+    <label for="suspect_name">Suspect's Full Name:</label>
+    <input type="text" id="suspect_name" name="suspect_name" value="{{ crime.suspect_name }}" readonly>
+
+    <div class="form-row">
+      <label for="comments">Further Comments:</label>
+      <textarea id="comments" name="comments" style="width: calc(100% - 22px);" value="{{ crime.comments }}" readonly></textarea>
+    </div>
+
     <div class="form-group image-container">
-        <button type="button" id="cancelButton" class="btn btn-danger" style="display: none;">Cancel</button>
-        <img id="imagePreview" src="#" alt="Image preview" style="display: none;">
-        <video id="videoPreview" controls style="display: none;"></video>
+        <img id="imagePreview" src="#" alt="Image preview" style="display: none;" value="{{ crime.file_upload }}" readonly>
+        <video id="videoPreview" controls style="display: none;" value="{{ crime.file_upload }}" readonly></video>
     </div>
     <hr>
     <div class="form-row">
-        <button type="submit" name="report_theft" class="submit">Submit</button>
-        <a href="{{ url_for('users.user_dashboard') }}"><button type="button" class="cancel">Cancel</button></a>
+        <a href="{{ url_for('users.history') }}"><button type="button" class="info">Back</button></a>
     </div>
 </form>
+
 <script>
     document.getElementById('mediaUpload').addEventListener('change', function(event) {
               var file = event.target.files[0];
@@ -228,5 +222,4 @@
           });
   </script>
 </body>
-</html>
 {% endblock %}

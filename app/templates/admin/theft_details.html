@@ -1,7 +1,4 @@
-{% extends 'user/base.html' %}
-{% block title %}
-  Theft Report
-{% endblock %}
+{% extends 'admin/layout.html' %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -135,98 +132,68 @@
     </style>
 </head>
 <body>
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    {{ message }}
-</div>
-{% endfor %} {% endif%} {% endwith %}
-<h1>Report Stolen Property</h1>
+{% for theft in theft_details %}
 <form method="POST">
+  <h1 style="text-align: left;"><strong>Theft ID: {{ theft.theft_id }}</strong></h1>
     <div class="form-row">
         <div class="form-column">
-            <label for="place_of_theft">Place of Theft:</label>
-            <input type="text" id="place_of_theft" name="place_of_theft" placeholder="Ex: House etc. " required>
+            <label for="place_of_theft">Place of Theft</label>
+            <input type="text" id="place_of_theft" name="place_of_theft" value="{{ theft.place_of_theft }}" readonly>
 
-            <label for="street_address">Street Address:</label>
-            <input type="text" id="street_address" name="street_address" placeholder="Street Address" required>
+            <label for="street_address">Street Address</label>
+            <input type="text" id="street_address" name="street_address" value="{{ theft.street_address }}" readonly>
 
-            <label for="city">City or Town:</label>
-            <input type="text" id="city" name="city" placeholder="City" value="" required>
+            <label for="city">City or Town</label>
+            <input type="text" id="city" name="city" value="{{ theft.city }}" readonly>
 
             <label for="date_of_theft">Date of Theft:</label>
-            <input type="date" id="date_of_theft" name="date_of_theft" placeholder="Date of theft" required>
+            <input type="text" id="date_of_theft" name="date_of_theft" value="{{ theft.date_of_theft }}" readonly>
+
+            <label for="date_received">Reported on:</label>
+            <input type="text" id="date_received" name="date_received" value="{{ theft.date_received }}" readonly>
         </div>
 
         <div class="form-column">
             <label for="reported_by">Reported By:</label>
-            <input type="text" id="reported_by" name="reported_by" placeholder="Enter full name">
+            <input type="text" id="reported_by" name="reported_by" value="{{ theft.reported_by }}" readonly>
 
             <label for="phone_number">Phone Number:</label>
-            <input type="text" id="phone_number" name="phone_number" placeholder="Please enter a valid phone number" required>
+            <input type="text" id="phone_number" name="phone_number" value="{{ theft.phone_number }}" readonly>
+
 
             <label for="value">Value of Stolen Properties:</label>
-            <input type="number" id="value" name="value" placeholder="Ksh" required>
+            <input type="number" id="value" name="value" value="{{ theft.value }}" readonly>
 
             <label for="time_of_theft">Time of Theft:</label>
-            <input type="time" id="time_of_theft" name="time_of_theft"required>
+            <input type="text" id="time_of_theft" name="time_of_theft" value="{{ theft.time_of_theft }}" readonly>
+
         </div>
     </div>
 
     <div class="form-row">
         <label for="stolen_property">Stolen Properties:</label>
-        <textarea id="stolen_property" name="stolen_property" style="width: calc(100% - 22px);" required></textarea>
+        <textarea id="stolen_property" name="stolen_property" style="width: calc(100% - 22px);" readonly>{{ theft.stolen_property }}</textarea>
     </div>
 
     <div class="form-row">
         <label for="description">Further Details:</label>
-        <textarea id="description" name="description" style="height: 80px;" required></textarea>
+        <textarea id="description" name="description" style="height: 80px;" readonly>{{ theft.description }}</textarea>
     </div>
 
     <div class="form-group">
-        <label for="mediaUpload">Attach Evidence:</label>
-        <input type="file" class="form-control-file" id="mediaUpload" name="file_upload accept="image/*, video/*">
+        <label for="mediaUpload">Attached Evidence:</label>
+        
     </div>
-    <div class="form-group image-container">
-        <button type="button" id="cancelButton" class="btn btn-danger" style="display: none;">Cancel</button>
-        <img id="imagePreview" src="#" alt="Image preview" style="display: none;">
-        <video id="videoPreview" controls style="display: none;"></video>
-    </div>
-    <hr>
+    
+  </br>
     <div class="form-row">
-        <button type="submit" name="report_theft" class="submit">Submit</button>
-        <a href="{{ url_for('users.user_dashboard') }}"><button type="button" class="cancel">Cancel</button></a>
+        <a href="{{ url_for('admins.reports') }}"><button type="button" class="cancel"><i class="bi bi-arrow-return-left"></i> Back</button></a>
     </div>
 </form>
+{% endfor %}
 <script>
-    document.getElementById('mediaUpload').addEventListener('change', function(event) {
-              var file = event.target.files[0];
-              var reader = new FileReader();
-              reader.onload = function() {
-                  var mediaType = file.type.split('/')[0]; // Get the media type (image or video)
-                  if (mediaType === 'image') {
-                      document.getElementById('imagePreview').src = reader.result;
-                      document.getElementById('imagePreview').style.display = 'block';
-                      document.getElementById('videoPreview').style.display = 'none';
-                  } else if (mediaType === 'video') {
-                      document.getElementById('videoPreview').src = reader.result;
-                      document.getElementById('videoPreview').style.display = 'block';
-                      document.getElementById('imagePreview').style.display = 'none';
-                  }
-                  document.getElementById('cancelButton').style.display = 'inline-block';
-              }
-              reader.readAsDataURL(file);
-          });
-  
-          document.getElementById('cancelButton').addEventListener('click', function() {
-              document.getElementById('mediaUpload').value = "";
-              document.getElementById('imagePreview').style.display = 'none';
-              document.getElementById('videoPreview').style.display = 'none';
-              document.getElementById('imagePreview').src = "#";
-              document.getElementById('videoPreview').src = "";
-              this.style.display = 'none';
-          });
+    
   </script>
 </body>
 </html>
-{% endblock %}
+{% endblock content %}
