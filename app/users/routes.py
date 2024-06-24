@@ -174,10 +174,9 @@ def status():
 def recovered():
     # should query all theft data with recovered 
     
-    victim = current_user.id
-    thefts = Theft.query.filter_by(victim_id=victim).all()
+    recovered_thefts = Theft.query.filter_by(status='Recovered').all()
 
-    return render_template('user/recovered_items.html', thefts=thefts)
+    return render_template('user/recovered_items.html', thefts=recovered_thefts)
 
 @users.route('/users/settings')
 def settings():
