@@ -32,7 +32,8 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      {% if session.get('admin_name') %}
+        <ul class="navbar-nav">
           <li class="new-item active">
             <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
           </li>
@@ -45,17 +46,19 @@
           <li>
             <a class="nav-link" href="{{ url_for('admins.analytics') }}">Analytics</a>
           </li>
-          <ul class="navbar-nav ms-auto">
-            <li>
-              <a class="nav-link" href="{{ url_for('admins.adminChangePassword') }}"><i class="bi bi-person-circle h4" style="color: white;"></i></a>
-            </li>
-  
-            <li>
-              <a class="nav-link" href="{{ url_for('admins.adminLogout') }}"><i class="bi bi-box-arrow-right h4" style="color: white;"></i></a>
-            </li>
-          </ul>
-          
         </ul>
+        <ul class="navbar-nav ms-auto">
+          <li>
+            <a class="nav-link" href="{{ url_for('admins.adminChangePassword') }}"><i class="bi bi-person-circle h5" style="color: white;"></i></a>
+          </li>
+
+          <li>
+            <a class="nav-link" href="{{ url_for('admins.adminLogout') }}"><i class="bi bi-box-arrow-right h5" style="color: white;"></i></a>
+          </li>
+        </ul>
+          
+        
+      {% endif %}
     </div>
 </nav>
 <br>
