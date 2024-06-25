@@ -83,9 +83,27 @@ def adminChangePassword():
 @admins.route('/admin/reports')
 @admin_required
 def reports():
+    search_query = request.args.get('search_query', '')
     try:
-        crimes = Crime.query.all()
-        thefts = Theft.query.all()
+        if search_query:
+            crimes = Crime.query.filter(
+                Crime.incident_location.ilike(f'%{search_query}%') | 
+                Crime.issued_by.ilike(f'%{search_query}%') |
+                Crime.date_of_incident.ilike(f'%{search_query}%') |
+                Crime.time_of_incident.ilike(f'%{search_query}%') |
+                Crime.date_received.ilike(f'%{search_query}%')
+            ).all()
+            
+            thefts = Theft.query.filter(
+                Theft.place_of_theft.ilike(f'%{search_query}%') |
+                Theft.street_address.ilike(f'%{search_query}%') |
+                Theft.date_of_theft.ilike(f'%{search_query}%') |
+                Theft.time_of_theft.ilike(f'%{search_query}%') |
+                Theft.date_received.ilike(f'%{search_query}%')
+            ).all()
+        else:
+            crimes = Crime.query.all()
+            thefts = Theft.query.all()
     except:
         # Log the error
         current_app.logger.error("Database error occurred:")
