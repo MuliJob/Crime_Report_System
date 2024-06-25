@@ -169,6 +169,33 @@ def updateStatus(theft_id):
     
     return redirect(url_for('admins.reportStatus'))
 
+@admins.route('/admin/crime_status')
+@admin_required
+def crimeStatus():
+    search_crime = request.args.get('search_crime', '')
+    try:
+        if search_crime:
+            crime_status = Crime.query.filter(
+                Crime.incident_location.ilike(f'%{search_crime}%') | 
+                Crime.issued_by.ilike(f'%{search_crime}%') |
+                Crime.date_of_incident.ilike(f'%{search_crime}%') |
+                Crime.time_of_incident.ilike(f'%{search_crime}%') |
+                Crime.date_received.ilike(f'%{search_crime}%')
+            ).all()
+        else:
+            crime_status = Crime.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.crimeStatus'))
+
+    return render_template('admin/crime_status.html', title='Crime Status', crime_status=crime_status)
+
 @admins.route('/admin/crime_details/<int:crime_id>')
 @admin_required
 def crimeDetails(crime_id):
