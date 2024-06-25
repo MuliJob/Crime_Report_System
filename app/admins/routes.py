@@ -5,8 +5,18 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from app.posts.models import Crime, Theft
 from app.users.models import User
+from functools import wraps
 
 admins = Blueprint('admins', __name__)
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_id'):
+            flash('You need to be logged in as an admin to access the page.', 'danger')
+            return redirect(url_for('admins.adminIndex'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # admin login
 @admins.route('/admin/', methods=['GET', 'POST'])
@@ -35,6 +45,7 @@ def adminIndex():
         title='Admin Login')
 
 @admins.route('/admin/dashboard')
+@admin_required
 def adminDashboard():
     user_count = User.query.count()
     crime_count = Crime.query.count()
@@ -49,6 +60,7 @@ def adminDashboard():
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
+@admin_required
 def adminChangePassword():
     admin=Admin.query.get(1)
     if request.method == 'POST':
@@ -69,6 +81,7 @@ def adminChangePassword():
 
 
 @admins.route('/admin/reports')
+@admin_required
 def reports():
     try:
         crimes = Crime.query.all()
@@ -86,6 +99,7 @@ def reports():
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
 
 @admins.route('/admin/reports_status')
+@admin_required
 def reportStatus():
     try:
         thefts = Theft.query.all()
@@ -102,6 +116,7 @@ def reportStatus():
     return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
 
 @admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
+@admin_required
 def updateStatus(theft_id):
     try:
         theft = Theft.query.get_or_404(theft_id)
@@ -125,6 +140,7 @@ def updateStatus(theft_id):
     return redirect(url_for('admins.reportStatus'))
 
 @admins.route('/admin/crime_details/<int:crime_id>')
+@admin_required
 def crimeDetails(crime_id):
     try:
         # Finding crime by id
@@ -142,6 +158,7 @@ def crimeDetails(crime_id):
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
 @admins.route('/admin/theft_details/<int:theft_id>')
+@admin_required
 def theftDetails(theft_id):
     try:
         #Finding theft by id 
@@ -159,6 +176,7 @@ def theftDetails(theft_id):
     return render_template('admin/theft_details.html', theft_details=theft_details)
 
 @admins.route('/admin/analytics')
+@admin_required
 def analytics():
     try:
         # Fetch crime data grouped by location
@@ -192,6 +210,7 @@ def analytics():
                            theft_labels=theft_labels, theft_counts=theft_counts)
 
 @admins.route('/admin/logout')
+@admin_required
 def adminLogout():    
     if not session.get('admin_id'):
         return redirect('/admin/')
