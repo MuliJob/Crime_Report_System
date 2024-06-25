@@ -154,9 +154,9 @@ def updateStatus(theft_id):
         if status:
             theft.status = status
             db.session.commit()
-            flash(f'Status updated to {status}.', 'success')
+            flash(f'Theft status updated to {status}.', 'success')
         else:
-            flash('Failed to update status.', 'danger')
+            flash('Failed to update theft status.', 'danger')
     except:
         # Log the error
         current_app.logger.error("Database error occurred:")
@@ -168,6 +168,30 @@ def updateStatus(theft_id):
         return redirect(url_for('admins.updateStatus'))
     
     return redirect(url_for('admins.reportStatus'))
+
+@admins.route('/admin/crime_status/<int:crime_id>', methods=['POST'])
+@admin_required
+def updateCrimeStatus(crime_id):
+    try:
+        crime = Crime.query.get_or_404(crime_id)
+        status = request.form.get('status')
+        if status:
+            crime.status = status
+            db.session.commit()
+            flash(f'Crime status updated to {status}.', 'success')
+        else:
+            flash('Failed to update crime status.', 'danger')
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.updateCrimeStatus'))
+    print(status)
+    return redirect(url_for('admins.crimeStatus'))
 
 @admins.route('/admin/crime_status')
 @admin_required

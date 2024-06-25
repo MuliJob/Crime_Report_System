@@ -126,24 +126,39 @@ def sign_out():
 
 
 @users.route('/users/dashboard', methods=['GET', 'POST'])
+@login_required
 def user_dashboard(): 
-    if not session.get('user_id'):
-        return redirect('/users/signin')   
-    url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        news_data = response.json()
-        articles = news_data.get('articles', [])
-    except RequestException:
-        flash("Error fetching news. Try connecting to internet", category='danger')
-        articles = []
+    user_id = session.get('user_id')
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            login_user(user)   
 
-    return render_template('user/userdashboard.html', articles=articles)
+            # fetching news data
+            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
+
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                news_data = response.json()
+                articles = news_data.get('articles', [])
+            except RequestException:
+                flash("Error fetching news. Try connecting to internet", category='danger')
+                articles = []
+
+            return render_template('user/userdashboard.html', articles=articles)
+        else:
+            # If user not found, clear session and redirect to signin
+            session.clear()
+            return redirect('/users/signin')
+    else:
+        # If no user_id in session, redirect to signin
+        return redirect('/users/signin')
 
 
 
 @users.route('/users/history')
+@login_required
 def history():
     try:
         reporter = current_user.id
@@ -160,11 +175,8 @@ def history():
         return render_template('user/history.html', crimes=[], thefts=[])
 
 
-@users.route('/users/status')
-def status():
-    return render_template('user/status.html')
-
 @users.route('/users/recovered-items')
+@login_required
 def recovered():
     try:
         # should query all theft data with recovered 
@@ -178,6 +190,7 @@ def recovered():
 
 # displaying crime details when button is clicked
 @users.route('/users/crime-details/<int:crime_id>')
+@login_required
 def crime_details(crime_id):
     try:
         # Finding crime by id
@@ -191,6 +204,7 @@ def crime_details(crime_id):
 
 # displaying theft details when button is clicked
 @users.route('/users/theft-details/<int:theft_id>')
+@login_required
 def theft_details(theft_id):
     try:
         #Finding theft by id 
@@ -204,6 +218,7 @@ def theft_details(theft_id):
     return render_template('user/theft-details.html', theft_details=theft_details)
 
 @users.route('/users/settings')
+@login_required
 def settings():
     if not session.get('user_id'):
         return redirect('/users/dashboard')
@@ -221,6 +236,7 @@ def settings():
     
 
 @users.route('/users/change-password',methods=["POST","GET"])
+@login_required
 def userChangePassword():
     if not session.get('user_id'):
         return redirect('/users/')
@@ -252,6 +268,7 @@ def userChangePassword():
 
 # user update profile
 @users.route('/users/update-profile', methods=["POST","GET"])
+@login_required
 def userUpdateProfile():
     if not session.get('user_id'):
         return redirect('/users/')

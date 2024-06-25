@@ -15,6 +15,7 @@ class Crime(db.Model, UserMixin):
     arrest_history = db.Column(db.Text, nullable=False)
     suspect_name = db.Column(db.String(10))
     comments = db.Column(db.Text)
+    status = db.Column(db.String(10), nullable=True)
     file_upload = db.Column(db.LargeBinary)
     date_received = db.Column(db.DateTime, nullable=False, default=func.now())
     reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'))

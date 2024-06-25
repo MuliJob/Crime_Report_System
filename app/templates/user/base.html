@@ -35,14 +35,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('users.history') }}">History</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Updates
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('users.status') }}">Status</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('users.recovered') }}">Recovered Items</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('users.recovered') }}">Recovered Items</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
