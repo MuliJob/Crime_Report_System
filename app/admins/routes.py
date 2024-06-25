@@ -119,8 +119,20 @@ def reports():
 @admins.route('/admin/reports_status')
 @admin_required
 def reportStatus():
+    search_theft = request.args.get('search_theft', '')
+
     try:
-        thefts = Theft.query.all()
+        if search_theft:
+            thefts = Theft.query.filter(
+                Theft.place_of_theft.ilike(f'%{search_theft}%') |
+                Theft.street_address.ilike(f'%{search_theft}%') |
+                Theft.date_of_theft.ilike(f'%{search_theft}%') |
+                Theft.time_of_theft.ilike(f'%{search_theft}%') |
+                Theft.date_received.ilike(f'%{search_theft}%') |
+                Theft.status.ilike(f'%{search_theft}%')
+            ).all()
+        else:
+            thefts = Theft.query.all()
     except:
         # Log the error
         current_app.logger.error("Database error occurred:")
