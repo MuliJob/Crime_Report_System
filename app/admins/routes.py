@@ -91,7 +91,8 @@ def reports():
                 Crime.issued_by.ilike(f'%{search_query}%') |
                 Crime.date_of_incident.ilike(f'%{search_query}%') |
                 Crime.time_of_incident.ilike(f'%{search_query}%') |
-                Crime.date_received.ilike(f'%{search_query}%')
+                Crime.date_received.ilike(f'%{search_query}%') |
+                Crime.status.ilike(f'%{search_query}%')
             ).all()
             
             thefts = Theft.query.filter(
@@ -99,7 +100,8 @@ def reports():
                 Theft.street_address.ilike(f'%{search_query}%') |
                 Theft.date_of_theft.ilike(f'%{search_query}%') |
                 Theft.time_of_theft.ilike(f'%{search_query}%') |
-                Theft.date_received.ilike(f'%{search_query}%')
+                Theft.date_received.ilike(f'%{search_query}%') |
+                Theft.status.ilike(f'%{search_query}%')
             ).all()
         else:
             crimes = Crime.query.all()
@@ -204,7 +206,8 @@ def crimeStatus():
                 Crime.issued_by.ilike(f'%{search_crime}%') |
                 Crime.date_of_incident.ilike(f'%{search_crime}%') |
                 Crime.time_of_incident.ilike(f'%{search_crime}%') |
-                Crime.date_received.ilike(f'%{search_crime}%')
+                Crime.date_received.ilike(f'%{search_crime}%') |
+                Crime.status.ilike(f'%{search_crime}%')
             ).all()
         else:
             crime_status = Crime.query.all()

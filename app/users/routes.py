@@ -291,7 +291,7 @@ def userUpdateProfile():
             db.session.commit()
             session['username']=username
             flash('Profile update Successfully','success')
-            return redirect('/users/dashboard')
+            return redirect('/users/settings')
     else:
         return render_template('user/update-profile.html',title="Update Profile",users=users)
 
