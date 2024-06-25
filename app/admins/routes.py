@@ -1,12 +1,22 @@
-from flask import Blueprint, render_template, redirect, request, flash, session, url_for
+from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from app.posts.models import Crime, Theft
 from app.users.models import User
+from functools import wraps
 
 admins = Blueprint('admins', __name__)
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_id'):
+            flash('You need to be logged in as an admin to access the page.', 'danger')
+            return redirect(url_for('admins.adminIndex'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # admin login
 @admins.route('/admin/', methods=['GET', 'POST'])
@@ -35,20 +45,22 @@ def adminIndex():
         title='Admin Login')
 
 @admins.route('/admin/dashboard')
+@admin_required
 def adminDashboard():
     user_count = User.query.count()
     crime_count = Crime.query.count()
     theft_count = Theft.query.count()
-    #recovered_count = Recovered.query.count()
+    recovered_count = Theft.query.filter_by(status='Recovered').count()
     
     # Fetch trend data for the graph (e.g., monthly counts)
-    crime_trends = [30, 50, 70, 60, 90, 100, 120]  # Example data
+    crime_trends = [30, 50, 70, 60, 90, 100, 200]  # Example data
     theft_trends = [20, 40, 60, 50, 80, 90, 110]   # Example data
 
-    return render_template('admin/dashboard.html', user_count=user_count, crime_count=crime_count, theft_count=theft_count, crime_trends=crime_trends, theft_trends=theft_trends)
+    return render_template('admin/dashboard.html', user_count=user_count, crime_count=crime_count, recovered_count=recovered_count, theft_count=theft_count, crime_trends=crime_trends, theft_trends=theft_trends)
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
+@admin_required
 def adminChangePassword():
     admin=Admin.query.get(1)
     if request.method == 'POST':
@@ -69,68 +81,220 @@ def adminChangePassword():
 
 
 @admins.route('/admin/reports')
+@admin_required
 def reports():
-    crimes = Crime.query.all()
-    thefts = Theft.query.all()
+    search_query = request.args.get('search_query', '')
+    try:
+        if search_query:
+            crimes = Crime.query.filter(
+                Crime.incident_location.ilike(f'%{search_query}%') | 
+                Crime.issued_by.ilike(f'%{search_query}%') |
+                Crime.date_of_incident.ilike(f'%{search_query}%') |
+                Crime.time_of_incident.ilike(f'%{search_query}%') |
+                Crime.date_received.ilike(f'%{search_query}%') |
+                Crime.status.ilike(f'%{search_query}%')
+            ).all()
+            
+            thefts = Theft.query.filter(
+                Theft.place_of_theft.ilike(f'%{search_query}%') |
+                Theft.street_address.ilike(f'%{search_query}%') |
+                Theft.date_of_theft.ilike(f'%{search_query}%') |
+                Theft.time_of_theft.ilike(f'%{search_query}%') |
+                Theft.date_received.ilike(f'%{search_query}%') |
+                Theft.status.ilike(f'%{search_query}%')
+            ).all()
+        else:
+            crimes = Crime.query.all()
+            thefts = Theft.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reports'))
     
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
 
 @admins.route('/admin/reports_status')
+@admin_required
 def reportStatus():
-    thefts = Theft.query.all()
+    search_theft = request.args.get('search_theft', '')
 
+    try:
+        if search_theft:
+            thefts = Theft.query.filter(
+                Theft.place_of_theft.ilike(f'%{search_theft}%') |
+                Theft.street_address.ilike(f'%{search_theft}%') |
+                Theft.date_of_theft.ilike(f'%{search_theft}%') |
+                Theft.time_of_theft.ilike(f'%{search_theft}%') |
+                Theft.date_received.ilike(f'%{search_theft}%') |
+                Theft.status.ilike(f'%{search_theft}%')
+            ).all()
+        else:
+            thefts = Theft.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reportStatus'))
+    
     return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
 
 @admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
+@admin_required
 def updateStatus(theft_id):
-    theft = Theft.query.get_or_404(theft_id)
-    status = request.form.get('status')
-    if status:
-        theft.status = status
-        db.session.commit()
-        flash(f'Status updated to {status}.', 'success')
-    else:
-        flash('Failed to update status.', 'danger')
+    try:
+        theft = Theft.query.get_or_404(theft_id)
+        status = request.form.get('status')
+        if status:
+            theft.status = status
+            db.session.commit()
+            flash(f'Theft status updated to {status}.', 'success')
+        else:
+            flash('Failed to update theft status.', 'danger')
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.updateStatus'))
+    
     return redirect(url_for('admins.reportStatus'))
 
-@admins.route('/admin/crime_details/<int:crime_id>')
-def crimeDetails(crime_id):
-    # Finding crime by id
-    crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+@admins.route('/admin/crime_status/<int:crime_id>', methods=['POST'])
+@admin_required
+def updateCrimeStatus(crime_id):
+    try:
+        crime = Crime.query.get_or_404(crime_id)
+        status = request.form.get('status')
+        if status:
+            crime.status = status
+            db.session.commit()
+            flash(f'Crime status updated to {status}.', 'success')
+        else:
+            flash('Failed to update crime status.', 'danger')
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.updateCrimeStatus'))
+    print(status)
+    return redirect(url_for('admins.crimeStatus'))
 
+@admins.route('/admin/crime_status')
+@admin_required
+def crimeStatus():
+    search_crime = request.args.get('search_crime', '')
+    try:
+        if search_crime:
+            crime_status = Crime.query.filter(
+                Crime.incident_location.ilike(f'%{search_crime}%') | 
+                Crime.issued_by.ilike(f'%{search_crime}%') |
+                Crime.date_of_incident.ilike(f'%{search_crime}%') |
+                Crime.time_of_incident.ilike(f'%{search_crime}%') |
+                Crime.date_received.ilike(f'%{search_crime}%') |
+                Crime.status.ilike(f'%{search_crime}%')
+            ).all()
+        else:
+            crime_status = Crime.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.crimeStatus'))
+
+    return render_template('admin/crime_status.html', title='Crime Status', crime_status=crime_status)
+
+@admins.route('/admin/crime_details/<int:crime_id>')
+@admin_required
+def crimeDetails(crime_id):
+    try:
+        # Finding crime by id
+        crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports crime details. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.reports'))
+    
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
 @admins.route('/admin/theft_details/<int:theft_id>')
+@admin_required
 def theftDetails(theft_id):
-    #Finding theft by id 
-    theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    try:
+        #Finding theft by id 
+        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred while fetching the reports theft details. Please try again later.", "error")
+        
+        # Redirect to a safe page
+        return redirect(url_for('admins.reports'))
 
     return render_template('admin/theft_details.html', theft_details=theft_details)
 
 @admins.route('/admin/analytics')
+@admin_required
 def analytics():
-    # Fetch crime data grouped by location
-    crime_data = db.session.query(
-        Crime.incident_location, db.func.count(Crime.crime_id)
-    ).group_by(Crime.incident_location).all()
+    try:
+        # Fetch crime data grouped by location
+        crime_data = db.session.query(
+            Crime.incident_location, db.func.count(Crime.crime_id)
+        ).group_by(Crime.incident_location).all()
 
-    # Fetch theft data grouped by location
-    theft_data = db.session.query(
-        Theft.street_address, db.func.count(Theft.theft_id)
-    ).group_by(Theft.street_address).all()
+        # Fetch theft data grouped by location
+        theft_data = db.session.query(
+            Theft.street_address, db.func.count(Theft.theft_id)
+        ).group_by(Theft.street_address).all()
 
-    # Prepare data for the charts
-    crime_labels = [row[0] for row in crime_data]
-    crime_counts = [row[1] for row in crime_data]
-    
-    theft_labels = [row[0] for row in theft_data]
-    theft_counts = [row[1] for row in theft_data]
+        # Prepare data for the charts
+        crime_labels = [row[0] for row in crime_data]
+        crime_counts = [row[1] for row in crime_data]
+        
+        theft_labels = [row[0] for row in theft_data]
+        theft_counts = [row[1] for row in theft_data]
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "error")
+        
+        # Redirect to a safe page
+        return redirect(url_for('admins.analytics'))
 
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
                            crime_labels=crime_labels, crime_counts=crime_counts,
                            theft_labels=theft_labels, theft_counts=theft_counts)
 
 @admins.route('/admin/logout')
+@admin_required
 def adminLogout():    
     if not session.get('admin_id'):
         return redirect('/admin/')

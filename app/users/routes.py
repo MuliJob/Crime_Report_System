@@ -126,24 +126,39 @@ def sign_out():
 
 
 @users.route('/users/dashboard', methods=['GET', 'POST'])
+@login_required
 def user_dashboard(): 
-    if not session.get('user_id'):
-        return redirect('/users/signin')   
-    url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        news_data = response.json()
-        articles = news_data.get('articles', [])
-    except RequestException:
-        flash("Error fetching news. Try connecting to internet", category='danger')
-        articles = []
+    user_id = session.get('user_id')
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            login_user(user)   
 
-    return render_template('user/userdashboard.html', articles=articles)
+            # fetching news data
+            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
+
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                news_data = response.json()
+                articles = news_data.get('articles', [])
+            except RequestException:
+                flash("Error fetching news. Try connecting to internet", category='danger')
+                articles = []
+
+            return render_template('user/userdashboard.html', articles=articles)
+        else:
+            # If user not found, clear session and redirect to signin
+            session.clear()
+            return redirect('/users/signin')
+    else:
+        # If no user_id in session, redirect to signin
+        return redirect('/users/signin')
 
 
 
 @users.route('/users/history')
+@login_required
 def history():
     try:
         reporter = current_user.id
@@ -159,39 +174,69 @@ def history():
         flash('Unable to fetch your data. Please try again later.', 'danger')
         return render_template('user/history.html', crimes=[], thefts=[])
 
-@users.route('/users/details')
-def crime_details():
-  crime = Crime.query.all()
-  if not crime:
-    return abort(404)
-  return render_template('user/crime_details.html', crime=crime)
-
-@users.route('/users/status')
-def status():
-    return render_template('user/status.html')
 
 @users.route('/users/recovered-items')
+@login_required
 def recovered():
-    # should query all theft data with recovered 
+    try:
+        # should query all theft data with recovered 
+        recovered_thefts = Theft.query.filter_by(status='Recovered').all()
+    except:
+        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.recovered'))
     
-    victim = current_user.id
-    thefts = Theft.query.filter_by(victim_id=victim).all()
+    return render_template('user/recovered_items.html', thefts=recovered_thefts)
 
-    return render_template('user/recovered_items.html', thefts=thefts)
+# displaying crime details when button is clicked
+@users.route('/users/crime-details/<int:crime_id>')
+@login_required
+def crime_details(crime_id):
+    try:
+        # Finding crime by id
+        crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+    except:
+        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.history'))
+
+    return render_template('user/crime-details.html', crime_details=crime_details)
+
+# displaying theft details when button is clicked
+@users.route('/users/theft-details/<int:theft_id>')
+@login_required
+def theft_details(theft_id):
+    try:
+        #Finding theft by id 
+        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+    except:
+        flash("An error occurred while fetching theft details. Please try again later.", "error")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.history'))
+    
+    return render_template('user/theft-details.html', theft_details=theft_details)
 
 @users.route('/users/settings')
+@login_required
 def settings():
     if not session.get('user_id'):
         return redirect('/users/dashboard')
     if session.get('user_id'):
         id=session.get('user_id')
-    users=User().query.filter_by(id=id).first()
+    try:
+        users=User().query.filter_by(id=id).first()
+    except:
+        flash('An error has occurred. Please try again later', 'error')
+        redirect(url_for('users.settings'))
+        
     return render_template('user/settings.html',title="User Dashboard",users=users)
 
 
     
 
 @users.route('/users/change-password',methods=["POST","GET"])
+@login_required
 def userChangePassword():
     if not session.get('user_id'):
         return redirect('/users/')
@@ -223,6 +268,7 @@ def userChangePassword():
 
 # user update profile
 @users.route('/users/update-profile', methods=["POST","GET"])
+@login_required
 def userUpdateProfile():
     if not session.get('user_id'):
         return redirect('/users/')
@@ -245,7 +291,7 @@ def userUpdateProfile():
             db.session.commit()
             session['username']=username
             flash('Profile update Successfully','success')
-            return redirect('/users/dashboard')
+            return redirect('/users/settings')
     else:
         return render_template('user/update-profile.html',title="Update Profile",users=users)
 

@@ -50,7 +50,10 @@
                 <h5 class="card-text"><strong>Incident:</strong> {{ crime.incident_nature }}</h5>
                 <h5 class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</h5>
                 <h5 class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</h5>
-                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
+                <h5 class="card-text"><strong>Status:</strong> {{ crime.status }}</h5>
+                <button class="btn btn-primary btn-sm" onclick="crime_details('{{ crime.crime_id }}')">
+                  View Details
+                </button>
               </div>
             </div>
           </div>
@@ -66,14 +69,14 @@
         {% for theft in thefts %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
-              <div class="card-header">
-                No. {{ count }}
-              </div>
               <div class="card-body">
                 <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
                 <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
                 <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
+                <h5 class="card-text"><strong>Status:</strong> {{ theft.status }}</h5>
+                <button class="btn btn-primary btn-sm" onclick="theft_details('{{ theft.theft_id }}')">
+                  View Details
+                </button>
               </div>
             </div>
           </div>
@@ -83,6 +86,16 @@
       <h4>No theft history found. <a href="{{ url_for('posts.report_theft') }}">Report Now</a></h4>
     {% endif %}
   </div>
+
+<script>
+  function crime_details(crime_id) {
+      window.location.href = '/users/crime-details/' + crime_id;
+  }
+
+  function theft_details(theft_id) {
+      window.location.href = '/users/theft-details/' + theft_id;
+  }
+</script>
 </body>
 </html>
 {% endblock %}

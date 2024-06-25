@@ -38,20 +38,18 @@
         {% for theft in thefts %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
-              <div class="card-header">
-                No. {{ count }}
-              </div>
               <div class="card-body">
                 <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
                 <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
+                <h5 class="card-text"><strong>Stolen Properties:</strong> {{ theft.stolen_property }}</h5>
                 <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <h5 class="card-text"><strong>Status:</strong> {{ theft.value }}</h5>
-                <a href="{{ url_for('users.crime_details') }}" class="btn btn-primary btn-sm">View Details</a>
+                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ theft.status }}</h5>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
+    <h4>No recovered items found.</h4>
     {% endif %}
 {% endblock %}

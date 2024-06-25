@@ -1,11 +1,19 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
 <style>
-  .three-dots-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-  }
+.three-dots-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.search-input {
+    width: 300px; /* Adjust the width as needed */
+}
 </style>
 
 <div class="container">
@@ -16,6 +24,16 @@
     </div>
     {% endfor %} {% endif%} {% endwith %}
 </br>
+<form method="GET" action="{{ url_for('admins.reportStatus') }}" class="search-form">
+    <div class="input-group search-input">
+        <input type="text" name="search_theft" class="form-control" placeholder="Search Crimes and Thefts...">
+        <div class="input-group-append ms-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+</form>
 <table class="table table-striped table-hover">
   <h2 style="text-align: center;">Thefts Reported</h2>
 
@@ -46,19 +64,38 @@
               <td>
                 <div class="dropdown">
                     <button class="three-dots-btn" type="button" id="dropdownMenuButton{{ theft.theft_id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-three-dots-vertical"></i>
+                        <i class="bi bi-three-dots-vertical h4"></i>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ theft.theft_id }}">
+                        <h6><strong>Change Status To:</strong></h6>
                         <li>
                             <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
                                 <input type="hidden" name="status" value="Recovered">
-                                <button type="submit" class="dropdown-item">Recovered</button>
+                                <button type="submit" class="dropdown-item">Recovered <i class="bi bi-check-circle"></i></button>
                             </form>
                         </li>
                         <li>
                             <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
                                 <input type="hidden" name="status" value="Under Investigation">
-                                <button type="submit" class="dropdown-item">Under Investigation</button>
+                                <button type="submit" class="dropdown-item">Under Investigation <i class="bi bi-search"></i></button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
+                                <input type="hidden" name="status" value="Unsolved">
+                                <button type="submit" class="dropdown-item">Unsolved <i class="bi bi-question-circle"></i></button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
+                                <input type="hidden" name="status" value="Suspect Identified">
+                                <button type="submit" class="dropdown-item">Suspect Identified <i class="bi bi-person-check"></i></button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ url_for('admins.updateStatus', theft_id=theft.theft_id) }}">
+                                <input type="hidden" name="status" value="Arrest Made">
+                                <button type="submit" class="dropdown-item">Arrest Made <i class="bi bi-person-lock"></i></button>
                             </form>
                         </li>
                     </ul>
