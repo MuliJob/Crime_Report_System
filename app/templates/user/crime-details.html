@@ -126,11 +126,24 @@
           left: 0;
           z-index: 1000;
       }
+      .printer-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: black;
+    }
+    @media print {
+        body { font-size: 12pt; }
+        button { display: none; }
+    }
   </style>
 </head>
 <body>
   {% for crime in crime_details %}
-  <form method="POST">
+  <form method="POST, GET">
+    <div class="ms-auto">
+        <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button> 
+     </div>
     <h1 style="text-align: left;"><strong>Crime ID: {{ crime.crime_id }}</strong></h1>
     <div class="form-row">
         <div class="form-column">
@@ -139,6 +152,9 @@
 
             <label for="issued_by">Incident reported by</label>
             <input type="text" id="issued_by" name="issued_by" value="{{ crime.issued_by }}" readonly>
+
+            <label for="status">Status</label>
+            <input type="text" id="status" name="status" value="{{ crime.status }}" readonly>
         </div>
 
         <div class="form-column">
@@ -148,8 +164,6 @@
             <label for="date_received">Received On</label>
             <input type="text" id="date_received" name="date_received" value="{{ crime.date_received }}" readonly>
 
-            <label for="status">Status</label>
-            <input type="text" id="status" name="status" value="{{ crime.status }}" readonly>
 
         </div>
     </div>
