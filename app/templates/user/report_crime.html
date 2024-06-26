@@ -139,7 +139,7 @@
 </div>
 {% endfor %} {% endif%} {% endwith %}
 <h1>Police Crime Report Form</h1>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
   <p style="text-align: center;">To report a crime or incident, please provide the following information's</p>
   <hr>
     <div class="form-row">
@@ -193,7 +193,7 @@
 
     <div class="form-group">
         <label for="mediaUpload">Attach Evidence:</label>
-        <input type="file" class="form-control-file" id="mediaUpload" name="file_upload accept="image/*, video/*">
+        <input type="file" class="form-control-file" id="mediaUpload" name="image">
     </div>
     <div class="form-group image-container">
         <button type="button" id="cancelButton" class="btn btn-danger" style="display: none;">Cancel</button>
