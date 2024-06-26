@@ -1,4 +1,5 @@
-from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash
+import io
+from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -195,12 +196,14 @@ def crime_details(crime_id):
     try:
         # Finding crime by id
         crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+        
+
     except:
         flash("An error occurred while fetching crime details. Please try again later.", "error")
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('users.history'))
 
-    return render_template('user/crime-details.html', crime_details=crime_details)
+    return render_template('user/crime-details.html', crime_details=crime_details, )
 
 # displaying theft details when button is clicked
 @users.route('/users/theft-details/<int:theft_id>')
@@ -209,6 +212,7 @@ def theft_details(theft_id):
     try:
         #Finding theft by id 
         theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+
     except:
         flash("An error occurred while fetching theft details. Please try again later.", "error")
         

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user
 from app.posts.models import Crime, Theft
 from app import db
+from werkzeug.utils import secure_filename
 
 posts = Blueprint('posts', __name__)
 
@@ -21,6 +22,10 @@ def report_theft():
         time_of_theft = request.form.get('time_of_theft')
         stolen_property = request.form.get('stolen_property')
         description = request.form.get('description')
+        image = request.files['image']
+
+        filename = secure_filename(image.filename)
+        mimetype = image.mimetype
 
         theft_report = Theft(place_of_theft=place_of_theft, 
                                 street_address=street_address,
@@ -32,6 +37,9 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
+                                file_upload=image.read(),
+                                name=filename,
+                                mimetype=mimetype,
                                 victim_id=victim)
         try:
             db.session.add(theft_report)
@@ -62,13 +70,11 @@ def report_crime():
         arrest_history = request.form.get('arrest_history')
         suspect_name = request.form.get('suspect_name')
         comments = request.form.get('comments')
+        image = request.files['image']
 
-        if request.files:
-            file_upload = request.files['file_upload']
-            file_content = file_upload.read()  # Read file content as bytes
-        else:
-            file_upload = None
-            file_content = None  # Set to None if no file uploaded
+
+        filename = secure_filename(image.filename)
+        mimetype = image.mimetype
 
         crime_report = Crime(date_of_incident=date_of_incident, 
                                 issued_by=issued_by,
@@ -80,7 +86,9 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
-                                file_upload=file_content,
+                                file_upload=image.read(),
+                                name=filename,
+                                mimetype=mimetype,
                                 reporter_id=reporter)
         try:
             db.session.add(crime_report)
