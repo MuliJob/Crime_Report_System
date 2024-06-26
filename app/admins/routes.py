@@ -167,7 +167,7 @@ def updateStatus(theft_id):
         flash("An error occurred. Please try again later.", "error")
         
         # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.updateStatus'))
+        return redirect(url_for('admins.reportStatus'))
     
     return redirect(url_for('admins.reportStatus'))
 
@@ -191,7 +191,7 @@ def updateCrimeStatus(crime_id):
         flash("An error occurred. Please try again later.", "error")
         
         # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.updateCrimeStatus'))
+        return redirect(url_for('admins.crimeStatus'))
     print(status)
     return redirect(url_for('admins.crimeStatus'))
 
