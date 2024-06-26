@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import current_user
 from app.posts.models import Crime, Theft
-from app import db
+from app import db, send_admin_email
 from werkzeug.utils import secure_filename
 
 posts = Blueprint('posts', __name__)
@@ -44,7 +44,24 @@ def report_theft():
         try:
             db.session.add(theft_report)
             db.session.commit()
-            flash(f"Your theft report was sent successfully", category='success')
+
+            #sending email
+            subject = f"New Theft Report Sent: {theft_report.stolen_property}"
+            body = f"""
+                A new theft report has been sent:
+
+                Place Of Theft: {theft_report.place_of_theft}
+                Location: {theft_report.street_address}
+                Date: {theft_report.date_of_theft}
+                Time: {theft_report.time_of_theft}
+
+                Please review this report as soon as possible.
+            """
+            if send_admin_email(subject, body):
+                flash("Report submitted successfully and admin has been notified.", "success")
+            else:
+                flash("Report submitted successfully, but there was an issue notifying the admin.", "warning")
+
             return redirect(url_for('users.user_dashboard'))
         except Exception:
             # Handle database errors gracefully (e.g., log the error)
@@ -93,10 +110,27 @@ def report_crime():
         try:
             db.session.add(crime_report)
             db.session.commit()
-            flash(f"Your crime report was sent successfully", category='success')
+
+            #sending email
+            subject = f"New Crime Report Sent: {crime_report.incident_nature}"
+            body = f"""
+                A new theft report has been sent:
+
+                Location: {crime_report.incident_location}
+                Date: {crime_report.date_of_incident}
+                Time: {crime_report.time_of_incident}
+
+                Please review this report as soon as possible.
+            """
+            if send_admin_email(subject, body):
+                flash("Report submitted successfully and admin has been notified.", "success")
+            else:
+                flash("Report submitted successfully, but there was an issue notifying the admin.", "warning")
+
             return redirect(url_for('users.user_dashboard'))
         except Exception:
             # Handle database errors gracefully (e.g., log the error)
             flash(f"An error occurred! Please try again", category='danger')
             return render_template('user/report_crime.html')
+        
     return render_template('user/report_crime.html')
