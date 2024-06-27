@@ -181,7 +181,7 @@ def history():
 def recovered():
     try:
         # should query all theft data with recovered 
-        recovered_thefts = Theft.query.filter_by(status='Recovered').all()
+        recovered_thefts = Theft.query.filter_by(theft_status='Recovered').all()
     except:
         flash("An error occurred while fetching crime details. Please try again later.", "error")
         # Redirect to a safe page, like the admin dashboard

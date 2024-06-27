@@ -154,7 +154,7 @@
             <input type="text" id="issued_by" name="issued_by" value="{{ crime.issued_by }}" readonly>
 
             <label for="status">Status</label>
-            <input type="text" id="status" name="status" value="{{ crime.status }}" readonly>
+            <input type="text" id="status" name="status" value="{{ crime.crime_status }}" readonly>
         </div>
 
         <div class="form-column">
@@ -203,7 +203,7 @@
 
     <div class="form-group">
         <label for="mediaUpload">Attached Evidence:</label>
-        <img src="{{ crime.file_upload }}" alt="{{ crime.name }}" style="max-width: 300px;">
+        <img src="{{ crime.crime_file_upload }}" alt="{{ crime.crime_file_name }}" style="max-width: 300px;">
     </div>
   </br>
     <div class="form-row">
