@@ -22,10 +22,10 @@ def report_theft():
         time_of_theft = request.form.get('time_of_theft')
         stolen_property = request.form.get('stolen_property')
         description = request.form.get('description')
-        image = request.files['image']
+        theft_image = request.files['theft_image']
 
-        filename = secure_filename(image.filename)
-        mimetype = image.mimetype
+        filename = secure_filename(theft_image.filename)
+        mimetype = theft_image.mimetype
 
         theft_report = Theft(place_of_theft=place_of_theft, 
                                 street_address=street_address,
@@ -37,9 +37,9 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
-                                file_upload=image.read(),
-                                name=filename,
-                                mimetype=mimetype,
+                                theft_file_upload=theft_image.read(),
+                                theft_file_name=filename,
+                                theft_mimetype=mimetype,
                                 victim_id=victim)
         try:
             db.session.add(theft_report)
@@ -103,9 +103,9 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
-                                file_upload=image.read(),
-                                name=filename,
-                                mimetype=mimetype,
+                                crime_file_upload=image.read(),
+                                crime_file_name=filename,
+                                crime_mimetype=mimetype,
                                 reporter_id=reporter)
         try:
             db.session.add(crime_report)

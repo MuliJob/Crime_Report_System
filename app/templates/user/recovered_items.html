@@ -43,13 +43,21 @@
                 <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
                 <h5 class="card-text"><strong>Stolen Properties:</strong> {{ theft.stolen_property }}</h5>
                 <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ theft.status }}</h5>
+                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ theft.theft_status }}</h5>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
-    {% else %}
-    <h4>No recovered items found.</h4>
-    {% endif %}
+{% else %}
+<div class="container d-flex justify-content-center align-items-center">
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="card mb-4 reduced-card-size">
+      <div class="card-body">
+        <h4><i class="bi bi-database-x"></i> No recovered items found.</h4>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
