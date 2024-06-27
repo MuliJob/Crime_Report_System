@@ -5,8 +5,9 @@ from flask_login import UserMixin
 
 class Admin(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
-  username = db.Column(db.String(255), nullable=False)
+  username = db.Column(db.String(10), nullable=False)
   password = db.Column(db.String(255), nullable=False)
+  admin_email = db.Column(db.String(120), unique=True, nullable=False)
 
   def __repr__(self):
     return f'Admin("{self.username}", "{self.id}")'
