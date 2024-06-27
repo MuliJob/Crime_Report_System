@@ -37,7 +37,7 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
-                                file_upload=theft_image.read(),
+                                theft_file_upload=theft_image.read(),
                                 theft_file_name=filename,
                                 theft_mimetype=mimetype,
                                 victim_id=victim)

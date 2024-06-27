@@ -163,7 +163,7 @@
             <input type="text" id="date_of_theft" name="date_of_theft" value="{{ theft.date_of_theft }}" readonly>
 
             <label for="date_received">Reported on:</label>
-            <input type="text" id="date_received" name="date_received" value="{{ theft.date_received }}" readonly>
+            <input type="text" id="date_received" name="date_received" value="{{ theft.date_theft_received }}" readonly>
         </div>
 
         <div class="form-column">
@@ -198,7 +198,7 @@
 
     <div class="form-group">
         <label for="mediaUpload">Attached Evidence:</label>
-        <img src="{{ theft.file_upload }}" alt="{{ theft.name }}" style="max-width: 300px;">
+        <img src="{{ theft.theft_file_upload }}" alt="{{ theft.theft_file_name }}" style="max-width: 300px;">
     </div>
     
   </br>
