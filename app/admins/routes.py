@@ -50,13 +50,19 @@ def adminDashboard():
     user_count = User.query.count()
     crime_count = Crime.query.count()
     theft_count = Theft.query.count()
+    
     recovered_count = Theft.query.filter_by(status='Recovered').count()
     
     # Fetch trend data for the graph (e.g., monthly counts)
     crime_trends = [30, 50, 70, 60, 90, 100, 200]  # Example data
     theft_trends = [20, 40, 60, 50, 80, 90, 110]   # Example data
 
-    return render_template('admin/dashboard.html', user_count=user_count, crime_count=crime_count, recovered_count=recovered_count, theft_count=theft_count, crime_trends=crime_trends, theft_trends=theft_trends)
+    return render_template('admin/dashboard.html', user_count=user_count, 
+                           crime_count=crime_count, 
+                           recovered_count=recovered_count, 
+                           theft_count=theft_count, 
+                           crime_trends=crime_trends, 
+                           theft_trends=theft_trends)
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
