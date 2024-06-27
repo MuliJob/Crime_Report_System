@@ -9,114 +9,129 @@ Dashboard
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-  .content-section {
-    margin: 20px 0;
-}
+        .content-section {
+            margin: 20px 0;
+        }
 
-#top-content {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap; /* Allow wrapping for smaller screens */
-}
+        #top-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        }
 
-.top-column {
-    flex: 1;
-    text-align: center;
-    padding: 20px; /* Increased padding for larger size */
-    box-sizing: border-box;
-}
+        .top-column {
+            flex: 1;
+            text-align: center;
+            padding: 20px; /* Increased padding for larger size */
+            box-sizing: border-box;
+        }
 
-.card {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.card-title {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
 
-.title-line {
-    width: 50%;
-    height: 2px;
-    background-color: #ccc;
-    margin-bottom: 20px;
-}
+        .title-line {
+            width: 50%;
+            height: 2px;
+            background-color: #ccc;
+            margin-bottom: 20px;
+        }
 
-.top-image {
-    width: 100%;
-    height: auto;
-    max-width: 200px; /* Increased max width for larger images */
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
+        .top-image {
+            width: 100%;
+            height: auto;
+            max-width: 200px; /* Increased max width for larger images */
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
 
-#profile-container {
-    max-height: 400px; /* Adjust the height as needed */
-    overflow-y: auto;
-    border-top: 1px solid #ccc;
-    padding-top: 20px;
-}
+        #profile-container {
+            max-height: 500px; /* Adjust the height as needed */
+            overflow-y: auto;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
 
-#profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        #profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.article-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
-}
+        .article-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
 
-.article-column {
-    box-sizing: border-box;
-}
+        .article-column {
+            box-sizing: border-box;
+        }
 
-.article-image {
-    width: 100%;
-    height: auto;
-    max-height: 200px;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
+        .article-image {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
 
-h2 {
-    font-size: 1.2em;
-    margin: 10px 0;
-}
+        h2 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
 
-p {
-    font-size: 1em;
-}
+        p {
+            font-size: 1em;
+        }
 
-/* Media Queries */
-@media (max-width: 768px) {
-    #top-content, .article-grid {
-        display: block;
-    }
+        /* Media Queries */
+        @media (max-width: 768px) {
+            #top-content, .article-grid {
+                display: block;
+            }
 
-    .top-column, .article-column {
-        width: 100%;
-        margin-bottom: 50px;
-    }
+            .top-column, .article-column {
+                width: 100%;
+                margin-bottom: 50px;
+            }
 
-    .article-grid {
-        grid-template-columns: 1fr; /* Single column for smaller screens */
-    }
-}
+            .article-grid {
+                grid-template-columns: 1fr; /* Single column for smaller screens */
+            }
+        }
 
-  </style>
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
 </head>
 <br>
   {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
@@ -175,6 +190,74 @@ p {
       {% endif %}
   </div>
 </section>
+
+<script>
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.classList.add('toast');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }, 100);
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(sendPosition, showError);
+        } else {
+            showToast("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function sendPosition(position) {
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+        
+        // Send the location to your server
+        fetch('/update_location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({latitude: lat, longitude: lon}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Location updated successfully');
+            } else {
+                console.error('Failed to update location');
+            }
+        });
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                showToast("Location access denied. Some features may be limited.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                showToast("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                showToast("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                showToast("An unknown error occurred.");
+                break;
+        }
+    }
+    // Calling getLocation when the page loads
+    window.onload = getLocation;
+</script>
 </body>
 </html>
 {% endblock %}

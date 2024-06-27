@@ -2,13 +2,11 @@ from flask import Flask
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from app.config import NEWS_API, SECRET_KEY, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER
+from app.config import SECRET_KEY, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER, SQLALCHEMY_DATABASE_URI
 from flask_session import Session
 from flask_migrate import Migrate
 #from flask_admin import Admin
 from flask_mail import Mail, Message
-
-api_key = NEWS_API
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -20,8 +18,7 @@ convention = {
 
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-        'sqlite:///system.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config["SESSION_PERMANENT"]=False
 app.config['SESSION_TYPE']='filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

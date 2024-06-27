@@ -1,10 +1,11 @@
 import io
-from flask import Blueprint, abort, render_template, redirect, session, url_for, request, flash, send_file
+from flask import Blueprint, jsonify, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
 from app.posts.models import Crime, Theft
-from app import db, api_key
+from app import db
+from app.config import NEWS_API
 from requests.exceptions import RequestException
 import requests
 
@@ -136,7 +137,7 @@ def user_dashboard():
             login_user(user)   
 
             # fetching news data
-            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={api_key}'
+            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={NEWS_API}'
 
             try:
                 response = requests.get(url)
@@ -155,8 +156,28 @@ def user_dashboard():
     else:
         # If no user_id in session, redirect to signin
         return redirect('/users/signin')
-
-
+        
+# getting location
+@users.route('/users/update_location', methods=['GET', 'POST'])
+@login_required
+def update_location():
+    data = request.json
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    
+    if latitude and longitude:
+        # Store in session
+        session['user_latitude'] = latitude
+        session['user_longitude'] = longitude
+        
+        # Optionally, store in database
+        current_user.latitude = latitude
+        current_user.longitude = longitude
+        db.session.commit()
+        
+        return jsonify({'success': True}), 200
+    else:
+        return jsonify({'success': False, 'error': 'Invalid location data'}), 400
 
 @users.route('/users/history')
 @login_required

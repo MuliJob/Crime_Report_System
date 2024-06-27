@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, session, url_for, request, flash
 from flask_login import current_user
 from app.posts.models import Crime, Theft
 from app import db, send_admin_email
@@ -10,6 +10,10 @@ posts = Blueprint('posts', __name__)
 def report_theft(): 
 
     victim = current_user.id
+
+    # Get location from session or database
+    theft_latitude = session.get('user_latitude') or current_user.latitude
+    theft_longitude = session.get('user_longitude') or current_user.longitude
 
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -37,6 +41,8 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
+                                theft_latitude=theft_latitude,
+                                theft_longitude=theft_longitude,
                                 theft_file_upload=theft_image.read(),
                                 theft_file_name=filename,
                                 theft_mimetype=mimetype,
@@ -76,6 +82,10 @@ def report_crime():
 
     reporter = current_user.id
 
+    # Get location from session or database
+    crime_latitude = session.get('user_latitude') or current_user.latitude
+    crime_longitude = session.get('user_longitude') or current_user.longitude
+
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')
         issued_by = request.form.get('issued_by')
@@ -103,6 +113,8 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
+                                crime_latitude=crime_latitude,
+                                crime_longitude=crime_longitude,
                                 crime_file_upload=image.read(),
                                 crime_file_name=filename,
                                 crime_mimetype=mimetype,

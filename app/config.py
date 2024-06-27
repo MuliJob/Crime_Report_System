@@ -3,6 +3,8 @@ SECRET_KEY='\x08\xd9V7\x94\xf0\xce\xa47\n;N\x86\xcak\xbd\x96bP\xed&Z`\x8ep\x0cJ\
 MAIL_USERNAME='crimereportsystem50@gmail.com'
 MAIL_PASSWORD='gipc iunz cwpw zdjr'
 MAIL_DEFAULT_SENDER='crimereportsystem50@gmail.com'
+SQLALCHEMY_DATABASE_URI = \
+        'sqlite:///system.db'
 
 # fuser development.db
 # > development.db: 5430
