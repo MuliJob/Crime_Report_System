@@ -8,6 +8,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
     crimes = db.relationship('Crime', backref='reporter', lazy=True)
     thefts = db.relationship('Theft', backref='victim', lazy=True)
     users = db.relationship('Register', backref='user', uselist=False)

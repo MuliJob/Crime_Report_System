@@ -234,6 +234,9 @@ def crimeDetails(crime_id):
     try:
         # Finding crime by id
         crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+        if crime_details is None:
+            flash("Crime details not found.", "warning")
+            return redirect(url_for('admins.reports'))
     except:
         # Log the error
         current_app.logger.error("Database error occurred:")
@@ -252,6 +255,9 @@ def theftDetails(theft_id):
     try:
         #Finding theft by id 
         theft_details = Theft.query.filter_by(theft_id=theft_id).all()
+        if theft_details is None:
+            flash("Theft details not found.", "warning")
+            return redirect(url_for('admins.reports'))
     except:
         # Log the error
         current_app.logger.error("Database error occurred:")
