@@ -3,7 +3,7 @@ from flask_login import logout_user
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.posts.models import Crime, Theft
+from app.posts.models import Crime, Message, Theft
 from app.users.models import User
 from functools import wraps
 
@@ -97,7 +97,7 @@ def reports():
                 Crime.issued_by.ilike(f'%{search_query}%') |
                 Crime.date_of_incident.ilike(f'%{search_query}%') |
                 Crime.time_of_incident.ilike(f'%{search_query}%') |
-                Crime.date_received.ilike(f'%{search_query}%') |
+                Crime.date_theft_received.ilike(f'%{search_query}%') |
                 Crime.crime_status.ilike(f'%{search_query}%')
             ).all()
             
@@ -106,7 +106,7 @@ def reports():
                 Theft.street_address.ilike(f'%{search_query}%') |
                 Theft.date_of_theft.ilike(f'%{search_query}%') |
                 Theft.time_of_theft.ilike(f'%{search_query}%') |
-                Theft.date_received.ilike(f'%{search_query}%') |
+                Theft.date_theft_received.ilike(f'%{search_query}%') |
                 Theft.theft_status.ilike(f'%{search_query}%')
             ).all()
         else:
@@ -136,7 +136,7 @@ def reportStatus():
                 Theft.street_address.ilike(f'%{search_theft}%') |
                 Theft.date_of_theft.ilike(f'%{search_theft}%') |
                 Theft.time_of_theft.ilike(f'%{search_theft}%') |
-                Theft.date_received.ilike(f'%{search_theft}%') |
+                Theft.date_theft_received.ilike(f'%{search_theft}%') |
                 Theft.theft_status.ilike(f'%{search_theft}%')
             ).all()
         else:
@@ -211,7 +211,7 @@ def crimeStatus():
                 Crime.issued_by.ilike(f'%{search_crime}%') |
                 Crime.date_of_incident.ilike(f'%{search_crime}%') |
                 Crime.time_of_incident.ilike(f'%{search_crime}%') |
-                Crime.date_received.ilike(f'%{search_crime}%') |
+                Crime.date_crime_received.ilike(f'%{search_crime}%') |
                 Crime.crime_status.ilike(f'%{search_crime}%')
             ).all()
         else:
@@ -303,6 +303,66 @@ def analytics():
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
                            crime_labels=crime_labels, crime_counts=crime_counts,
                            theft_labels=theft_labels, theft_counts=theft_counts)
+
+@admins.route('/admin/notifications')
+@admin_required
+def notifications():
+    search_notifications = request.args.get('search_notifications', '')
+    try:
+        if search_notifications:
+            messages = Message.query.filter(
+                Message.incident_location.ilike(f'%{search_notifications}%') | 
+                Message.issued_by.ilike(f'%{search_notifications}%') |
+                Message.date_of_incident.ilike(f'%{search_notifications}%') |
+                Message.time_of_incident.ilike(f'%{search_notifications}%') |
+                Message.date_received.ilike(f'%{search_notifications}%') |
+                Message.crime_status.ilike(f'%{search_notifications}%')
+            ).all()
+        else:
+            messages = Message.query.all()
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("No report with the keyword.", "warning")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.notifications'))
+    return render_template('/admin/notifications.html', messages=messages)
+
+@admins.route('/admin/message/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def view_message(id):
+    try:
+        # Fetch the message by id
+        message = Message.query.get(id)
+        if message is None:
+            flash("Message not found.", "warning")
+            return redirect(url_for('admins.notifications'))
+
+        if request.method == 'POST':
+            message_reply = request.form.get('reply')
+            if message_reply:
+                message.reply = message_reply
+                db.session.commit()
+                flash('Reply sent.', 'success')
+            else:
+                flash('Failed to send reply.', 'danger')
+                
+            return redirect(url_for('admins.view_message', id=id))
+
+    except Exception as e:
+        # Log the error with details
+        current_app.logger.error(f"Database error occurred: {e}")
+        
+        # Flash an error message to the user
+        flash("An error occurred. Please try again later.", "danger")
+        
+        # Redirect to a safe page
+        return redirect(url_for('admins.notifications'))
+    
+    return render_template('/admin/message_details.html', message=message)
 
 @admins.route('/admin/logout')
 @admin_required

@@ -1,9 +1,9 @@
 import io
-from flask import Blueprint, jsonify, render_template, redirect, session, url_for, request, flash
+from flask import Blueprint, current_app, jsonify, render_template, redirect, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
-from app.posts.models import Crime, Theft
+from app.posts.models import Crime, Message, Theft
 from app import db
 from app.config import NEWS_API
 from requests.exceptions import RequestException
@@ -257,8 +257,24 @@ def settings():
         
     return render_template('user/settings.html',title="User Dashboard",users=users)
 
+# notifications
+@users.route('/users/notification')
+@login_required
+def notification():
+    try:
+        sender = current_user.id
+        user_message = Message.query.filter_by(sender_id=sender).all()
 
-    
+    except:
+        # Log the error
+        current_app.logger.error("Database error occurred:")
+        
+        # Flash an error message to the user
+        flash("No report with the keyword.", "warning")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('users.notification'))
+    return render_template('user/notification.html', user_message=user_message)
 
 @users.route('/users/change-password',methods=["POST","GET"])
 @login_required

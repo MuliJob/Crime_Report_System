@@ -1,19 +1,20 @@
 from flask import Blueprint, render_template, redirect, session, url_for, request, flash
-from flask_login import current_user
-from app.posts.models import Crime, Theft
+from flask_login import current_user, login_required
+from app.posts.models import Crime, Message, Theft
 from app import db, send_admin_email
 from werkzeug.utils import secure_filename
 
 posts = Blueprint('posts', __name__)
 
+# submitting theft report
 @posts.route('/theft_report', methods=['GET', 'POST'])
 def report_theft(): 
 
     victim = current_user.id
 
     # Get location from session or database
-    theft_latitude = session.get('user_latitude') or current_user.latitude
-    theft_longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('user_latitude') or current_user.latitude
+    longitude = session.get('user_longitude') or current_user.longitude
 
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -41,8 +42,8 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
-                                theft_latitude=theft_latitude,
-                                theft_longitude=theft_longitude,
+                                latitude=latitude,
+                                longitude=longitude,
                                 theft_file_upload=theft_image.read(),
                                 theft_file_name=filename,
                                 theft_mimetype=mimetype,
@@ -76,15 +77,15 @@ def report_theft():
 
     return render_template('user/report_theft.html')
 
-
+# submitting crime report
 @posts.route('/crime_report', methods=['GET', 'POST'])
 def report_crime():
 
     reporter = current_user.id
 
     # Get location from session or database
-    crime_latitude = session.get('user_latitude') or current_user.latitude
-    crime_longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('user_latitude') or current_user.latitude
+    longitude = session.get('user_longitude') or current_user.longitude
 
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')
@@ -113,8 +114,8 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
-                                crime_latitude=crime_latitude,
-                                crime_longitude=crime_longitude,
+                                latitude=latitude,
+                                longitude=longitude,
                                 crime_file_upload=image.read(),
                                 crime_file_name=filename,
                                 crime_mimetype=mimetype,
@@ -146,3 +147,44 @@ def report_crime():
             return render_template('user/report_crime.html')
         
     return render_template('user/report_crime.html')
+
+# contact us
+@posts.route('/users/contactus', methods=["POST","GET"])
+@login_required
+def contact_us():
+    sender = current_user.id
+
+    if request.method == 'POST':
+        firstName = request.form.get('firstName')
+        lastName = request.form.get('lastName')
+        email = request.form.get('email')
+        message = request.form.get('message')
+
+        sender_message = Message(
+            first_name=firstName,
+            last_name=lastName,
+            email_address=email,
+            message=message,
+            sender_id=sender
+        )
+        try:
+            db.session.add(sender_message)
+            db.session.commit()
+
+            # notify admin
+            subject = f"New Message Sent"
+            body = f"""
+                You have a new message from: {sender_message.first_name}
+            """
+            if send_admin_email(subject, body):
+                flash("Message sent successfully wait for feedback from admin.", "success")
+            else:
+                flash("Message sent successfully, but there was an issue notifying the admin.", "warning")
+
+            return redirect(url_for('posts.contact_us'))
+        except Exception:
+            # Handle database errors gracefully (e.g., log the error)
+            flash(f"An error occurred! Please try again", category='danger')
+            return render_template('user/contactus.html')
+        
+    return render_template('/user/contactus.html')

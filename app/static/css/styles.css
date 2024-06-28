@@ -37,7 +37,7 @@ html,body {
 .my-login-page .card {
 	border-color: transparent;
 	box-shadow: 0 4px 8px rgba(0,0,0,.05);
-	background-color: lavender;
+	background-color: #f1f1f1;
 }
 
 .my-login-page .card.fat {

@@ -1,91 +1,202 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <style>
-        /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-        .row.content {height: 550px}
-        
-        /* Set gray background color and 100% height */
-            
-        /* On small screens, set height to 'auto' for the grid */
-        @media screen and (max-width: 767px) {
-          .row.content {height: auto;} 
+        body {
+            background-color: #f0f0f0;
+            color: black;
+            margin: 0;
+            padding: 20px;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .chart {
+            height: 200px;
+        }
+        #map {
+            height: 450px; /* Ensure the map has a height */
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
-    </div>
-    {% endfor %} {% endif%} {% endwith %}
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Users</h5>
-                        <p class="card-text">Total Users: {{ user_count }} </p>
-                    </div>
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+        {% endfor %} {% endif%} {% endwith %}
+        <div class="main-content">
+            <div class="header">
+                <h1>Insights</h1>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Users</h3>
+                    <canvas id="usersChart" class="chart"></canvas>
+                    <p>Total Users: {{ user_count }}</p>
+                </div>
+                <div class="card">
+                    <h3>Crimes</h3>
+                    <canvas id="crimesChart" class="chart"></canvas>
+                    <p>Total Reported: {{ crime_count }}</p>
+                </div>
+                <div class="card">
+                    <h3>Theft and Recovered</h3>
+                    <canvas id="theftRecoveredChart" class="chart"></canvas>
+                    <p>Theft Theft Reported: {{ theft_count }}</p>
+                    <p style="color: green;">Recovered: {{ recovered_count }}</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Crimes</h5>
-                        <p class="card-text">Total Crimes: {{ crime_count }} </p>
-                    </div>
-                </div>
+            <div class="card">
+                <h3>Crime Locations</h3>
+                <div id="map"></div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Theft and Recovered</h5>
-                        <p class="card-text">Theft: {{ theft_count }},  Recovered: {{ recovered_count }}</p>
-                    </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Average Risk Over Time</h3>
+                    <canvas id="riskOverTimeChart" class="chart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Crime Distribution</h3>
+                    <canvas id="crimeDistributionChart" class="chart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-5">
-            <div class="col-12">
-                <canvas id="crimeTheftTrends" height="100"></canvas>
-            </div>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Users Chart
+            const ctxUsers = document.getElementById('usersChart').getContext('2d');
+            new Chart(ctxUsers, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active'],
+                    datasets: [{
+                        data: [{{ user_count }}],
+                        backgroundColor: ['#36a2eb', '#ff6384'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
 
-<script>
-    var ctx = document.getElementById('crimeTheftTrends').getContext('2d');
-    var crimeTheftTrends = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [{
-                label: 'Crimes',
-                data: [30, 50, 70, 60, 90, 100, 200],
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                fill: false
-            },
-            {
-                label: 'Theft',
-                data: [20, 40, 60, 50, 80, 90, 110],
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                fill: false
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-</script>
+            // Crimes Chart
+            const ctxCrimes = document.getElementById('crimesChart').getContext('2d');
+            new Chart(ctxCrimes, {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March'],
+                    datasets: [{
+                        label: 'Crimes',
+                        data: [180, 200, {{ crime_count }}],
+                        backgroundColor: '#FF0000',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Theft and Recovered Chart
+            const ctxTheftRecovered = document.getElementById('theftRecoveredChart').getContext('2d');
+            new Chart(ctxTheftRecovered, {
+                type: 'pie',
+                data: {
+                    labels: ['Theft', 'Recovered'],
+                    datasets: [{
+                        data: [{{ theft_count - recovered_count }}, {{ recovered_count }}],
+                        backgroundColor: ['#ffcd56', '#39AD48'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
+
+            // Crime Locations Map
+            var map = L.map('map').setView([51.505, -0.09], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add markers for crime locations
+            {% for location in crime_locations %}
+                L.marker([{{ location[0].split(',')[0] }}, {{ location[0].split(',')[1] }}]).addTo(map)
+                    .bindPopup('A crime happened here.')
+                    .openPopup();
+            {% endfor %}
+
+            // Average Risk Over Time Chart
+            const ctxRiskOverTime = document.getElementById('riskOverTimeChart').getContext('2d');
+            new Chart(ctxRiskOverTime, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Risk',
+                        data: [40, 42, 39, 45, 43],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Crime Distribution Chart
+            const ctxCrimeDistribution = document.getElementById('crimeDistributionChart').getContext('2d');
+            new Chart(ctxCrimeDistribution, {
+                type: 'pie',
+                data: {
+                    labels: ['Theft', 'Crime'],
+                    datasets: [{
+                        data: [30, 50],
+                        backgroundColor: ['#ffcd56', '#FF0000'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
+        });
+    </script>
 </body>
+</html>
 {% endblock content %}

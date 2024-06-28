@@ -18,11 +18,22 @@
     height: 100%;
     width: 100%;
     padding-top: 30px;
+    background-color: #f0f0f0;
   }
   .form-inline {
     display: flex;
     justify-content: center;
   }
+  /* Custom Dropdown Menu Positioning */
+  .custom-dropdown-menu {
+            transform: translateX(-70%); /* Adjust as needed to move left or right */
+            margin-top: 20px; /* Adjust to move up or down */
+            /* Alternatively, use position */
+            /* position: absolute; */
+            /* top: 50px;  Adjust to move down */
+            /* left: -100px;  Adjust to move left */
+        }
+
   </style>
 </head>
 <body>
@@ -54,14 +65,19 @@
         </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li>
-            <a class="nav-link" href="{{ url_for('admins.adminChangePassword') }}"><i class="bi bi-person-circle h5" style="color: white;"></i></a>
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('users.notification') }}"><i class="bi bi-bell-fill h5" style="color: white;"></i></a>
           </li>
-
-          <li>
-            <a class="nav-link" href="{{ url_for('admins.adminLogout') }}"><i class="bi bi-box-arrow-right h5" style="color: white;"></i></a>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle h4"></i>
+              </a>
+              <ul class="dropdown-menu custom-dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('admins.adminChangePassword') }}"><i class="bi bi-gear-fill h4"></i> Settings</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('admins.adminLogout') }}"><i class="bi bi-arrow-right-circle-fill h4"></i> Logout</a></li>
+              </ul>
           </li>
-        </ul>
+      </ul>
           
         
       {% endif %}
