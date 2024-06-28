@@ -48,3 +48,11 @@ class Theft(db.Model, UserMixin):
     theft_mimetype = db.Column(db.Text, nullable=True)
     date_theft_received = db.Column(db.DateTime, nullable=False, default=func.now())
     victim_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class Message(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=True)
+    email_address = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))

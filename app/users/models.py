@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     crimes = db.relationship('Crime', backref='reporter', lazy=True)
     thefts = db.relationship('Theft', backref='victim', lazy=True)
     users = db.relationship('Register', backref='user', uselist=False)
+    messages = db.relationship('Message', backref='sender', lazy=True)
 
 
 class Register(db.Model, UserMixin):

@@ -10,7 +10,7 @@
         body {
             background-color: #f0f0f0;
             margin: 0;
-            padding: 60px;
+            padding: 40px;
         }
         #contactForm {
             background-color: white;
@@ -93,7 +93,13 @@
     </style>
 </head>
 <body>
-    <form id="contactForm">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
+    <form id="contactForm" method="POST">
         <h2>Contact Us</h2>
         <p>Please fill this form in a decent manner</p>
         
@@ -117,7 +123,7 @@
         
         <div class="button-group">
             <a href="{{ url_for('users.user_dashboard') }}"><button type="button" class="back-btn"><i class="bi bi-arrow-left-circle-fill"></i></button></a>
-            <button type="submit" class="submit-btn">SUBMIT</button>
+            <button type="submit" name="contact_us" class="submit-btn">SUBMIT</button>
         </div>
         <br>
         <p><strong>You may also call us at: +254712345678</strong></p>

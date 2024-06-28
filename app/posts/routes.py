@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, session, url_for, request, flash
-from flask_login import current_user
-from app.posts.models import Crime, Theft
+from flask_login import current_user, login_required
+from app.posts.models import Crime, Message, Theft
 from app import db, send_admin_email
 from werkzeug.utils import secure_filename
 
@@ -146,3 +146,45 @@ def report_crime():
             return render_template('user/report_crime.html')
         
     return render_template('user/report_crime.html')
+
+# contact us
+@posts.route('/users/contactus', methods=["POST","GET"])
+@login_required
+def contact_us():
+    sender = current_user.id
+
+    if request.method == 'POST':
+        firstName = request.form.get('firstName')
+        lastName = request.form.get('lastName')
+        email = request.form.get('email')
+        message = request.form.get('message')
+
+        sender_message = Message(
+            first_name=firstName,
+            last_name=lastName,
+            email_address=email,
+            message=message,
+            sender_id=sender
+        )
+        try:
+            db.session.add(sender_message)
+            db.session.commit()
+
+            # notify admin
+            #sending email
+            subject = f"New Message Sent"
+            body = f"""
+                You have a new message from: {sender_message.first_name}
+            """
+            if send_admin_email(subject, body):
+                flash("Message sent successfully wait for feedback from admin.", "success")
+            else:
+                flash("Message sent successfully, but there was an issue notifying the admin.", "warning")
+
+            return redirect(url_for('posts.contact_us'))
+        except Exception:
+            # Handle database errors gracefully (e.g., log the error)
+            flash(f"An error occurred! Please try again", category='danger')
+            return render_template('user/contactus.html')
+        
+    return render_template('/user/contactus.html')
