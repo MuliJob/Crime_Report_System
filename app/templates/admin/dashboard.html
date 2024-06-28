@@ -5,23 +5,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuardPro Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1d2b;
-            color: white;
+            background-color: #f0f0f0;
+            color: black;
             margin: 0;
             padding: 0;
         }
         .dashboard {
             display: flex;
-        }
-        .sidebar {
-            width: 200px;
-            background-color: #232738;
-            padding: 20px;
         }
         .main-content {
             flex-grow: 1;
@@ -34,7 +28,7 @@
             margin-bottom: 20px;
         }
         .card {
-            background-color: #232738;
+            background-color: #ffffff;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
@@ -47,98 +41,160 @@
         .chart {
             height: 200px;
         }
+        #map {
+            height: 400px; /* Ensure the map has a height */
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard">
-        <div class="sidebar">
-            <h2>GuardPro</h2>
-            <ul>
-                <li>Insights</li>
-                <li>Analytics</li>
-                <li>Resources</li>
-                <li>Trust</li>
-                <li>Relationships</li>
-                <li>Business Explorer</li>
-                <li>Setting</li>
-                <li>Help Center</li>
-            </ul>
-        </div>
         <div class="main-content">
             <div class="header">
                 <h1>Insights</h1>
-                <div>
-                    <span>Nov 21 - Nov 31</span>
-                    <button>Filter</button>
-                    <button>Export</button>
-                </div>
             </div>
             <div class="grid">
                 <div class="card">
-                    <h3>Relationships</h3>
-                    <div class="chart" id="relationshipsChart"></div>
-                    <p>852 <span>+1.2%</span></p>
+                    <h3>Users</h3>
+                    <canvas id="usersChart" class="chart"></canvas>
+                    <p>Total Users: {{ user_count }}</p>
                 </div>
                 <div class="card">
-                    <h3>Average Risk</h3>
-                    <div class="chart" id="riskChart"></div>
-                    <p>42% <span>-0.8%</span></p>
+                    <h3>Crimes</h3>
+                    <canvas id="crimesChart" class="chart"></canvas>
+                    <p>Total Reported: {{ crime_count }}</p>
                 </div>
                 <div class="card">
-                    <h3>Average Coverage</h3>
-                    <div class="chart" id="coverageChart"></div>
-                    <p>94% <span>+0.3%</span></p>
+                    <h3>Theft and Recovered</h3>
+                    <canvas id="theftRecoveredChart" class="chart"></canvas>
+                    <p>Theft Theft Reported: {{ theft_count }}</p>
+                    <p style="color: green;">Recovered: {{ recovered_count }}</p>
                 </div>
             </div>
             <div class="card">
-                <h3>Average risk over time</h3>
-                <div class="chart" id="riskOverTimeChart"></div>
+                <h3>Crime Locations</h3>
+                <div id="map"></div>
             </div>
             <div class="grid">
                 <div class="card">
-                    <h3>Relationships by content type</h3>
-                    <div class="chart" id="contentTypeChart"></div>
+                    <h3>Average Risk Over Time</h3>
+                    <canvas id="riskOverTimeChart" class="chart"></canvas>
                 </div>
                 <div class="card">
-                    <h3>Risk by business unit</h3>
-                    <div class="chart" id="businessUnitChart"></div>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="card">
-                    <h3>Relationships by risk</h3>
-                    <div class="chart" id="riskRelationshipChart"></div>
-                </div>
-                <div class="card">
-                    <h3>Relationships by data type</h3>
-                    <div class="chart" id="dataTypeChart"></div>
+                    <h3>Crime Distribution</h3>
+                    <canvas id="crimeDistributionChart" class="chart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <script>
-        // Sample data and chart creation
-        const ctx1 = document.getElementById('relationshipsChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'line',
-            data: {
-                labels: ['Sep', 'Oct', 'Nov'],
-                datasets: [{
-                    data: [800, 825, 852],
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Users Chart
+            const ctxUsers = document.getElementById('usersChart').getContext('2d');
+            new Chart(ctxUsers, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active'],
+                    datasets: [{
+                        data: [{{ user_count }}],
+                        backgroundColor: ['#36a2eb', '#ff6384'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
+
+            // Crimes Chart
+            const ctxCrimes = document.getElementById('crimesChart').getContext('2d');
+            new Chart(ctxCrimes, {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March'],
+                    datasets: [{
+                        label: 'Crimes',
+                        data: [180, 200, {{ crime_count }}],
+                        backgroundColor: '#FF0000',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Theft and Recovered Chart
+            const ctxTheftRecovered = document.getElementById('theftRecoveredChart').getContext('2d');
+            new Chart(ctxTheftRecovered, {
+                type: 'pie',
+                data: {
+                    labels: ['Theft', 'Recovered'],
+                    datasets: [{
+                        data: [{{ theft_count - recovered_count }}, {{ recovered_count }}],
+                        backgroundColor: ['#ffcd56', '#39AD48'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
+
+            // Crime Locations Map
+            var map = L.map('map').setView([51.505, -0.09], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add markers for crime locations
+            {% for location in crime_locations %}
+                L.marker([{{ location[0].split(',')[0] }}, {{ location[0].split(',')[1] }}]).addTo(map)
+                    .bindPopup('A crime happened here.')
+                    .openPopup();
+            {% endfor %}
+
+            // Average Risk Over Time Chart
+            const ctxRiskOverTime = document.getElementById('riskOverTimeChart').getContext('2d');
+            new Chart(ctxRiskOverTime, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Risk',
+                        data: [40, 42, 39, 45, 43],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Crime Distribution Chart
+            const ctxCrimeDistribution = document.getElementById('crimeDistributionChart').getContext('2d');
+            new Chart(ctxCrimeDistribution, {
+                type: 'pie',
+                data: {
+                    labels: ['Theft', 'Crime'],
+                    datasets: [{
+                        data: [30, 50],
+                        backgroundColor: ['#ffcd56', '#FF0000'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } }
+                }
+            });
         });
-
-        // Repeat similar chart creation for other charts...
-
     </script>
 </body>
 </html>
