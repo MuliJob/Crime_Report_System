@@ -258,7 +258,10 @@ def settings():
     return render_template('user/settings.html',title="User Dashboard",users=users)
 
 
-    
+@users.route('/users/contactus', methods=["POST","GET"])
+@login_required
+def contact_us():
+    return render_template('/user/contactus.html')
 
 @users.route('/users/change-password',methods=["POST","GET"])
 @login_required
