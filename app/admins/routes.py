@@ -333,49 +333,36 @@ def notifications():
 
 @admins.route('/admin/message/<int:id>', methods=['GET', 'POST'])
 @admin_required
-def viewMessage(id):
+def view_message(id):
     try:
-        #Finding message by id 
-        message_details = Message.query.filter_by(id=id).all()
-        if message_details is None:
+        # Fetch the message by id
+        message = Message.query.get(id)
+        if message is None:
             flash("Message not found.", "warning")
             return redirect(url_for('admins.notifications'))
-    
-    except:
-        # Log the error
-        current_app.logger.error("Database error occurred:")
-        
-        # Flash an error message to the user
-        flash("An error occurred while fetching message details. Please try again later.", "danger")
-        
-        # Redirect to a safe page
-        return redirect(url_for('admins.notifications'))
-    
-    return render_template('/admin/message_details.html', message_details=message_details)
 
-@admins.route('/admin/message/<int:id>', methods=['POST'])
-@admin_required
-def sendReply(id):
-    try:
-        messages = Message.query.get_or_404(id)
-        message_reply = request.form.get('reply')
-        if message_reply:
-            messages.reply = message_reply
-            db.session.commit()
-            flash('Reply sent.', 'success')
-        else:
-            flash('Failed to send reply.', 'danger')
-    except:
-        # Log the error
-        current_app.logger.error("Database error occurred:")
+        if request.method == 'POST':
+            message_reply = request.form.get('reply')
+            if message_reply:
+                message.reply = message_reply
+                db.session.commit()
+                flash('Reply sent.', 'success')
+            else:
+                flash('Failed to send reply.', 'danger')
+                
+            return redirect(url_for('admins.view_message', id=id))
+
+    except Exception as e:
+        # Log the error with details
+        current_app.logger.error(f"Database error occurred: {e}")
         
         # Flash an error message to the user
         flash("An error occurred. Please try again later.", "danger")
         
-        # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.viewMessage'))
-    return redirect(url_for('admins.viewMessage'))
-
+        # Redirect to a safe page
+        return redirect(url_for('admins.notifications'))
+    
+    return render_template('/admin/message_details.html', message=message)
 
 @admins.route('/admin/logout')
 @admin_required

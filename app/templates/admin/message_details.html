@@ -65,20 +65,18 @@
         {{ message }}
     </div>
   {% endfor %} {% endif%} {% endwith %}
-  {% for message in message_details %}
     <div class="message-container">
         <div class="message-title">{{ message.first_name }}</div>
         <div class="message-description">{{ message.message }}</div>
         <div class="message-time">{{ message.date_received }}</div>
 
         <div class="reply-form">
-            <form action="{{ url_for('admins.sendReply', id=message.id) }}" method="POST">
-                <textarea name="reply" placeholder="Write your reply here..."></textarea>
+            <form method="POST" action="{{ url_for('admins.view_message', id=message.id) }}">
+                <textarea name="reply" id="reply" placeholder="Write your reply here..."></textarea>
                 <button type="submit">Send Reply</button>
             </form>
         </div>
     </div>
-    {% endfor %}
 </body>
 </html>
 

@@ -54,7 +54,7 @@
     <div class="notification-container">
     {% for message in messages %}
         <div class="notification-card" data-notification-id="{{ message.id }}">
-            <a href="{{ url_for('admins.viewMessage', id=message.id) }}" class="notification-link">
+            <a href="{{ url_for('admins.view_message', id=message.id) }}" class="notification-link">
                 <div class="notification-title">{{ message.first_name }}</div>
                 <div class="notification-description">{{ message.message }}</div>
                 <div class="notification-time">{{ message.date_received }}</div>
