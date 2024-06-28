@@ -12,8 +12,8 @@ def report_theft():
     victim = current_user.id
 
     # Get location from session or database
-    theft_latitude = session.get('user_latitude') or current_user.latitude
-    theft_longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('user_latitude') or current_user.latitude
+    longitude = session.get('user_longitude') or current_user.longitude
 
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -41,8 +41,8 @@ def report_theft():
                                 time_of_theft=time_of_theft, 
                                 stolen_property=stolen_property,
                                 description=description,
-                                theft_latitude=theft_latitude,
-                                theft_longitude=theft_longitude,
+                                latitude=latitude,
+                                longitude=longitude,
                                 theft_file_upload=theft_image.read(),
                                 theft_file_name=filename,
                                 theft_mimetype=mimetype,
@@ -83,8 +83,8 @@ def report_crime():
     reporter = current_user.id
 
     # Get location from session or database
-    crime_latitude = session.get('user_latitude') or current_user.latitude
-    crime_longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('user_latitude') or current_user.latitude
+    longitude = session.get('user_longitude') or current_user.longitude
 
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')
@@ -113,8 +113,8 @@ def report_crime():
                                 arrest_history=arrest_history,
                                 suspect_name=suspect_name,
                                 comments=comments,
-                                crime_latitude=crime_latitude,
-                                crime_longitude=crime_longitude,
+                                latitude=latitude,
+                                longitude=longitude,
                                 crime_file_upload=image.read(),
                                 crime_file_name=filename,
                                 crime_mimetype=mimetype,

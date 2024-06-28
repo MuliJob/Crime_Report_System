@@ -1,91 +1,145 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardPro Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-        .row.content {height: 550px}
-        
-        /* Set gray background color and 100% height */
-            
-        /* On small screens, set height to 'auto' for the grid */
-        @media screen and (max-width: 767px) {
-          .row.content {height: auto;} 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1d2b;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .dashboard {
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #232738;
+            padding: 20px;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: #232738;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .chart {
+            height: 200px;
         }
     </style>
 </head>
 <body>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
-    </div>
-    {% endfor %} {% endif%} {% endwith %}
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Users</h5>
-                        <p class="card-text">Total Users: {{ user_count }} </p>
-                    </div>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>GuardPro</h2>
+            <ul>
+                <li>Insights</li>
+                <li>Analytics</li>
+                <li>Resources</li>
+                <li>Trust</li>
+                <li>Relationships</li>
+                <li>Business Explorer</li>
+                <li>Setting</li>
+                <li>Help Center</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <h1>Insights</h1>
+                <div>
+                    <span>Nov 21 - Nov 31</span>
+                    <button>Filter</button>
+                    <button>Export</button>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Crimes</h5>
-                        <p class="card-text">Total Crimes: {{ crime_count }} </p>
-                    </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Relationships</h3>
+                    <div class="chart" id="relationshipsChart"></div>
+                    <p>852 <span>+1.2%</span></p>
+                </div>
+                <div class="card">
+                    <h3>Average Risk</h3>
+                    <div class="chart" id="riskChart"></div>
+                    <p>42% <span>-0.8%</span></p>
+                </div>
+                <div class="card">
+                    <h3>Average Coverage</h3>
+                    <div class="chart" id="coverageChart"></div>
+                    <p>94% <span>+0.3%</span></p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Theft and Recovered</h5>
-                        <p class="card-text">Theft: {{ theft_count }},  Recovered: {{ recovered_count }}</p>
-                    </div>
+            <div class="card">
+                <h3>Average risk over time</h3>
+                <div class="chart" id="riskOverTimeChart"></div>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Relationships by content type</h3>
+                    <div class="chart" id="contentTypeChart"></div>
+                </div>
+                <div class="card">
+                    <h3>Risk by business unit</h3>
+                    <div class="chart" id="businessUnitChart"></div>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Relationships by risk</h3>
+                    <div class="chart" id="riskRelationshipChart"></div>
+                </div>
+                <div class="card">
+                    <h3>Relationships by data type</h3>
+                    <div class="chart" id="dataTypeChart"></div>
                 </div>
             </div>
         </div>
-
-        <div class="row mt-5">
-            <div class="col-12">
-                <canvas id="crimeTheftTrends" height="100"></canvas>
-            </div>
-        </div>
     </div>
 
-<script>
-    var ctx = document.getElementById('crimeTheftTrends').getContext('2d');
-    var crimeTheftTrends = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [{
-                label: 'Crimes',
-                data: [30, 50, 70, 60, 90, 100, 200],
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                fill: false
-            },
-            {
-                label: 'Theft',
-                data: [20, 40, 60, 50, 80, 90, 110],
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                fill: false
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
+    <script>
+        // Sample data and chart creation
+        const ctx1 = document.getElementById('relationshipsChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Sep', 'Oct', 'Nov'],
+                datasets: [{
+                    data: [800, 825, 852],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
                 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
-        }
-    });
-</script>
+        });
+
+        // Repeat similar chart creation for other charts...
+
+    </script>
 </body>
+</html>
 {% endblock content %}
