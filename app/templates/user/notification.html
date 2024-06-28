@@ -1,4 +1,4 @@
-{% extends 'admin/layout.html' %}
+{% extends "user/base.html" %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +8,6 @@
     <title>Notification Cards</title>
     <style>
         body {
-            background-color: #f0f0f0;
             margin: 0;
             padding: 40px;
         }
@@ -35,8 +34,7 @@
             text-decoration: none;
         }
         .notification-title {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 14px;
             margin-bottom: 5px;
         }
         .notification-description {
@@ -57,14 +55,15 @@
 <body>
     <h1>Notifications</h1>
 
-  {% if messages %}
+  {% if user_message %}
     <div class="notification-container">
-    {% for message in messages %}
+    {% for message in user_message %}
         <div class="notification-card" data-notification-id="{{ message.id }}">
-            <a href="{{ url_for('admins.view_message', id=message.id) }}" class="notification-link">
-                <div class="notification-title">{{ message.first_name }}</div>
-                <div class="notification-description">{{ message.message }}</div>
-                <div class="notification-time">{{ message.date_received }}</div>
+            <a href="{{ url_for('users.notification')}}" class="notification-link">
+              <h6 style="font-weight: bold;">You:</h6>
+              <div class="notification-title">{{ message.message }}</div>
+              <h6 style="font-weight: bold;">Admin:</h6>
+              <div class="notification-description">{{ message.reply }}</div>
             </a>
         </div>
     </div>  
