@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 
 posts = Blueprint('posts', __name__)
 
+# submitting theft report
 @posts.route('/theft_report', methods=['GET', 'POST'])
 def report_theft(): 
 
@@ -76,7 +77,7 @@ def report_theft():
 
     return render_template('user/report_theft.html')
 
-
+# submitting crime report
 @posts.route('/crime_report', methods=['GET', 'POST'])
 def report_crime():
 
@@ -171,7 +172,6 @@ def contact_us():
             db.session.commit()
 
             # notify admin
-            #sending email
             subject = f"New Message Sent"
             body = f"""
                 You have a new message from: {sender_message.first_name}

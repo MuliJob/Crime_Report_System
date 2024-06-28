@@ -55,4 +55,6 @@ class Message(db.Model, UserMixin):
     last_name = db.Column(db.String(100), nullable=True)
     email_address = db.Column(db.String(120), nullable=False)
     message = db.Column(db.Text, nullable=False)
+    reply = db.Column(db.Text, nullable=True)
+    date_received = db.Column(db.DateTime, nullable=False, default=func.now())
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
