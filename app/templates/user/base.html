@@ -11,6 +11,18 @@
             {% block title%} Crime Reporting System {% endblock %}
         </title>
     </head>
+    <style>
+        /* Custom Dropdown Menu Positioning */
+        .custom-dropdown-menu {
+            transform: translateX(-70%); /* Adjust as needed to move left or right */
+            margin-top: 20px; /* Adjust to move up or down */
+            /* Alternatively, use position */
+            /* position: absolute; */
+            /* top: 50px;  Adjust to move down */
+            /* left: -100px;  Adjust to move left */
+        }
+
+    </style>
     <body>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
             <a class="navbar-brand nav-link active" href="{{ url_for('main.home_page') }}">E-Security <span class="sr-only"></span></a>
@@ -43,11 +55,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('users.notification') }}"><i class="bi bi-bell-fill h5" style="color: white;"></i></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('users.settings') }}"><i class="bi bi-person-circle h4"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('users.sign_out') }}"><i class="bi bi-box-arrow-right h4"></i></a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle h4"></i>
+                        </a>
+                        <ul class="dropdown-menu custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('users.settings') }}"><i class="bi bi-gear-fill h4"></i> Settings</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('users.sign_out') }}"><i class="bi bi-arrow-right-circle-fill h4"></i> Logout</a></li>
+                        </ul>
                     </li>
                 </ul>
                 {% else %}
