@@ -12,10 +12,7 @@
             background-color: #f0f0f0;
             color: black;
             margin: 0;
-            padding: 0;
-        }
-        .dashboard {
-            display: flex;
+            padding: 20px;
         }
         .main-content {
             flex-grow: 1;
@@ -42,13 +39,18 @@
             height: 200px;
         }
         #map {
-            height: 400px; /* Ensure the map has a height */
+            height: 450px; /* Ensure the map has a height */
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+        {% endfor %} {% endif%} {% endwith %}
         <div class="main-content">
             <div class="header">
                 <h1>Insights</h1>
@@ -86,7 +88,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
