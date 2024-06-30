@@ -14,8 +14,8 @@ def report_theft():
     victim = current_user.id
 
     # Get location from session or database
-    latitude = session.get('user_latitude') or current_user.latitude
-    longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('latitude')
+    longitude = session.get('longitude')
 
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -86,8 +86,8 @@ def report_crime():
     reporter = current_user.id
 
     # Get location from session or database
-    latitude = session.get('user_latitude') or current_user.latitude
-    longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('latitude')
+    longitude = session.get('longitude')
 
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')

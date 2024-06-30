@@ -154,8 +154,13 @@ def adminDashboard():
     theft_count = Theft.query.count()
     
     recovered_count = Theft.query.filter_by(theft_status='Recovered').count()
+    # Fetch crime and theft data
+    crimes = Crime.query.all()
+    thefts = Theft.query.all()
+    crime_locations = [crime.to_dict() for crime in crimes]
+    theft_locations = [theft.to_dict() for theft in thefts]
 
-    return render_template('admin/dashboard.html', user_count=user_count, 
+    return render_template('admin/dashboard.html', user_count=user_count,
                            crime_count=crime_count, 
                            recovered_count=recovered_count, 
                            theft_count=theft_count, 
@@ -165,6 +170,8 @@ def adminDashboard():
                            theft_average=theft_average,
                            annual_crime_data=annual_crime_data,
                            annual_theft_data=annual_theft_data,
+                           crime_locations=crime_locations,
+                           theft_locations=theft_locations,
                            crime_dist=crime_dist)
 
 # change admin password
