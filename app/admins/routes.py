@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
+from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
@@ -18,7 +19,102 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# admin login
+# function to get crime by month
+def get_crime_data_by_month():
+    crime_data = {f'{i:02d}': 0 for i in range(1, 13)}
+    results = db.session.query(
+        db.extract('month', Crime.date_crime_received).label('month'),
+        db.func.count(Crime.crime_id).label('count')
+    ).group_by('month').all()
+
+    for month, count in results:
+        crime_data[f'{month:02d}'] = count
+
+    return crime_data
+
+# function to get theft by month
+def get_theft_data_by_month():
+    theft_data = {f'{i:02d}': 0 for i in range(1, 13)}
+    results = db.session.query(
+        db.extract('month', Theft.date_theft_received).label('month'),
+        db.func.count(Theft.theft_id).label('count')
+    ).group_by('month').all()
+
+    for month, count in results:
+        theft_data[f'{month:02d}'] = count
+
+    return theft_data
+
+# analyzing data and crime distribution on a daily basis
+def get_daily_crime_and_theft_data():
+    crime_dist = {day: {'crimes': 0, 'thefts': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
+
+    # Query crimes
+    crime_results = db.session.query(
+        db.extract('dow', Crime.date_crime_received).label('day'),
+        db.func.count(Crime.crime_id).label('count')
+    ).group_by('day').all()
+
+    # Query thefts
+    theft_results = db.session.query(
+        db.extract('dow', Theft.date_theft_received).label('day'),
+        db.func.count(Theft.theft_id).label('count')
+    ).group_by('day').all()
+
+    for day, count in crime_results:
+        crime_dist[day]['crimes'] = count
+
+    for day, count in theft_results:
+        crime_dist[day]['thefts'] = count
+
+    return crime_dist
+
+# getting monthly averages
+def get_monthly_averages():
+    crime_average = {f'{i:02d}': 0 for i in range(1, 13)}
+    theft_average = {f'{i:02d}': 0 for i in range(1, 13)}
+
+    # Calculating monthly crime averages
+    crime_results = db.session.query(
+        extract('month', Crime.date_crime_received).label('month'),
+        func.count(Crime.crime_id).label('count')
+    ).group_by('month').all()
+
+    for month, count in crime_results:
+        crime_average[f'{month:02d}'] = count
+
+    # Calculating monthly theft averages
+    theft_results = db.session.query(
+        extract('month', Theft.date_theft_received).label('month'),
+        func.count(Theft.theft_id).label('count')
+    ).group_by('month').all()
+
+    for month, count in theft_results:
+        theft_average[f'{month:02d}'] = count
+
+    return crime_average, theft_average
+
+#getting annual crime distribution
+def get_annual_crime_data():
+    # Query to get annual counts of crimes
+    annual_crime_data = db.session.query(
+        func.strftime('%Y', Crime.date_crime_received).label('year'),
+        func.count(Crime.crime_id).label('crime_count')
+    ).group_by(func.strftime('%Y', Crime.date_crime_received)).all()
+
+    return annual_crime_data
+
+#getting annual crime distribution
+def get_annual_theft_data():
+    # Query to get annual counts of thefts
+    annual_theft_data = db.session.query(
+        func.strftime('%Y', Theft.date_theft_received).label('year'),
+        func.count(Theft.theft_id).label('theft_count')
+    ).group_by(func.strftime('%Y', Theft.date_theft_received)).all()
+
+    return annual_theft_data
+
+# admin login page route
 @admins.route('/admin/', methods=['GET', 'POST'])
 def adminIndex():
     if request.method == 'POST':
@@ -47,22 +143,29 @@ def adminIndex():
 @admins.route('/admin/dashboard')
 @admin_required
 def adminDashboard():
+    annual_crime_data = get_annual_crime_data()
+    annual_theft_data = get_annual_theft_data()
+    crime_average, theft_average = get_monthly_averages()
+    crime_data = get_crime_data_by_month()
+    theft_data = get_theft_data_by_month()
+    crime_dist = get_daily_crime_and_theft_data()
     user_count = User.query.count()
     crime_count = Crime.query.count()
     theft_count = Theft.query.count()
     
     recovered_count = Theft.query.filter_by(theft_status='Recovered').count()
-    
-    # Fetch trend data for the graph (e.g., monthly counts)
-    crime_trends = [30, 50, 70, 60, 90, 100, 200]  # Example data
-    theft_trends = [20, 40, 60, 50, 80, 90, 110]   # Example data
 
     return render_template('admin/dashboard.html', user_count=user_count, 
                            crime_count=crime_count, 
                            recovered_count=recovered_count, 
                            theft_count=theft_count, 
-                           crime_trends=crime_trends, 
-                           theft_trends=theft_trends)
+                           crime_data=crime_data,
+                           theft_data=theft_data,
+                           crime_average=crime_average,
+                           theft_average=theft_average,
+                           annual_crime_data=annual_crime_data,
+                           annual_theft_data=annual_theft_data,
+                           crime_dist=crime_dist)
 
 # change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
@@ -114,7 +217,7 @@ def reports():
             thefts = Theft.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
         flash("No reports with the keyword.", "warning")
@@ -143,7 +246,7 @@ def reportStatus():
             thefts = Theft.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -167,10 +270,10 @@ def updateStatus(theft_id):
             flash('Failed to update theft status.', 'danger')
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error occurred. Please try again later.", "danger")
+        flash("An error date_theft_received. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reportStatus'))
@@ -191,10 +294,10 @@ def updateCrimeStatus(crime_id):
             flash('Failed to update crime status.', 'danger')
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error occurred. Please try again later.", "danger")
+        flash("An error date_theft_received. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.crimeStatus'))
@@ -218,7 +321,7 @@ def crimeStatus():
             crimes_status = Crime.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -239,10 +342,10 @@ def crimeDetails(crime_id):
             return redirect(url_for('admins.reports'))
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error occurred while fetching the reports crime details. Please try again later.", "danger")
+        flash("An error date_theft_received while fetching the reports crime details. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reports'))
@@ -260,10 +363,10 @@ def theftDetails(theft_id):
             return redirect(url_for('admins.reports'))
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error occurred while fetching the reports theft details. Please try again later.", "danger")
+        flash("An error date_theft_received while fetching the reports theft details. Please try again later.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.reports'))
@@ -292,10 +395,10 @@ def analytics():
         theft_counts = [row[1] for row in theft_data]
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error occurred generating the analysis.", "danger")
+        flash("An error date_theft_received generating the analysis.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.analytics'))
@@ -322,7 +425,7 @@ def notifications():
             messages = Message.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error occurred:")
+        current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -354,10 +457,10 @@ def view_message(id):
 
     except Exception as e:
         # Log the error with details
-        current_app.logger.error(f"Database error occurred: {e}")
+        current_app.logger.error(f"Database error date_theft_received: {e}")
         
         # Flash an error message to the user
-        flash("An error occurred. Please try again later.", "danger")
+        flash("An error date_theft_received. Please try again later.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.notifications'))
