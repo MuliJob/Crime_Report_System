@@ -124,13 +124,23 @@ def sign_out():
         logout_user()
     return redirect(url_for('users.sign_in'))
     
-
+# getting coordinates
+@users.route('/save-coordinates', methods=['POST'])
+def save_coordinates():
+    data = request.get_json()
+    session['latitude'] = data['latitude']
+    session['longitude'] = data['longitude']
+    return 'Coordinates saved', 200
 
 
 @users.route('/users/dashboard', methods=['GET', 'POST'])
 @login_required
 def user_dashboard(): 
     user_id = session.get('user_id')
+    latitude = session.get('latitude')
+    longitude = session.get('longitude')
+    print(latitude)
+    print(longitude)
     if user_id:
         user = User.query.get(user_id)
         if user:
@@ -148,7 +158,7 @@ def user_dashboard():
                 flash("Error fetching news. Try connecting to internet", category='danger')
                 articles = []
 
-            return render_template('user/userdashboard.html', articles=articles)
+            return render_template('user/userdashboard.html', articles=articles, latitude=latitude, longitude=longitude)
         else:
             # If user not found, clear session and redirect to signin
             session.clear()
@@ -157,28 +167,6 @@ def user_dashboard():
         # If no user_id in session, redirect to signin
         return redirect('/users/signin')
         
-# getting location
-@users.route('/users/update_location', methods=['GET', 'POST'])
-@login_required
-def update_location():
-    data = request.json
-    latitude = data.get('latitude')
-    longitude = data.get('longitude')
-    
-    if latitude and longitude:
-        # Store in session
-        session['user_latitude'] = latitude
-        session['user_longitude'] = longitude
-        
-        # Optionally, store in database
-        current_user.latitude = latitude
-        current_user.longitude = longitude
-        db.session.commit()
-        
-        return jsonify({'success': True}), 200
-    else:
-        return jsonify({'success': False, 'error': 'Invalid location data'}), 400
-
 @users.route('/users/history')
 @login_required
 def history():

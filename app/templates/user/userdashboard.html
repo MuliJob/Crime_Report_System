@@ -6,9 +6,11 @@ Dashboard
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <style>
         .content-section {
             margin: 20px 0;
         }
@@ -120,7 +122,7 @@ Dashboard
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #333;
+            background: #06f53e;
             color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
@@ -172,7 +174,7 @@ Dashboard
 <section id="profile-container" class="content-section">
   <div id="profile">
       {% if articles %}
-          <h3>Top Headlines</h3>
+          <h3>Discover</h3>
           <div class="article-grid">
               {% for article in articles %}
                   <div class="article-column">
@@ -191,71 +193,52 @@ Dashboard
 </section>
 
 <script>
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.classList.add('toast');
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    document.body.removeChild(toast);
-                }, 300);
-            }, 3000);
-        }, 100);
-    }
+    function getCoordinates() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(sendPosition, showError);
-        } else {
-            showToast("Geolocation is not supported by this browser.");
-        }
-    }
-
-    function sendPosition(position) {
-        let lat = position.coords.latitude;
-        let lon = position.coords.longitude;
-        
-        // Send the location to your server
-        fetch('/update_location', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({latitude: lat, longitude: lon}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Location updated successfully');
+                        // Send coordinates to the server
+                        fetch('/save-coordinates', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ latitude: latitude, longitude: longitude })
+                        }).then(response => {
+                            if (response.ok) {
+                                toastr.success('Location coordinates saved successfully.');
+                            } else {
+                                toastr.error('Failed to save location coordinates.');
+                            }
+                        }).catch(() => {
+                            toastr.error('An error occurred while saving location coordinates.');
+                        });
+                    },
+                    function (error) {
+                        if (error.code === error.PERMISSION_DENIED) {
+                            toastr.warning('Location access denied.');
+                        } else {
+                            toastr.error('An error occurred while retrieving location coordinates.');
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
             } else {
-                console.error('Failed to update location');
+                toastr.error('Geolocation is not supported by this browser.');
             }
-        });
-    }
-
-    function showError(error) {
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                showToast("Location access denied. Some features may be limited.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                showToast("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                showToast("The request to get user location timed out.");
-                break;
-            case error.UNKNOWN_ERROR:
-                showToast("An unknown error occurred.");
-                break;
         }
-    }
-    // Calling getLocation when the page loads
-    window.onload = getLocation;
+
+        // Call getCoordinates when the page loads
+        window.onload = function() {
+            setTimeout(getCoordinates, 1000); // Delay execution to ensure DOM is fully loaded
+        };
 </script>
 </body>
 </html>

@@ -235,17 +235,42 @@
         });
 
         // Crime Locations Map
-        var map = L.map('map').setView([51.505, -0.09], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        var map = L.map('map').setView([1.2921, 36.8219], 6);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
         // Add markers for crime locations
-        {% for location in crime_locations %}
-            L.marker([{{ location[0].split(',')[0] }}, {{ location[0].split(',')[1] }}]).addTo(map)
-                .bindPopup('A crime happened here.')
-                .openPopup();
-        {% endfor %}
+        const crimeLocations = {{ crime_locations|tojson }};
+        crimeLocations.forEach(location => {
+            if (location.latitude && location.longitude) {
+                L.marker([location.latitude, location.longitude], {icon: getMarkerIcon('red')}).addTo(map)
+                    .bindPopup(`Crime ID: ${location.crime_id}<br>Description: ${location.incident_details}`)
+                    .openPopup();
+            }
+        });
+
+        // Add markers for theft locations
+        const theftLocations = {{ theft_locations|tojson }};
+        theftLocations.forEach(location => {
+            if (location.latitude && location.longitude) {
+                L.marker([location.latitude, location.longitude], {icon: getMarkerIcon('yellow')}).addTo(map)
+                    .bindPopup(`Theft ID: ${location.theft_id}<br>Description: ${location.description}`)
+                    .openPopup();
+            }
+        });
+
+        // Function to get marker icon based on color
+        function getMarkerIcon(color) {
+            return L.divIcon({
+                className: 'custom-marker',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%;"></div>`
+            });
+        }
 
         // Average Risk Over Time Chart
         const ctxRiskOverTime = document.getElementById('riskOverTimeChart').getContext('2d');

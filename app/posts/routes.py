@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from flask import Blueprint, render_template, redirect, session, url_for, request, flash
 from flask_login import current_user, login_required
 from app.posts.models import Crime, Message, Theft
@@ -13,8 +14,8 @@ def report_theft():
     victim = current_user.id
 
     # Get location from session or database
-    latitude = session.get('user_latitude') or current_user.latitude
-    longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('latitude')
+    longitude = session.get('longitude')
 
     if request.method == 'POST':
         place_of_theft = request.form.get('place_of_theft')
@@ -47,6 +48,7 @@ def report_theft():
                                 theft_file_upload=theft_image.read(),
                                 theft_file_name=filename,
                                 theft_mimetype=mimetype,
+                                date_theft_received=datetime.now(timezone.utc),
                                 victim_id=victim)
         try:
             db.session.add(theft_report)
@@ -84,8 +86,8 @@ def report_crime():
     reporter = current_user.id
 
     # Get location from session or database
-    latitude = session.get('user_latitude') or current_user.latitude
-    longitude = session.get('user_longitude') or current_user.longitude
+    latitude = session.get('latitude')
+    longitude = session.get('longitude')
 
     if request.method == 'POST':
         date_of_incident = request.form.get('date_of_incident')
@@ -119,6 +121,7 @@ def report_crime():
                                 crime_file_upload=image.read(),
                                 crime_file_name=filename,
                                 crime_mimetype=mimetype,
+                                date_crime_received=datetime.now(timezone.utc),
                                 reporter_id=reporter)
         try:
             db.session.add(crime_report)
@@ -165,6 +168,7 @@ def contact_us():
             last_name=lastName,
             email_address=email,
             message=message,
+            datetime_received=datetime.now(timezone.utc),
             sender_id=sender
         )
         try:
