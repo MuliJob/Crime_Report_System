@@ -30,7 +30,7 @@
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('posts.report_crime') }}" class="btn btn-primary">Report a Crime Now</a>
         {% else %}
-        <a href="{{ url_for('posts.report_crime') }}" class="btn btn-primary">Report a Crime Now</a>
+        <a href="{{ url_for('users.sign_in') }}" class="btn btn-primary">Report a Crime Now</a>
         {% endif %}
       </section>
     </main>
