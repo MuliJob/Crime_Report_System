@@ -352,7 +352,7 @@ def crimeDetails(crime_id):
         current_app.logger.error("Database error date_theft_received:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received while fetching the reports crime details. Please try again later.", "danger")
+        flash("An error occurred while fetching the reports crime details. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reports'))

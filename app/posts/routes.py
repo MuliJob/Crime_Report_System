@@ -93,6 +93,7 @@ def report_crime():
         date_of_incident = request.form.get('date_of_incident')
         issued_by = request.form.get('issued_by')
         time_of_incident = request.form.get('time_of_incident')
+        phonenumber = request.form.get('phonenumber')
         incident_location = request.form.get('incident_location')
         incident_nature = request.form.get('incident_nature')
         incident_details = request.form.get('incident_details')
@@ -109,6 +110,7 @@ def report_crime():
         crime_report = Crime(date_of_incident=date_of_incident, 
                                 issued_by=issued_by,
                                 time_of_incident=time_of_incident, 
+                                phonenumber=phonenumber,
                                 incident_location=incident_location,
                                 incident_nature=incident_nature, 
                                 incident_details=incident_details,
