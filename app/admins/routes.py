@@ -1,18 +1,13 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
-import pandas as pd
 from flask_login import logout_user
-from sqlalchemy import extract, func, create_engine
+from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.config import SQLALCHEMY_DATABASE_URI
 from app.posts.models import Crime, Message, Theft
 from app.users.models import User
 from functools import wraps
-import folium
-from folium.plugins import HeatMap
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 admins = Blueprint('admins', __name__)
@@ -27,37 +22,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# function for generating heatmap
-def update_heatmap():
-    # Replace with your actual database URI
-    engine = create_engine(f'{SQLALCHEMY_DATABASE_URI}')
-
-    # Query data from the database
-    crimes_df = pd.read_sql_query('SELECT latitude, longitude FROM crime', engine)
-    thefts_df = pd.read_sql_query('SELECT latitude, longitude FROM theft', engine)
-
-    # Combine data for visualization
-    data_df = pd.concat([crimes_df, thefts_df], ignore_index=True)
-
-    # Initialize the map centered around the mean location
-    map_center = [data_df['latitude'].mean(), data_df['longitude'].mean()]
-    heatmap = folium.Map(location=[1.2921, 36.8219], zoom_start=12)
-
-    # Prepare data for the heatmap
-    heat_data = [[row['latitude'], row['longitude']] for index, row in data_df.iterrows()]
-
-    # Add HeatMap layer to the map
-    HeatMap(heat_data).add_to(heatmap)
-
-    # Save the map to an HTML file in the static directory
-    heatmap.save('static/crime_theft_heatmap.html')
-
-    return update_heatmap()
-
-# Schedule the update every 1 hour (adjust as needed)
-scheduler = BackgroundScheduler()
-scheduler.add_job(update_heatmap, 'interval', hours=1)
-scheduler.start()
 
 # function to get crime by month
 def get_crime_data_by_month():
