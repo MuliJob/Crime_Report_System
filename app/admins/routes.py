@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 from sqlalchemy import extract, func
@@ -45,20 +46,28 @@ def get_theft_data_by_month():
 
     return theft_data
 
-# analyzing data and crime distribution on a daily basis
+# getting daily distribution
 def get_daily_crime_and_theft_data():
     crime_dist = {day: {'crimes': 0, 'thefts': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
 
-    # Query crimes
+    today = datetime.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
     crime_results = db.session.query(
         db.extract('dow', Crime.date_crime_received).label('day'),
         db.func.count(Crime.crime_id).label('count')
+    ).filter(
+        Crime.date_crime_received >= start_of_week,
+        Crime.date_crime_received <= end_of_week
     ).group_by('day').all()
 
-    # Query thefts
     theft_results = db.session.query(
         db.extract('dow', Theft.date_theft_received).label('day'),
         db.func.count(Theft.theft_id).label('count')
+    ).filter(
+        Theft.date_theft_received >= start_of_week,
+        Theft.date_theft_received <= end_of_week
     ).group_by('day').all()
 
     for day, count in crime_results:
