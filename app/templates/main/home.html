@@ -3,21 +3,36 @@
     Home
 {% endblock %}
 {% block content %}
+<style>
+  body {
+    background-image: url('{{ url_for('static', filename='img/home.png') }}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white; /* Ensuring text color is readable */
+  }
+  .transparent-section {
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% transparency */
+    padding: 20px;
+    border-radius: 10px; /* Optional: adding some border-radius for better appearance */
+  }
+</style>
+
 <header>
     <h1 style="text-align: center;">Welcome To E-Security</h1>
-  </header>
-  <div class="position-relative p-3 p-md-5 m-md-3 text-center bg-dark" style="color:white">
-    <main>
-        <section>
-          <h2 class="display-4">Report a Crime. Make Your Community Safer.</h2>
-          <p class="lead">This online system allows you to report a crime to the authorities quickly and easily. Reporting suspicious activity can help prevent future crimes and keep your community safe.</p>
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('users.user_dashboard') }}" class="btn btn-primary">Report a Crime Now</a>
-          {% else %}
-          <a href="{{ url_for('users.sign_in') }}" class="btn btn-primary">Report a Crime Now</a>
-          {% endif %}
-        </section>
-      </main>
-  </div>
+</header>
 
+<div class="position-relative p-3 p-md-5 m-md-3 text-center">
+  <main>
+      <section class="transparent-section">
+        <h2 class="display-4">Report a Crime. Make Your Community Safer.</h2>
+        <p class="lead">This online system allows you to report a crime to the authorities quickly and easily. Reporting suspicious activity can help prevent future crimes and keep your community safe.</p>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('posts.report_crime') }}" class="btn btn-primary">Report a Crime Now</a>
+        {% else %}
+        <a href="{{ url_for('users.sign_in') }}" class="btn btn-primary">Report a Crime Now</a>
+        {% endif %}
+      </section>
+    </main>
+</div>
 {% endblock %}

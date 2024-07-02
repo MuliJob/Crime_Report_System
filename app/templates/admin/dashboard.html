@@ -167,10 +167,10 @@
         new Chart(ctxUsers, {
             type: 'doughnut',
             data: {
-                labels: ['Active'],
+                labels: ['Active', 'Inactive'],
                 datasets: [{
-                    data: [{{ user_count }}],
-                    backgroundColor: ['rgba(192, 192, 192, 1)', '#ff6384'],
+                    data: [{{ user_count }}, 0],
+                    backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(139, 139, 139, 0.5)'],
                 }]
             },
             options: {
@@ -235,7 +235,7 @@
         });
 
         // Crime Locations Map
-        var map = L.map('map').setView([1.2921, 36.8219], 6);
+        var map = L.map('map').setView([1.2921, 36.8219], 12);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -1,5 +1,6 @@
 import io
-from flask import Blueprint, current_app, jsonify, render_template, redirect, session, url_for, request, flash
+import os
+from flask import Blueprint, current_app, jsonify, render_template, redirect, send_file, send_from_directory, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -197,6 +198,25 @@ def recovered():
         return redirect(url_for('users.recovered'))
     
     return render_template('user/recovered_items.html', thefts=recovered_thefts)
+
+# DOWNLOADING P3 FORM
+@users.route('/users/downloads', methods=['GET', 'POST'])
+@login_required
+def download():
+    if request.method == 'POST':
+        # Handle the download request
+        filename = "P3.pdf"  # Replace with your actual filename
+        directory = os.path.join(current_app.root_path, 'static', 'files')
+        
+        # Check if file exists
+        if os.path.exists(os.path.join(directory, filename)):
+            return send_from_directory(directory, filename, as_attachment=True)
+        else:
+            # Handle file not found error
+            flash('Unable to download file', 'warning')
+            return redirect(url_for('users.download'))
+        
+    return render_template('user/downloads.html')
 
 # displaying crime details when button is clicked
 @users.route('/users/crime-details/<int:crime_id>')

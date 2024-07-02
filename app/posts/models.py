@@ -8,6 +8,7 @@ class Crime(db.Model, UserMixin):
     date_of_incident = db.Column(db.String(10), nullable=False)
     issued_by = db.Column(db.String(20), nullable=True)
     time_of_incident = db.Column(db.String(10), nullable=False)
+    phonenumber = db.Column(db.String(10), nullable=True)
     incident_location = db.Column(db.Text, nullable=False)
     incident_nature = db.Column(db.Text, nullable=False)
     incident_details = db.Column(db.Text, nullable=False)
@@ -31,6 +32,7 @@ class Crime(db.Model, UserMixin):
             'date_of_incident': self.date_of_incident,
             'issued_by': self.issued_by,
             'time_of_incident': self.time_of_incident,
+            'phonenumber': self.phonenumber,
             'incident_location': self.incident_location,
             'incident_nature': self.incident_nature,
             'incident_details': self.incident_details,

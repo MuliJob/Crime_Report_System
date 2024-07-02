@@ -1,14 +1,22 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
+import pandas as pd
 from flask_login import logout_user
-from sqlalchemy import extract, func
+from sqlalchemy import extract, func, create_engine
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
+from app.config import SQLALCHEMY_DATABASE_URI
 from app.posts.models import Crime, Message, Theft
 from app.users.models import User
 from functools import wraps
+import folium
+from folium.plugins import HeatMap
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 admins = Blueprint('admins', __name__)
+
 
 def admin_required(f):
     @wraps(f)
@@ -18,6 +26,38 @@ def admin_required(f):
             return redirect(url_for('admins.adminIndex'))
         return f(*args, **kwargs)
     return decorated_function
+
+# function for generating heatmap
+def update_heatmap():
+    # Replace with your actual database URI
+    engine = create_engine(f'{SQLALCHEMY_DATABASE_URI}')
+
+    # Query data from the database
+    crimes_df = pd.read_sql_query('SELECT latitude, longitude FROM crime', engine)
+    thefts_df = pd.read_sql_query('SELECT latitude, longitude FROM theft', engine)
+
+    # Combine data for visualization
+    data_df = pd.concat([crimes_df, thefts_df], ignore_index=True)
+
+    # Initialize the map centered around the mean location
+    map_center = [data_df['latitude'].mean(), data_df['longitude'].mean()]
+    heatmap = folium.Map(location=[1.2921, 36.8219], zoom_start=12)
+
+    # Prepare data for the heatmap
+    heat_data = [[row['latitude'], row['longitude']] for index, row in data_df.iterrows()]
+
+    # Add HeatMap layer to the map
+    HeatMap(heat_data).add_to(heatmap)
+
+    # Save the map to an HTML file in the static directory
+    heatmap.save('static/crime_theft_heatmap.html')
+
+    return update_heatmap()
+
+# Schedule the update every 1 hour (adjust as needed)
+scheduler = BackgroundScheduler()
+scheduler.add_job(update_heatmap, 'interval', hours=1)
+scheduler.start()
 
 # function to get crime by month
 def get_crime_data_by_month():
@@ -45,20 +85,28 @@ def get_theft_data_by_month():
 
     return theft_data
 
-# analyzing data and crime distribution on a daily basis
+# getting daily distribution
 def get_daily_crime_and_theft_data():
     crime_dist = {day: {'crimes': 0, 'thefts': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
 
-    # Query crimes
+    today = datetime.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
     crime_results = db.session.query(
         db.extract('dow', Crime.date_crime_received).label('day'),
         db.func.count(Crime.crime_id).label('count')
+    ).filter(
+        Crime.date_crime_received >= start_of_week,
+        Crime.date_crime_received <= end_of_week
     ).group_by('day').all()
 
-    # Query thefts
     theft_results = db.session.query(
         db.extract('dow', Theft.date_theft_received).label('day'),
         db.func.count(Theft.theft_id).label('count')
+    ).filter(
+        Theft.date_theft_received >= start_of_week,
+        Theft.date_theft_received <= end_of_week
     ).group_by('day').all()
 
     for day, count in crime_results:
@@ -224,7 +272,7 @@ def reports():
             thefts = Theft.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
         flash("No reports with the keyword.", "warning")
@@ -253,7 +301,7 @@ def reportStatus():
             thefts = Theft.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -277,10 +325,10 @@ def updateStatus(theft_id):
             flash('Failed to update theft status.', 'danger')
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received. Please try again later.", "danger")
+        flash("An error occurred. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reportStatus'))
@@ -301,10 +349,10 @@ def updateCrimeStatus(crime_id):
             flash('Failed to update crime status.', 'danger')
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received. Please try again later.", "danger")
+        flash("An error occurred. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.crimeStatus'))
@@ -328,7 +376,7 @@ def crimeStatus():
             crimes_status = Crime.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -349,10 +397,10 @@ def crimeDetails(crime_id):
             return redirect(url_for('admins.reports'))
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received while fetching the reports crime details. Please try again later.", "danger")
+        flash("An error occurred while fetching the reports crime details. Please try again later.", "danger")
         
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reports'))
@@ -370,10 +418,10 @@ def theftDetails(theft_id):
             return redirect(url_for('admins.reports'))
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received while fetching the reports theft details. Please try again later.", "danger")
+        flash("An error occurred while fetching the reports theft details. Please try again later.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.reports'))
@@ -402,10 +450,10 @@ def analytics():
         theft_counts = [row[1] for row in theft_data]
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
-        flash("An error date_theft_received generating the analysis.", "danger")
+        flash("An error occurred generating the analysis.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.analytics'))
@@ -432,7 +480,7 @@ def notifications():
             messages = Message.query.all()
     except:
         # Log the error
-        current_app.logger.error("Database error date_theft_received:")
+        current_app.logger.error("Database error:")
         
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
@@ -464,10 +512,10 @@ def view_message(id):
 
     except Exception as e:
         # Log the error with details
-        current_app.logger.error(f"Database error date_theft_received: {e}")
+        current_app.logger.error(f"Database error: {e}")
         
         # Flash an error message to the user
-        flash("An error date_theft_received. Please try again later.", "danger")
+        flash("An error occurred. Please try again later.", "danger")
         
         # Redirect to a safe page
         return redirect(url_for('admins.notifications'))
