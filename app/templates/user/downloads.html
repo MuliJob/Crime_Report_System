@@ -1,0 +1,86 @@
+{% extends "user/base.html" %}
+
+{% block title %}
+Request Download
+{% endblock title %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P3 Download</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ececec;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .download-button {
+            background-color: #0dcaf0;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border: none;
+        }
+
+        .download-button:hover {
+            background-color: #05b4d7;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>P3</h1>
+    <form action="{{ url_for('users.download') }}" method="post" class="download-form">
+        <button type="submit" class="download-button"><i class="bi bi-download"></i> Download</button>
+    </form>
+    <table>
+        <tr>
+            <td class="label">File Size</td>
+            <td>139.36 KB</td>
+        </tr>
+        <tr>
+            <td class="label">File Count</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td class="label">Create Date</td>
+            <td>December 14, 2021</td>
+        </tr>
+        <tr>
+            <td class="label">Last Updated</td>
+            <td>December 14, 2021</td>
+        </tr>
+    </table>
+</body>
+</html>
+{% endblock content %}
