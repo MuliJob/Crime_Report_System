@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
+import folium
 from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -8,6 +9,7 @@ from app import db
 from app.posts.models import Crime, Message, Theft
 from app.users.models import User
 from functools import wraps
+from folium.plugins import HeatMap
 
 
 admins = Blueprint('admins', __name__)
@@ -22,6 +24,9 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# getting coordinates
+def get_coordinates():
+    return db.session.query(Crime.latitude, Crime.longitude).all()
 
 # function to get crime by month
 def get_crime_data_by_month():
@@ -395,6 +400,19 @@ def theftDetails(theft_id):
 @admins.route('/admin/analytics')
 @admin_required
 def analytics():
+    # Get coordinates from database
+    coordinates = get_coordinates()
+    
+    # Create a map centered on the mean of your coordinates
+    map_center = [sum(lat for lat, _ in coordinates) / len(coordinates),
+                  sum(lon for _, lon in coordinates) / len(coordinates)]
+    m = folium.Map(location=map_center, zoom_start=6)
+    
+    # Add heatmap layer
+    HeatMap(coordinates).add_to(m)
+    
+    # Get the HTML representation of the map
+    map_html = m._repr_html_()
     try:
         # Fetch crime data grouped by location
         crime_data = db.session.query(
@@ -424,7 +442,7 @@ def analytics():
 
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
                            crime_labels=crime_labels, crime_counts=crime_counts,
-                           theft_labels=theft_labels, theft_counts=theft_counts)
+                           theft_labels=theft_labels, theft_counts=theft_counts, map_html=map_html)
 
 @admins.route('/admin/notifications')
 @admin_required

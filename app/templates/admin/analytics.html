@@ -1,6 +1,19 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
+<style>
+    #map {
+        width: 800px;
+        height: 600px;
+        margin: 0 auto;  /* Center the map */
+    }
+</style>
 <div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
   <h2 style="text-align: center;">Crime Analysis By Location</h2>
   <div class="card mb-4">
       <div class="card-body">
@@ -21,6 +34,12 @@
               </div>
           </div>
       </div>
+  </div>
+  <div>
+    <h2 style="text-align: center;">Crimes Heatmap</h2>
+    <div id="map">
+        {{ map_html|safe }}
+    </div>
   </div>
 </div>
 
