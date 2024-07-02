@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, current_app, render_template, redirect, request, flash, session, url_for
+from io import BytesIO
+from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
 from flask_login import logout_user
 import folium
 from sqlalchemy import extract, func
@@ -376,6 +377,28 @@ def crimeDetails(crime_id):
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
+# create download function for download files
+@admins.route('/admin/crime_details/<int:crime_id>')
+def download(crime_id):
+    try:
+        upload = Crime.query.filter_by(crime_id=crime_id).first()
+        if not upload:
+            abort(404, description="Crime record not found")
+        
+        if not upload.crime_file_upload or not upload.crime_file_name:
+            abort(404, description="File not found")
+        
+        return send_file(
+            BytesIO(upload.crime_file_upload),
+            download_name=upload.crime_file_name,
+            as_attachment=True,
+            mimetype='application/octet-stream'  # Adjust MIME type if known
+        )
+    except Exception as e:
+        # Log the error
+        print(f"Error downloading file: {str(e)}")
+        abort(500, description="Internal server error")
+    
 @admins.route('/admin/theft_details/<int:theft_id>')
 @admin_required
 def theftDetails(theft_id):
