@@ -203,7 +203,10 @@
 
     <div class="form-group">
         <label for="mediaUpload">Attached Evidence:</label>
-        <img src="{{ crime.crime_file_upload }}" alt="{{ crime.crime_file_name }}" style="max-width: 300px;">
+        <img alt="{{ crime.crime_file_name }}" style="max-width: 300px;">
+        <a href="{{ url_for('admins.download', crime_id=crime.crime_id) }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-download"></i> Download File
+        </a>
     </div>
   </br>
     <div class="form-row">
