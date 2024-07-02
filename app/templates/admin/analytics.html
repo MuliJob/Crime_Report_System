@@ -2,8 +2,8 @@
 {% block content %}
 <style>
     #map {
-        width: 800px;
-        height: 600px;
+        width: 1100px;
+        height: 1100px;
         margin: 0 auto;  /* Center the map */
     }
 </style>
@@ -35,9 +35,9 @@
           </div>
       </div>
   </div>
-  <div>
+  <div id="map">
     <h2 style="text-align: center;">Crimes Heatmap</h2>
-    <div id="map">
+    <div>
         {{ map_html|safe }}
     </div>
   </div>

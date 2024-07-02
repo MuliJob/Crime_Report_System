@@ -57,28 +57,39 @@ def get_theft_data_by_month():
 
 # getting daily distribution
 def get_daily_crime_and_theft_data():
+    # Get the current date and time
+    now = datetime.now()
+
+    # Calculate the start of the current week (Monday)
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Calculate the end of the current week (Sunday)
+    end_of_week = start_of_week + timedelta(days=6)
+    end_of_week = end_of_week.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Initialize the dictionary for all days of the week
     crime_dist = {day: {'crimes': 0, 'thefts': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
 
-    today = datetime.today()
-    start_of_week = today - timedelta(days=today.weekday())
-    end_of_week = start_of_week + timedelta(days=6)
-
+    # Query for crimes in the current week
     crime_results = db.session.query(
-        db.extract('dow', Crime.date_crime_received).label('day'),
-        db.func.count(Crime.crime_id).label('count')
+        extract('dow', Crime.date_crime_received).label('day'),
+        func.count(Crime.crime_id).label('count')
     ).filter(
         Crime.date_crime_received >= start_of_week,
         Crime.date_crime_received <= end_of_week
     ).group_by('day').all()
 
+    # Query for thefts in the current week
     theft_results = db.session.query(
-        db.extract('dow', Theft.date_theft_received).label('day'),
-        db.func.count(Theft.theft_id).label('count')
+        extract('dow', Theft.date_theft_received).label('day'),
+        func.count(Theft.theft_id).label('count')
     ).filter(
         Theft.date_theft_received >= start_of_week,
         Theft.date_theft_received <= end_of_week
     ).group_by('day').all()
 
+    # Populate the dictionary with results
     for day, count in crime_results:
         crime_dist[day]['crimes'] = count
 
@@ -247,7 +258,7 @@ def reports():
         # Flash an error message to the user
         flash("No reports with the keyword.", "warning")
         
-        # Redirect to a safe page, like the admin dashboard
+        # Redirect to a safe page
         return redirect(url_for('admins.reports'))
     
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
@@ -276,7 +287,7 @@ def reportStatus():
         # Flash an error message to the user
         flash("No report with the keyword.", "warning")
         
-        # Redirect to a safe page, like the admin dashboard
+        # Redirect to a safe page
         return redirect(url_for('admins.reportStatus'))
     
     return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
@@ -360,7 +371,6 @@ def crimeStatus():
 @admin_required
 def crimeDetails(crime_id):
     try:
-        # Finding crime by id
         crime_details = Crime.query.filter_by(crime_id=crime_id).all()
         if crime_details is None:
             flash("Crime details not found.", "warning")
@@ -377,7 +387,7 @@ def crimeDetails(crime_id):
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
-# create download function for download files
+# download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
 def download(crime_id):
     try:
@@ -392,7 +402,7 @@ def download(crime_id):
             BytesIO(upload.crime_file_upload),
             download_name=upload.crime_file_name,
             as_attachment=True,
-            mimetype='application/octet-stream'  # Adjust MIME type if known
+            mimetype=upload.crime_mimetype
         )
     except Exception as e:
         # Log the error
@@ -426,41 +436,32 @@ def analytics():
     # Get coordinates from database
     coordinates = get_coordinates()
     
-    # Create a map centered on the mean of your coordinates
     map_center = [sum(lat for lat, _ in coordinates) / len(coordinates),
                   sum(lon for _, lon in coordinates) / len(coordinates)]
     m = folium.Map(location=map_center, zoom_start=6)
     
-    # Add heatmap layer
     HeatMap(coordinates).add_to(m)
     
-    # Get the HTML representation of the map
     map_html = m._repr_html_()
     try:
-        # Fetch crime data grouped by location
         crime_data = db.session.query(
             Crime.incident_location, db.func.count(Crime.crime_id)
         ).group_by(Crime.incident_location).all()
 
-        # Fetch theft data grouped by location
         theft_data = db.session.query(
             Theft.street_address, db.func.count(Theft.theft_id)
         ).group_by(Theft.street_address).all()
 
-        # Prepare data for the charts
         crime_labels = [row[0] for row in crime_data]
         crime_counts = [row[1] for row in crime_data]
         
         theft_labels = [row[0] for row in theft_data]
         theft_counts = [row[1] for row in theft_data]
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("An error occurred generating the analysis.", "danger")
         
-        # Redirect to a safe page
         return redirect(url_for('admins.analytics'))
 
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
@@ -498,7 +499,6 @@ def notifications():
 @admin_required
 def view_message(id):
     try:
-        # Fetch the message by id
         message = Message.query.get(id)
         if message is None:
             flash("Message not found.", "warning")
