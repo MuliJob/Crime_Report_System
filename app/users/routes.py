@@ -199,7 +199,7 @@ def recovered():
     
     return render_template('user/recovered_items.html', thefts=recovered_thefts)
 
-# SENDING REQUEST TO DOWNLOAD P3 FORM
+# DOWNLOADING P3 FORM
 @users.route('/users/downloads', methods=['GET', 'POST'])
 @login_required
 def download():
