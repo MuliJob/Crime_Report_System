@@ -73,46 +73,11 @@
       </div>
     </div>
     {% endif %}
-    </br>
-    <h2 class="text-center">Theft Reports</h2>
-    {% if thefts %}
-      <div class="row">
-        {% for theft in thefts %}
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="card mb-4 reduced-card-size">
-              <div class="card-body">
-                <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
-                <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
-                <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <h5 class="card-text"><strong>Status:</strong> {{ theft.theft_status }}</h5>
-                <button class="btn btn-primary btn-sm" onclick="theft_details('{{ theft.theft_id }}')">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-    <div class="container d-flex justify-content-center align-items-center">
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card mb-4 reduced-card-size">
-          <div class="card-body">
-            <h4><i class="bi bi-database-x"></i> No theft history found. <a href="{{ url_for('posts.report_theft') }}">Report Now</a></h4>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
   </div>
 
 <script>
   function crime_details(crime_id) {
       window.location.href = '/users/crime-details/' + crime_id;
-  }
-
-  function theft_details(theft_id) {
-      window.location.href = '/users/theft-details/' + theft_id;
   }
 </script>
 </body>

@@ -51,48 +51,6 @@ class Crime(db.Model, UserMixin):
     #    return f'<Crime "{self.crime_id}", "{self.date_of_incident}", "{self.issued_by}",
     #    "{self.time_of_incident}", "{self.incident_location}">'
 
-class Theft(db.Model, UserMixin):
-    theft_id = db.Column(db.Integer, primary_key=True)
-    place_of_theft = db.Column(db.String(50), nullable=False)
-    street_address = db.Column(db.String(30), nullable=False)
-    city = db.Column(db.String(10), nullable=False)
-    date_of_theft = db.Column(db.String(10), nullable=False)
-    reported_by = db.Column(db.String(10), nullable=True)
-    phone_number = db.Column(db.String(10), nullable=False)
-    value = db.Column(db.Integer, nullable=False)
-    time_of_theft = db.Column(db.String(10), nullable=False)
-    stolen_property = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    theft_status = db.Column(db.String(10), nullable=True)
-    latitude = db.Column(db.Float)
-    longitude = db.Column(db.Float)
-    theft_file_upload = db.Column(db.Text, nullable=True)
-    theft_file_name = db.Column(db.Text, nullable=True)
-    theft_mimetype = db.Column(db.Text, nullable=True)
-    date_theft_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
-    victim_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-
-    def to_dict(self):
-        return {
-            'theft_id': self.theft_id,
-            'place_of_theft': self.place_of_theft,
-            'street_address': self.street_address,
-            'city': self.city,
-            'date_of_theft': self.date_of_theft,
-            'reported_by': self.reported_by,
-            'phone_number': self.phone_number,
-            'value': self.value,
-            'time_of_theft': self.time_of_theft,
-            'stolen_property': self.stolen_property,
-            'description': self.description,
-            'theft_status': self.theft_status,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
-            'date_theft_received': self.date_theft_received.isoformat(),
-            'victim_id': self.victim_id
-        }
-
 class Message(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)

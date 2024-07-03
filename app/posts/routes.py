@@ -1,83 +1,12 @@
 from datetime import datetime, timezone
 from flask import Blueprint, render_template, redirect, session, url_for, request, flash
 from flask_login import current_user, login_required
-from app.posts.models import Crime, Message, Theft
+from app.posts.models import Crime, Message
 from app import db, send_admin_email
 from werkzeug.utils import secure_filename
 
 posts = Blueprint('posts', __name__)
 
-# submitting theft report
-@posts.route('/theft_report', methods=['GET', 'POST'])
-def report_theft(): 
-
-    victim = current_user.id
-
-    # Get location from session or database
-    latitude = session.get('latitude')
-    longitude = session.get('longitude')
-
-    if request.method == 'POST':
-        place_of_theft = request.form.get('place_of_theft')
-        street_address = request.form.get('street_address')
-        city = request.form.get('city')
-        date_of_theft = request.form.get('date_of_theft')
-        reported_by = request.form.get('reported_by')
-        phone_number = request.form.get('phone_number')
-        value = request.form.get('value')
-        time_of_theft = request.form.get('time_of_theft')
-        stolen_property = request.form.get('stolen_property')
-        description = request.form.get('description')
-        theft_image = request.files['theft_image']
-
-        filename = secure_filename(theft_image.filename)
-        mimetype = theft_image.mimetype
-
-        theft_report = Theft(place_of_theft=place_of_theft, 
-                                street_address=street_address,
-                                city=city, 
-                                date_of_theft=date_of_theft,
-                                reported_by=reported_by,
-                                phone_number=phone_number, 
-                                value=value,
-                                time_of_theft=time_of_theft, 
-                                stolen_property=stolen_property,
-                                description=description,
-                                latitude=latitude,
-                                longitude=longitude,
-                                theft_file_upload=theft_image.read(),
-                                theft_file_name=filename,
-                                theft_mimetype=mimetype,
-                                date_theft_received=datetime.now(timezone.utc),
-                                victim_id=victim)
-        try:
-            db.session.add(theft_report)
-            db.session.commit()
-
-            #sending email
-            subject = f"New Theft Report Sent: {theft_report.stolen_property}"
-            body = f"""
-                A new theft report has been sent:
-
-                Place Of Theft: {theft_report.place_of_theft}
-                Location: {theft_report.street_address}
-                Date: {theft_report.date_of_theft}
-                Time: {theft_report.time_of_theft}
-
-                Please review this report as soon as possible.
-            """
-            if send_admin_email(subject, body):
-                flash("Report submitted successfully and admin has been notified.", "success")
-            else:
-                flash("Report submitted successfully, but there was an issue notifying the admin.", "warning")
-
-            return redirect(url_for('users.user_dashboard'))
-        except Exception:
-            # Handle database errors gracefully (e.g., log the error)
-            flash(f"An error occurred! Please try again", category='danger')
-            return render_template('user/report_theft.html')
-
-    return render_template('user/report_theft.html')
 
 # submitting crime report
 @posts.route('/crime_report', methods=['GET', 'POST'])

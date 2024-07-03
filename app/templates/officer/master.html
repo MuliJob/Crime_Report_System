@@ -52,21 +52,14 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      {% if session.get('admin_name') %}
+      {% if session.get('officer_username') %}
       <ul class="navbar-nav">
         <li class="new-item active">
-          <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
+          <a class="nav-link" href="{{ url_for('officers.officerDashboard') }}">Dashboard</a>
         </li>
         <li class="new-item">
-          <a class="nav-link" href="{{ url_for('admins.reports') }}">Reports</a>
+          <a class="nav-link" href="{{ url_for('officers.officerDashboard') }}">Tasks</a>
         </li>
-        <li>
-          <a class="nav-link" href="{{ url_for('admins.analytics') }}">Analytics</a>
-        </li>
-        <li>
-          <li><a class="nav-link" href="{{ url_for('admins.crimeStatus') }}">Crime Status</a></li>
-        </li>
-        
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
@@ -80,14 +73,12 @@
           <ul class="dropdown-menu custom-dropdown-menu">
             <li><a class="dropdown-item" href="{{ url_for('admins.adminChangePassword') }}"><i
                   class="bi bi-gear-fill h4"></i> Settings</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('admins.adminLogout') }}"><i
+            <li><a class="dropdown-item" href="{{ url_for('officers.officerLogout') }}"><i
                   class="bi bi-arrow-right-circle-fill h4"></i> Logout</a></li>
           </ul>
         </li>
+        {% endif %}
       </ul>
-
-
-      {% endif %}
     </div>
   </nav>
   <br>

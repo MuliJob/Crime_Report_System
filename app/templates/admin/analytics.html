@@ -14,33 +14,27 @@
         {{ message }}
     </div>
     {% endfor %} {% endif%} {% endwith %}
-  <h2 style="text-align: center;">Crime Analysis By Location</h2>
-  <div class="card mb-4">
-      <div class="card-body">
-          <div class="row">
-              <div class="col-md-6">
-                  <canvas id="crimeByLocation" height="150"></canvas>
-              </div>
-          </div>
-      </div>
-  </div>
-<br>
-<h2 style="text-align: center;">Theft Analysis By Location</h2>
-  <div class="card mb-4">
-      <div class="card-body">
-          <div class="row">
-              <div class="col-md-6">
-                  <canvas id="theftByLocation" height="150"></canvas>
-              </div>
-          </div>
-      </div>
-  </div>
-  <div id="map">
     <h2 style="text-align: center;">Crimes Heatmap</h2>
-    <div>
-        {{ map_html|safe }}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div>
+                    {{ map_html|safe }}
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    <br>
+    <h2 style="text-align: center;">Crime Analysis By Location</h2>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="crimeByLocation" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -59,29 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
               datasets: [{
                   label: 'Crimes',
                   data: {{ crime_counts|tojson }},
-                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                  borderColor: 'rgba(255, 99, 132, 1)',
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-
-      // Theft by Location Data
-      var theftCtx = document.getElementById('theftByLocation').getContext('2d');
-      var theftByLocation = new Chart(theftCtx, {
-          type: 'bar',
-          data: {
-              labels: {{ theft_labels|tojson }},
-              datasets: [{
-                  label: 'Thefts',
-                  data: {{ theft_counts|tojson }},
                   backgroundColor: 'rgba(54, 162, 235, 0.2)',
                   borderColor: 'rgba(54, 162, 235, 1)',
                   borderWidth: 1

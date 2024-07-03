@@ -73,6 +73,12 @@
                             </li>
                             <li>
                                 <form method="POST" action="{{ url_for('admins.updateCrimeStatus', crime_id=crime.crime_id) }}">
+                                    <input type="hidden" name="crime_status" value="Recovered">
+                                    <button type="submit" class="dropdown-item">Recovered <i class="bi bi-question-circle"></i></button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ url_for('admins.updateCrimeStatus', crime_id=crime.crime_id) }}">
                                     <input type="hidden" name="crime_status" value="Under Investigation">
                                     <button type="submit" class="dropdown-item">Under Investigation <i class="bi bi-search"></i></button>
                                 </form>

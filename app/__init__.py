@@ -44,6 +44,13 @@ login_manager.login_view = 'users.sign_in'
 @login_manager.user_loader
 def load_user(user_id):
     return models.User.query.get(user_id)
+
+# login_manager.login_view = 'officers.officerLogin'
+
+# @login_manager.user_loader
+# def load_officer(officer_id):
+#    return Officers.query.get(officer_id)
+
 #@login_manager.user_loader
 #def load_user(id):
 #  return models.User.query.get(int(id))
@@ -61,13 +68,16 @@ def send_admin_email(subject, body):
         print(f"Failed to send email: {str(e)}")
         return False
 
+# from app.officers.models import Officers
 from app.users.routes import users
 from app.posts.routes import posts
 from app.main.routes import main
 from app.admins.routes import admins
+from app.officers.routes import officers
 from app.users import models
 
 app.register_blueprint(users)
 app.register_blueprint(posts)
 app.register_blueprint(main)
 app.register_blueprint(admins)
+app.register_blueprint(officers)
