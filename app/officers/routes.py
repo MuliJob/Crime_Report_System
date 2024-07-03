@@ -1,4 +1,5 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask_login import login_user, logout_user
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -6,9 +7,33 @@ from app.officers.models import Officers
 
 officers = Blueprint('officers', __name__)
 
+@officers.route('/officer/login', methods=['GET', 'POST'])
+def officerLogin():
+  if  session.get('officer_id'):
+        return redirect('/officer/officer-dashboard')
+  if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        officer = Officers.query.filter_by(username=username).first()
+        
+        if officer:
+            if check_password_hash(officer.password, password):
+                session['officer_id']=officer.officer_id
+                session['officer_username']=officer.username
+                flash(f'Logged in successfully! Hello {username}', category='success')
+                return redirect(url_for('officers.officerDashboard'))
+            else: 
+                flash('Incorrect password, try again.', category='danger')
+        else:
+            flash('Username does not exist.', category='danger')
+    
+  return render_template('officer/login.html')
 
 @officers.route('/officer/register', methods=['GET', 'POST'])
 def officerRegister():
+  if  session.get('officer_id'):
+        return redirect('/officer/officer-dashboard')
   if request.method == 'POST':
         username = request.form.get('username')
         officer_email = request.form.get('officer_email')
@@ -36,7 +61,7 @@ def officerRegister():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='danger')
         else:
-            # add user to database
+            # add officer to database
             new_officer = Officers(username=username, 
                                 officer_email=officer_email, 
                                 first_name=first_name,
@@ -53,6 +78,17 @@ def officerRegister():
             return redirect(url_for('officers.officerLogin'))
   return render_template('officer/registration.html')
 
-@officers.route('/officer/login', methods=['GET', 'POST'])
-def officerLogin():
-  return render_template('officer/login.html')
+@officers.route('/officer/officer-dashboard', methods=['GET', 'POST'])
+def officerDashboard():
+    return render_template('officer/officer-dashboard.html')
+
+@officers.route('/officer/logout')
+def officerLogout():    
+    if not session.get('officer_id'):
+        return redirect('/officer/login')
+    if session.get('officer_id'):
+        session['officer_id']=None
+        session['officer_username']=None
+        flash('You have been logged out.', category='info')
+        logout_user()
+    return redirect(url_for('officers.officerLogin'))
