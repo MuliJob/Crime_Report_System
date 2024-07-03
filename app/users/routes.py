@@ -1,10 +1,10 @@
 import io
 import os
-from flask import Blueprint, current_app, jsonify, render_template, redirect, send_file, send_from_directory, session, url_for, request, flash
+from flask import Blueprint, current_app, render_template, redirect, send_from_directory, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
-from app.posts.models import Crime, Message, Theft
+from app.posts.models import Crime, Message
 from app import db
 from app.config import NEWS_API
 from requests.exceptions import RequestException
