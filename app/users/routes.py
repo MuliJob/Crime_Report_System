@@ -173,17 +173,15 @@ def user_dashboard():
 def history():
     try:
         reporter = current_user.id
-        victim = current_user.id
 
         # filter with current user login
         crimes = Crime.query.filter_by(reporter_id=reporter).all()
-        thefts = Theft.query.filter_by(victim_id=victim).all()
 
-        return render_template('user/history.html', crimes=crimes, thefts=thefts)
+        return render_template('user/history.html', crimes=crimes)
     
     except Exception:
         flash('Unable to fetch your data. Please try again later.', 'danger')
-        return render_template('user/history.html', crimes=[], thefts=[])
+        return render_template('user/history.html', crimes=[])
 
 
 @users.route('/users/recovered-items')
@@ -191,13 +189,13 @@ def history():
 def recovered():
     try:
         # should query all theft data with recovered 
-        recovered_thefts = Theft.query.filter_by(theft_status='Recovered').all()
+        recovered_crimes = Crime.query.filter_by(crime_status='Recovered').all()
     except:
         flash("An error occurred while fetching crime details. Please try again later.", "error")
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('users.recovered'))
     
-    return render_template('user/recovered_items.html', thefts=recovered_thefts)
+    return render_template('user/recovered_items.html', crime=recovered_crimes)
 
 # DOWNLOADING P3 FORM
 @users.route('/users/downloads', methods=['GET', 'POST'])
@@ -233,22 +231,6 @@ def crime_details(crime_id):
         return redirect(url_for('users.history'))
 
     return render_template('user/crime-details.html', crime_details=crime_details, )
-
-# displaying theft details when button is clicked
-@users.route('/users/theft-details/<int:theft_id>')
-@login_required
-def theft_details(theft_id):
-    try:
-        #Finding theft by id 
-        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
-
-    except:
-        flash("An error occurred while fetching theft details. Please try again later.", "error")
-        
-        # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('users.history'))
-    
-    return render_template('user/theft-details.html', theft_details=theft_details)
 
 @users.route('/users/settings')
 @login_required

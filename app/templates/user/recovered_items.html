@@ -41,17 +41,15 @@
   }
 </style>
 <h2 style="text-align: center;">Recovered Items</h2>
-{% if thefts %}
+{% if crimes %}
       <div class="row">
-        {% for theft in thefts %}
+        {% for crime in crimes %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
               <div class="card-body">
-                <h5 class="card-text"><strong>Place of Incident:</strong> {{ theft.place_of_theft }}</h5>
-                <h5 class="card-text"><strong>Street:</strong> {{ theft.street_address }}</h5>
-                <h5 class="card-text"><strong>Description:</strong> {{ theft.stolen_property }}</h5>
-                <h5 class="card-text"><strong>Value of Property:</strong> {{ theft.value }}</h5>
-                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ theft.theft_status }}</h5>
+                <h5 class="card-text"><strong>Place of Incident:</strong> {{ crime.incident_location }}</h5>
+                <h5 class="card-text"><strong>Description:</strong> {{ crime.incident_details }}</h5>
+                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ crime.crime_status }}</h5>
               </div>
             </div>
           </div>
