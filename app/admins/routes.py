@@ -42,21 +42,8 @@ def get_crime_data_by_month():
 
     return crime_data
 
-# function to get theft by month
-def get_theft_data_by_month():
-    theft_data = {f'{i:02d}': 0 for i in range(1, 13)}
-    results = db.session.query(
-        db.extract('month', Theft.date_theft_received).label('month'),
-        db.func.count(Theft.theft_id).label('count')
-    ).group_by('month').all()
-
-    for month, count in results:
-        theft_data[f'{month:02d}'] = count
-
-    return theft_data
-
 # getting daily distribution
-def get_daily_crime_and_theft_data():
+def get_daily_crime_data():
     # Get the current date and time
     now = datetime.now()
 
@@ -69,7 +56,7 @@ def get_daily_crime_and_theft_data():
     end_of_week = end_of_week.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     # Initialize the dictionary for all days of the week
-    crime_dist = {day: {'crimes': 0, 'thefts': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
+    crime_dist = {day: {'crimes': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
 
     # Query for crimes in the current week
     crime_results = db.session.query(
@@ -80,28 +67,17 @@ def get_daily_crime_and_theft_data():
         Crime.date_crime_received <= end_of_week
     ).group_by('day').all()
 
-    # Query for thefts in the current week
-    theft_results = db.session.query(
-        extract('dow', Theft.date_theft_received).label('day'),
-        func.count(Theft.theft_id).label('count')
-    ).filter(
-        Theft.date_theft_received >= start_of_week,
-        Theft.date_theft_received <= end_of_week
-    ).group_by('day').all()
+    
 
     # Populate the dictionary with results
     for day, count in crime_results:
         crime_dist[day]['crimes'] = count
-
-    for day, count in theft_results:
-        crime_dist[day]['thefts'] = count
 
     return crime_dist
 
 # getting monthly averages
 def get_monthly_averages():
     crime_average = {f'{i:02d}': 0 for i in range(1, 13)}
-    theft_average = {f'{i:02d}': 0 for i in range(1, 13)}
 
     # Calculating monthly crime averages
     crime_results = db.session.query(
@@ -112,16 +88,9 @@ def get_monthly_averages():
     for month, count in crime_results:
         crime_average[f'{month:02d}'] = count
 
-    # Calculating monthly theft averages
-    theft_results = db.session.query(
-        extract('month', Theft.date_theft_received).label('month'),
-        func.count(Theft.theft_id).label('count')
-    ).group_by('month').all()
+    
 
-    for month, count in theft_results:
-        theft_average[f'{month:02d}'] = count
-
-    return crime_average, theft_average
+    return crime_average
 
 #getting annual crime distribution
 def get_annual_crime_data():
@@ -132,16 +101,6 @@ def get_annual_crime_data():
     ).group_by(func.strftime('%Y', Crime.date_crime_received)).all()
 
     return annual_crime_data
-
-#getting annual crime distribution
-def get_annual_theft_data():
-    # Query to get annual counts of thefts
-    annual_theft_data = db.session.query(
-        func.strftime('%Y', Theft.date_theft_received).label('year'),
-        func.count(Theft.theft_id).label('theft_count')
-    ).group_by(func.strftime('%Y', Theft.date_theft_received)).all()
-
-    return annual_theft_data
 
 # admin login page route
 @admins.route('/admin/', methods=['GET', 'POST'])
@@ -173,34 +132,23 @@ def adminIndex():
 @admin_required
 def adminDashboard():
     annual_crime_data = get_annual_crime_data()
-    annual_theft_data = get_annual_theft_data()
-    crime_average, theft_average = get_monthly_averages()
+    crime_average = get_monthly_averages()
     crime_data = get_crime_data_by_month()
-    theft_data = get_theft_data_by_month()
-    crime_dist = get_daily_crime_and_theft_data()
+    crime_dist = get_daily_crime_data()
     user_count = User.query.count()
     crime_count = Crime.query.count()
-    theft_count = Theft.query.count()
     
-    recovered_count = Theft.query.filter_by(theft_status='Recovered').count()
-    # Fetch crime and theft data
+    recovered_count = Crime.query.filter_by(crime_status='Recovered').count()
     crimes = Crime.query.all()
-    thefts = Theft.query.all()
     crime_locations = [crime.to_dict() for crime in crimes]
-    theft_locations = [theft.to_dict() for theft in thefts]
 
     return render_template('admin/dashboard.html', user_count=user_count,
                            crime_count=crime_count, 
                            recovered_count=recovered_count, 
-                           theft_count=theft_count, 
                            crime_data=crime_data,
-                           theft_data=theft_data,
                            crime_average=crime_average,
-                           theft_average=theft_average,
                            annual_crime_data=annual_crime_data,
-                           annual_theft_data=annual_theft_data,
                            crime_locations=crime_locations,
-                           theft_locations=theft_locations,
                            crime_dist=crime_dist)
 
 # change admin password
@@ -240,17 +188,8 @@ def reports():
                 Crime.crime_status.ilike(f'%{search_query}%')
             ).all()
             
-            thefts = Theft.query.filter(
-                Theft.place_of_theft.ilike(f'%{search_query}%') |
-                Theft.street_address.ilike(f'%{search_query}%') |
-                Theft.date_of_theft.ilike(f'%{search_query}%') |
-                Theft.time_of_theft.ilike(f'%{search_query}%') |
-                Theft.date_theft_received.ilike(f'%{search_query}%') |
-                Theft.theft_status.ilike(f'%{search_query}%')
-            ).all()
         else:
             crimes = Crime.query.all()
-            thefts = Theft.query.all()
     except:
         # Log the error
         current_app.logger.error("Database error:")
@@ -261,60 +200,10 @@ def reports():
         # Redirect to a safe page
         return redirect(url_for('admins.reports'))
     
-    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes, thefts=thefts)
+    return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
 
-@admins.route('/admin/reports_status')
-@admin_required
-def reportStatus():
-    search_theft = request.args.get('search_theft', '')
 
-    try:
-        if search_theft:
-            thefts = Theft.query.filter(
-                Theft.place_of_theft.ilike(f'%{search_theft}%') |
-                Theft.street_address.ilike(f'%{search_theft}%') |
-                Theft.date_of_theft.ilike(f'%{search_theft}%') |
-                Theft.time_of_theft.ilike(f'%{search_theft}%') |
-                Theft.date_theft_received.ilike(f'%{search_theft}%') |
-                Theft.theft_status.ilike(f'%{search_theft}%')
-            ).all()
-        else:
-            thefts = Theft.query.all()
-    except:
-        # Log the error
-        current_app.logger.error("Database error:")
-        
-        # Flash an error message to the user
-        flash("No report with the keyword.", "warning")
-        
-        # Redirect to a safe page
-        return redirect(url_for('admins.reportStatus'))
-    
-    return render_template('admin/reports_status.html', title='Reports Status', thefts=thefts)
 
-@admins.route('/admin/reports_status/<int:theft_id>', methods=['POST'])
-@admin_required
-def updateStatus(theft_id):
-    try:
-        theft = Theft.query.get_or_404(theft_id)
-        theft_status = request.form.get('theft_status')
-        if theft_status:
-            theft.theft_status = theft_status
-            db.session.commit()
-            flash(f'Theft status updated to {theft_status}.', 'success')
-        else:
-            flash('Failed to update theft status.', 'danger')
-    except:
-        # Log the error
-        current_app.logger.error("Database error:")
-        
-        # Flash an error message to the user
-        flash("An error occurred. Please try again later.", "danger")
-        
-        # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.reportStatus'))
-    
-    return redirect(url_for('admins.reportStatus'))
 
 @admins.route('/admin/crime_status/<int:crime_id>', methods=['POST'])
 @admin_required
@@ -410,47 +299,6 @@ def download(crime_id):
         print(f"Error downloading file: {str(e)}")
         abort(500, description="Internal server error")
     
-@admins.route('/admin/theft_details/<int:theft_id>')
-@admin_required
-def theftDetails(theft_id):
-    try:
-        #Finding theft by id 
-        theft_details = Theft.query.filter_by(theft_id=theft_id).all()
-        if theft_details is None:
-            flash("Theft details not found.", "warning")
-            return redirect(url_for('admins.reports'))
-    except:
-        # Log the error
-        current_app.logger.error("Database error:")
-        
-        # Flash an error message to the user
-        flash("An error occurred while fetching the reports theft details. Please try again later.", "danger")
-        
-        # Redirect to a safe page
-        return redirect(url_for('admins.reports'))
-
-    return render_template('admin/theft_details.html', theft_details=theft_details)
-
-@admins.route('/admin/theft_details/<int:theft_id>')
-def theft_download(theft_id):
-    try:
-        upload = Theft.query.filter_by(theft_id=theft_id).first()
-        if not upload:
-            abort(404, description="Theft record not found")
-        
-        if not upload.theft_file_upload or not upload.theft_file_name:
-            abort(404, description="File not found")
-        
-        return send_file(
-            BytesIO(upload.theft_file_upload),
-            download_name=upload.theft_file_name,
-            as_attachment=True,
-            mimetype=upload.theft_mimetype
-        )
-    except Exception as e:
-        # Log the error
-        print(f"Error downloading file: {str(e)}")
-        abort(500, description="Internal server error")
 
 @admins.route('/admin/analytics')
 @admin_required
@@ -470,15 +318,9 @@ def analytics():
             Crime.incident_location, db.func.count(Crime.crime_id)
         ).group_by(Crime.incident_location).all()
 
-        theft_data = db.session.query(
-            Theft.street_address, db.func.count(Theft.theft_id)
-        ).group_by(Theft.street_address).all()
-
         crime_labels = [row[0] for row in crime_data]
         crime_counts = [row[1] for row in crime_data]
         
-        theft_labels = [row[0] for row in theft_data]
-        theft_counts = [row[1] for row in theft_data]
     except:
         current_app.logger.error("Database error:")
         
@@ -487,8 +329,8 @@ def analytics():
         return redirect(url_for('admins.analytics'))
 
     return render_template('admin/analytics.html', title='Analytics Dashboard', 
-                           crime_labels=crime_labels, crime_counts=crime_counts,
-                           theft_labels=theft_labels, theft_counts=theft_counts, map_html=map_html)
+                            crime_labels=crime_labels, crime_counts=crime_counts,
+                            map_html=map_html)
 
 @admins.route('/admin/notifications')
 @admin_required

@@ -1,386 +1,318 @@
 {% extends 'admin/layout.html' %} {% block content %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"
-    />
-    <style>
-      body {
-        background-color: #f0f0f0;
-        color: black;
-        margin: 0;
-        padding: 20px;
-      }
-      .main-content {
-        flex-grow: 1;
-        padding: 20px;
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-      .card {
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-      }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+  <style>
+    body {
+      background-color: #f0f0f0;
+      color: black;
+      margin: 0;
+      padding: 20px;
+    }
+    p {
+      font-weight: bolder;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .chart {
+      height: 200px;
+    }
+
+    #map {
+      height: 450px;
+      /* Ensure the map has a height */
+      border-radius: 10px;
+    }
+
+    @media (max-width: 1200px) {
       .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
       }
-      .chart {
-        height: 200px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
-      #map {
-        height: 450px; /* Ensure the map has a height */
-        border-radius: 10px;
-      }
-      @media (max-width: 1200px) {
-        .grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      @media (max-width: 768px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
+    }
+  </style>
+</head>
+
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in
+  messages%}
+  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+  </div>
+  {% endfor %} {% endif%} {% endwith %}
+  <div class="main-content">
+    <div class="header">
+      <h1>Admin Dashboard</h1>
     </div>
-    {% endfor %} {% endif%} {% endwith %}
-    <div class="main-content">
-      <div class="header">
-        <h1>Admin Dashboard</h1>
-      </div>
-      <div class="grid">
-        <div class="card">
-          <h3>Users</h3>
-          <canvas id="usersChart" class="chart"></canvas>
-          <p>Total Users: {{ user_count }}</p>
-        </div>
-        <div class="card">
-          <h3>Crimes</h3>
-          <canvas id="crimesChart" class="chart"></canvas>
-          <p>Total Reported: {{ crime_count }}</p>
-          <hr>
-          <h3>Thefts</h3>
-          <canvas id="theftsChart" class="chart"></canvas>
-          <p>Total Reported: {{ theft_count }}</p>
-        </div>
-        <div class="card">
-          <h3>Theft and Recovered</h3>
-          <canvas id="theftRecoveredChart" class="chart"></canvas>
-          <p>Total Theft Reported: {{ theft_count }}</p>
-          <p style="color: green">Recovered: {{ recovered_count }}</p>
-        </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Users</h3>
+        <canvas id="usersChart" class="chart"></canvas>
+        <p>Total Users: {{ user_count }}</p>
       </div>
       <div class="card">
-        <h3>Crime Locations</h3>
-        <div id="map"></div>
+        <h3>Crimes</h3>
+        <canvas id="crimesChart" class="chart"></canvas>
+        <p>Total Reported: {{ crime_count }}</p>
       </div>
-      <div class="grid">
-        <div class="card">
-          <h3>Average Risk Over Time</h3>
-          <canvas id="riskOverTimeChart" class="chart"></canvas>
-        </div>
-        <div class="card">
-          <h3>Daily Distribution</h3>
-          <canvas id="crimeDistributionChart" class="chart"></canvas>
-        </div>
-        <div class="card">
-          <h3>Annual Distribution</h3>
-          <canvas id="annualCrimeTheftChart" class="chart"></canvas>
-        </div>
+      <div class="card">
+        <h3>Crimes and Recovered</h3>
+        <canvas id="crimeRecoveredChart" class="chart"></canvas>
+        <p>Total Crime Reported: {{ crime_count }}</p>
+        <p style="color: green">Recovered: {{ recovered_count }}</p>
       </div>
     </div>
+    <div class="card">
+      <h3>Crime Locations</h3>
+      <div id="map"></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Average Risk Over Time</h3>
+        <canvas id="riskOverTimeChart" class="chart"></canvas>
+      </div>
+      <div class="card">
+        <h3>Daily Distribution</h3>
+        <canvas id="crimeDistributionChart" class="chart"></canvas>
+      </div>
+      <div class="card">
+        <h3>Annual Distribution</h3>
+        <canvas id="annualCrimeChart" class="chart"></canvas>
+      </div>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const crimeAnnualData = {{ annual_crime_data | safe }};
-        const theftAnnualData = {{ annual_theft_data | safe }};
-        const crimeData = {{ crime_data | tojson }};
-        const theftData = {{ theft_data | tojson }};
-        const crimeDist = {{ crime_dist | tojson }};
-        const crimeAverage = {{ crime_average | tojson }};
-        const theftAverage = {{ theft_average | tojson }};
-    
-        // Extract years, crime counts, and theft counts
-        const crimeYears = crimeAnnualData.map(data => data.year);
-        const crimeAnnualCounts = crimeAnnualData.map(data => data.crime_count);
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const crimeAnnualData = {{ annual_crime_data | safe
+    }};
+    const crimeData = {{ crime_data | tojson }};
+    const crimeDist = {{ crime_dist | tojson }};
+    const crimeAverage = {{ crime_average | tojson }};
 
-        const theftYears = theftAnnualData.map(data => data.year);
-        const theftAnnualCounts = theftAnnualData.map(data => data.theft_count);
+    // Extract years, crime counts, and theft counts
+    const crimeYears = crimeAnnualData.map(data => data.year);
+    const crimeAnnualCounts = crimeAnnualData.map(data => data.crime_count);
 
-        // crime monthly analysis
-        const crimeCounts = [
-            crimeData['01'], crimeData['02'], crimeData['03'], crimeData['04'],
-            crimeData['05'], crimeData['06'], crimeData['07'], crimeData['08'],
-            crimeData['09'], crimeData['10'], crimeData['11'], crimeData['12']
-        ];
-        // theft monthly analysis
-        const theftCounts = [
-            theftData['01'], theftData['02'], theftData['03'], theftData['04'],
-            theftData['05'], theftData['06'], theftData['07'], theftData['08'],
-            theftData['09'], theftData['10'], theftData['11'], theftData['12']
-        ];
 
-        // daily crime distribution
-        const dailyCrimeCounts = [
-            crimeDist[0].crimes, crimeDist[1].crimes, crimeDist[2].crimes,
-            crimeDist[3].crimes, crimeDist[4].crimes, crimeDist[5].crimes, crimeDist[6].crimes
-        ];
-        // daily theft distribution
-        const dailyTheftCounts = [
-            crimeDist[0].thefts, crimeDist[1].thefts, crimeDist[2].thefts,
-            crimeDist[3].thefts, crimeDist[4].thefts, crimeDist[5].thefts, crimeDist[6].thefts
-        ];
-        //crime monthly average
-        const crimeAverages = [
-                crimeAverage['01'], crimeAverage['02'], crimeAverage['03'], crimeAverage['04'],
-                crimeAverage['05'], crimeAverage['06'], crimeAverage['07'], crimeAverage['08'],
-                crimeAverage['09'], crimeAverage['10'], crimeAverage['11'], crimeAverage['12']
-            ];
-        const theftAverages = [
-            theftAverage['01'], theftAverage['02'], theftAverage['03'], theftAverage['04'],
-            theftAverage['05'], theftAverage['06'], theftAverage['07'], theftAverage['08'],
-            theftAverage['09'], theftAverage['10'], theftAverage['11'], theftAverage['12']
-        ];
-          // Users Chart
-        const ctxUsers = document.getElementById('usersChart').getContext('2d');
-        new Chart(ctxUsers, {
-            type: 'doughnut',
-            data: {
-                labels: ['Active', 'Inactive'],
-                datasets: [{
-                    data: [{{ user_count }}, 0],
-                    backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(139, 139, 139, 0.5)'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } }
-            }
+    // crime monthly analysis
+    const crimeCounts = [
+      crimeData['01'], crimeData['02'], crimeData['03'], crimeData['04'],
+      crimeData['05'], crimeData['06'], crimeData['07'], crimeData['08'],
+      crimeData['09'], crimeData['10'], crimeData['11'], crimeData['12']
+    ];
+
+    // daily crime distribution
+    const dailyCrimeCounts = [
+      crimeDist[0].crimes, crimeDist[1].crimes, crimeDist[2].crimes,
+      crimeDist[3].crimes, crimeDist[4].crimes, crimeDist[5].crimes, crimeDist[6].crimes
+    ];
+
+    //crime monthly average
+    const crimeAverages = [
+      crimeAverage['01'], crimeAverage['02'], crimeAverage['03'], crimeAverage['04'],
+      crimeAverage['05'], crimeAverage['06'], crimeAverage['07'], crimeAverage['08'],
+      crimeAverage['09'], crimeAverage['10'], crimeAverage['11'], crimeAverage['12']
+    ];
+
+    // Users Chart
+    const ctxUsers = document.getElementById('usersChart').getContext('2d');
+    new Chart(ctxUsers, {
+      type: 'doughnut',
+      data: {
+        labels: ['Active', 'Inactive'],
+        datasets: [{
+          data: [{{ user_count }}, 0],
+        backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(139, 139, 139, 0.5)'],
+      }]
+    },
+      options: {
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
         });
 
-        // Crimes Chart
-        const ctxCrimes = document.getElementById('crimesChart').getContext('2d');
-        new Chart(ctxCrimes, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Crimes',
-                    data: crimeCounts,
-                    backgroundColor: 'rgba(255, 99, 132, 1)',
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-
-        // Theft Chart
-        const ctxThefts = document.getElementById('theftsChart').getContext('2d');
-        new Chart(ctxThefts, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Thefts',
-                    data: theftCounts,
-                    backgroundColor: 'rgba(54, 162, 235, 1)',
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-
-        // Theft and Recovered Chart
-        const ctxTheftRecovered = document.getElementById('theftRecoveredChart').getContext('2d');
-        new Chart(ctxTheftRecovered, {
-            type: 'pie',
-            data: {
-                labels: ['Theft', 'Recovered'],
-                datasets: [{
-                    data: [{{ theft_count - recovered_count }}, {{ recovered_count }}],
-                    backgroundColor: ['rgba(54, 162, 235, 1)', 'rgba(46, 204, 113, 1)'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } }
-            }
-        });
-
-        // Crime Locations Map
-        var map = L.map('map').setView([1.2921, 36.8219], 6);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-        // Add markers for crime locations
-        const crimeLocations = {{ crime_locations|tojson }};
-        crimeLocations.forEach(location => {
-            if (location.latitude && location.longitude) {
-                L.marker([location.latitude, location.longitude], {icon: getMarkerIcon('red')}).addTo(map)
-                    .bindPopup(`Crime ID: ${location.crime_id}<br>Description: ${location.incident_details}`)
-                    .openPopup();
-            }
-        });
-
-        // Add markers for theft locations
-        const theftLocations = {{ theft_locations|tojson }};
-        theftLocations.forEach(location => {
-            if (location.latitude && location.longitude) {
-                L.marker([location.latitude, location.longitude], {icon: getMarkerIcon('yellow')}).addTo(map)
-                    .bindPopup(`Theft ID: ${location.theft_id}<br>Description: ${location.description}`)
-                    .openPopup();
-            }
-        });
-
-        // Function to get marker icon based on color
-        function getMarkerIcon(color) {
-            return L.divIcon({
-                className: 'custom-marker',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%;"></div>`
-            });
-        }
-
-        // Average Risk Over Time Chart
-        const ctxRiskOverTime = document.getElementById('riskOverTimeChart').getContext('2d');
-        new Chart(ctxRiskOverTime, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [
-                  {
-                    label: 'Crimes',
-                    data: crimeAverages,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)', 
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    tension: 0.5
-                  },
-                  {
-                    label: 'Thefts',
-                    data: theftAverages,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)', 
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    tension: 0.5
-                  }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-
-        // Crime Distribution Chart
-        const ctxCrimeDistribution = document.getElementById('crimeDistributionChart').getContext('2d');
-        new Chart(ctxCrimeDistribution, {
-            type: 'bar',
-            data: {
-                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                datasets: [
-                    {
-                        label: 'Crimes',
-                        data: dailyCrimeCounts,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)', 
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                    },
-                    {
-                        label: 'Thefts',
-                        data: dailyTheftCounts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)', 
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-
-        // Annual Distribution
-        const ctxAnnualDistribution = document.getElementById('annualCrimeTheftChart').getContext('2d');
-        new Chart(ctxAnnualDistribution, {
-            type: 'bar',
-            data: {
-                labels: crimeYears,
-                datasets: [
-                    {
-                        label: 'Crimes',
-                        data: crimeAnnualCounts,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)', 
-                        borderColor: 'rgba(255, 99, 132, 1)', 
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Thefts',
-                        data: theftAnnualCounts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)', // Blue with opacity
-                        borderColor: 'rgba(54, 162, 235, 1)', // Blue
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                },
-                scales: {
-                    x: {
-                        stacked: true,
-                        title: {
-                            display: true,
-                            text: 'Year'
-                        }
-                    },
-                    y: {
-                        stacked: true,
-                        title: {
-                            display: true,
-                            text: 'Count'
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+    // Crimes Chart
+    const ctxCrimes = document.getElementById('crimesChart').getContext('2d');
+    new Chart(ctxCrimes, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+          label: 'Crimes',
+          data: crimeCounts,
+          backgroundColor: 'rgba(54, 162, 235, 1)',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
     });
-    </script>
-  </body>
+
+
+    // Theft and Recovered Chart
+    const ctxCrimeRecovered = document.getElementById('crimeRecoveredChart').getContext('2d');
+    new Chart(ctxCrimeRecovered, {
+      type: 'pie',
+      data: {
+        labels: ['Crime', 'Recovered'],
+        datasets: [{
+          data: [{{ crime_count - recovered_count }}, {{ recovered_count }}],
+      backgroundColor: ['rgba(54, 162, 235, 1)', 'rgba(46, 204, 113, 1)'],
+                }]
+            },
+      options: {
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
+        });
+
+    // Crime Locations Map
+    var map = L.map('map').setView([1.2921, 36.8219], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add markers for crime locations
+    const crimeLocations = {{ crime_locations| tojson }};
+    crimeLocations.forEach(location => {
+      if (location.latitude && location.longitude) {
+        L.marker([location.latitude, location.longitude]).addTo(map)
+          .bindPopup(`Crime ID: ${location.crime_id}<br>Description: ${location.incident_details}`)
+          .openPopup();
+      }
+    });
+
+    // Average Risk Over Time Chart
+    const ctxRiskOverTime = document.getElementById('riskOverTimeChart').getContext('2d');
+    new Chart(ctxRiskOverTime, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+          {
+            label: 'Crimes',
+            data: crimeAverages,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            tension: 0.5
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // Crime Distribution Chart
+    const ctxCrimeDistribution = document.getElementById('crimeDistributionChart').getContext('2d');
+    new Chart(ctxCrimeDistribution, {
+      type: 'bar',
+      data: {
+        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        datasets: [
+          {
+            label: 'Crimes',
+            data: dailyCrimeCounts,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // Annual Distribution
+    const ctxAnnualDistribution = document.getElementById('annualCrimeChart').getContext('2d');
+    new Chart(ctxAnnualDistribution, {
+      type: 'bar',
+      data: {
+        labels: crimeYears,
+        datasets: [
+          {
+            label: 'Crimes',
+            data: crimeAnnualCounts,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Year'
+            }
+          },
+          y: {
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Count'
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+    });
+  </script>
+</body>
+
 </html>
 {% endblock content %}
