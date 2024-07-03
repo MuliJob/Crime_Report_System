@@ -1,11 +1,21 @@
+from functools import wraps
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from flask_login import login_user, logout_user
+from flask_login import logout_user
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.officers.models import Officers
 
 officers = Blueprint('officers', __name__)
+
+def officer_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('officer_id'):
+            flash('You need to be logged in as an admin to access the page.', 'danger')
+            return redirect(url_for('officers.officerLogin'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @officers.route('/officer/login', methods=['GET', 'POST'])
 def officerLogin():
@@ -79,10 +89,12 @@ def officerRegister():
   return render_template('officer/registration.html')
 
 @officers.route('/officer/officer-dashboard', methods=['GET', 'POST'])
+@officer_required
 def officerDashboard():
     return render_template('officer/officer-dashboard.html')
 
 @officers.route('/officer/logout')
+@officer_required
 def officerLogout():    
     if not session.get('officer_id'):
         return redirect('/officer/login')
