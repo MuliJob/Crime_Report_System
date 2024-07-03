@@ -7,7 +7,6 @@ from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.officers.models import Officer
 from app.posts.models import Crime, Message, Theft
 from app.users.models import User
 from functools import wraps
@@ -224,40 +223,6 @@ def adminChangePassword():
             return redirect('/admin/change-admin-password')
     else:
         return render_template('admin/admin-change-password.html',title='Admin Change Password',admin=admin)
-
-# adding officer    
-@admins.route('/admin/add-officer', methods=["POST","GET"])
-@admin_required
-def addOfficer():
-    try:
-        if request.method == 'POST':
-            first_name = request.form.get('first_name')
-            last_name = request.form.get('last_name')
-            officer_email = request.form.get('officer_email')
-            badge = request.form.get('badge')
-            rank = request.form.get('rank')
-            station = request.form.get('station')
-
-            add_officer = Officer(
-                first_name=first_name,
-                last_name=last_name,
-                officer_email=officer_email,
-                badge=badge,
-                rank=rank,
-                station=station
-            )
-
-            db.session.add(add_officer)
-            db.session.commit()
-            flash('Success, Officer has been added', 'success')
-        else:
-            flash('Error, Failed to add officer', 'danger')
-    except Exception:
-            # Handle database errors gracefully (e.g., log the error)
-            flash(f"An error occurred! Please try again", category='danger')
-            return render_template('admin/addofficer.html')
-        
-    return render_template('/admin/addofficer.html', title='Add Officer')
 
 
 @admins.route('/admin/reports')

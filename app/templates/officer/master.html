@@ -52,7 +52,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      {% if session.get('admin_name') %}
+      
       <ul class="navbar-nav">
         <li class="new-item active">
           <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
@@ -90,9 +90,6 @@
           </ul>
         </li>
       </ul>
-
-
-      {% endif %}
     </div>
   </nav>
   <br>
