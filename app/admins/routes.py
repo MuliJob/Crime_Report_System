@@ -224,6 +224,12 @@ def adminChangePassword():
     else:
         return render_template('admin/admin-change-password.html',title='Admin Change Password',admin=admin)
 
+# adding officer    
+@admins.route('/admin/add-officer',methods=["POST","GET"])
+@admin_required
+def addOfficer():
+    return render_template('/admin/addofficer.html')
+
 
 @admins.route('/admin/reports')
 @admin_required

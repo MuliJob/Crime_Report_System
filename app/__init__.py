@@ -65,9 +65,11 @@ from app.users.routes import users
 from app.posts.routes import posts
 from app.main.routes import main
 from app.admins.routes import admins
+from app.officers.routes import officers
 from app.users import models
 
 app.register_blueprint(users)
 app.register_blueprint(posts)
 app.register_blueprint(main)
 app.register_blueprint(admins)
+app.register_blueprint(officers)
