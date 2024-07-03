@@ -55,22 +55,10 @@
       {% if session.get('officer_username') %}
       <ul class="navbar-nav">
         <li class="new-item active">
-          <a class="nav-link" href="{{ url_for('admins.adminDashboard') }}">Dashboard</a>
+          <a class="nav-link" href="{{ url_for('officers.officerDashboard') }}">Dashboard</a>
         </li>
         <li class="new-item">
-          <a class="nav-link" href="{{ url_for('admins.reports') }}">Reports</a>
-        </li>
-        <li>
-          <a class="nav-link" href="{{ url_for('admins.analytics') }}">Analytics</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Update
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('admins.reportStatus') }}">Theft Status</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('admins.crimeStatus') }}">Crime Status</a></li>
-          </ul>
+          <a class="nav-link" href="{{ url_for('officers.officerDashboard') }}">Tasks</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">

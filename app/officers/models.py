@@ -11,7 +11,7 @@ class Officers(db.Model, UserMixin):
     rank = db.Column(db.String(10), nullable=False)
     station = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(128), nullable=False)
-
+    cases = db.relationship('CaseReport', backref='case', lazy=True)
     def to_dict(self):
       return {
           'officer_id': self.officer_id,
@@ -24,3 +24,28 @@ class Officers(db.Model, UserMixin):
           'station': self.station,
           'password': self.password,
       }
+    
+
+class CaseReport(db.Model, UserMixin):
+    report_id = db.Column(db.Integer, primary_key=True)
+    crime_type = db.Column(db.String(120), nullable=False)
+    location = db.Column(db.String(40), nullable=False)
+    date = db.Column(db.String(10), nullable=False)
+    time = db.Column(db.String(10), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    evidence = db.Column(db.Text, nullable=False)
+    urgency = db.Column(db.String(10), nullable=False)
+    officer_id = db.Column(db.Integer, db.ForeignKey('officers.officer_id'))
+
+    def to_dict(self):
+       return {
+          'reporter_id': self.reporter_id,
+          'crime_type': self.crime_type,
+          'location': self.location,
+          'date': self.date,
+          'time': self.time,
+          'description': self.description,
+          "evidence": self.evidence,
+          'urgency': self.urgency,
+       }
+

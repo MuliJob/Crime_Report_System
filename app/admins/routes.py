@@ -7,6 +7,7 @@ from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
+from app.officers.models import CaseReport
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
@@ -276,6 +277,41 @@ def crimeDetails(crime_id):
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
+@admins.route('/admin/crime_details/', methods=['POST'])
+@admin_required
+def caseReport():
+    try:
+        if request.method == 'POST':
+            crime_type = request.form.get('crime_type')
+            location = request.form.get('location')
+            date = request.form.get('date')
+            time = request.form.get('time')
+            description = request.form.get('description')
+            evidence = request.form.get('evidence')
+            urgency = request.form.get('urgency')
+
+            case_report = CaseReport(crime_type=crime_type,
+                                    location=location,
+                                    date=date,
+                                    time=time,
+                                    description=description,
+                                    evidence=evidence,
+                                    urgency=urgency)
+            
+            db.session.add(case_report)
+            db.session.commit()
+            flash('Success. Case Report created')
+    except:
+        # Log the error
+        current_app.logger.error("Database error:")
+        
+        # Flash an error message to the user
+        flash("An error occurred when creating report. Please try again later.", "danger")
+        
+        # Redirect to a safe page, like the admin dashboard
+        return redirect(url_for('admins.caseReport'))
+    
+    return render_template('admin/crime_details.html')
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
 @admin_required
