@@ -7,7 +7,7 @@ from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.posts.models import Crime, Message, Theft
+from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
