@@ -389,6 +389,7 @@ def crimeDetails(crime_id):
 
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
+@admin_required
 def download(crime_id):
     try:
         upload = Crime.query.filter_by(crime_id=crime_id).first()
@@ -429,6 +430,27 @@ def theftDetails(theft_id):
         return redirect(url_for('admins.reports'))
 
     return render_template('admin/theft_details.html', theft_details=theft_details)
+
+@admins.route('/admin/theft_details/<int:theft_id>')
+def theft_download(theft_id):
+    try:
+        upload = Theft.query.filter_by(theft_id=theft_id).first()
+        if not upload:
+            abort(404, description="Theft record not found")
+        
+        if not upload.theft_file_upload or not upload.theft_file_name:
+            abort(404, description="File not found")
+        
+        return send_file(
+            BytesIO(upload.theft_file_upload),
+            download_name=upload.theft_file_name,
+            as_attachment=True,
+            mimetype=upload.theft_mimetype
+        )
+    except Exception as e:
+        # Log the error
+        print(f"Error downloading file: {str(e)}")
+        abort(500, description="Internal server error")
 
 @admins.route('/admin/analytics')
 @admin_required
