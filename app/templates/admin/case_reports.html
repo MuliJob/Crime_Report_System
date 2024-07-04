@@ -12,6 +12,11 @@
     .clickable-row:hover {
         background-color: #f5f5f5;
     }
+    .three-dots-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
 </style>
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
@@ -42,8 +47,9 @@
             <th scope="col">Date <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Description <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Status <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Priority <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Actions <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Assigned Officer <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
     <tbody>
@@ -55,6 +61,7 @@
                 <td>{{ case.date }}</td>
                 <td>{{ case.time }}</td>
                 <td>{{ case.description }}</td>
+                <td>{{ case.status }}</td>
                 <td>{{ case.urgency }}</td>
                 <td></td>
             </tr>
@@ -72,8 +79,7 @@
             <th scope="col">Date <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Description <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Urgency <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Action <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Priority <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
 </table>

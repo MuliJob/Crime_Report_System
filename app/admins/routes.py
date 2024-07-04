@@ -7,7 +7,7 @@ from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.officers.models import CaseReport
+from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
@@ -310,12 +310,26 @@ def caseReport(crime_id):
     # If it's a GET request, just render the page
     return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
 
+
 @admins.route('/admin/case-reports')
 @admin_required
 def case_reports():
     cases = CaseReport.query.all()
+    officers = Officers.query.all()
+    return render_template('admin/case_reports.html', cases=cases, officers=officers)
 
-    return render_template('admin/case_reports.html', cases=cases)
+# @admins.route('/admins/assign_officer/<int:report_id>', methods=['POST'])
+# def assign_officer(report_id):
+#     officer_id = request.form.get('officer_id')
+
+#     # Update case report with assigned officer
+#     case_report = CaseReport.query.get_or_404(report_id)
+#     case_report.assigned_officer_id = officer_id
+
+#     db.session.commit()
+
+#     return redirect(url_for('admins.case_reports', case_report=case_report))
+
 
 @admins.route('/admin/case_report_details/<int:report_id>')
 @admin_required
