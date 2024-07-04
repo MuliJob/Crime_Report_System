@@ -162,8 +162,14 @@
 </head>
 
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
     {% for crime in crime_details %}
-    <form method="POST">
+    <form>
         <div class="ms-auto">
             <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button>
         </div>
@@ -251,7 +257,7 @@
 
     <br>
     <h2 style="text-align: center;">Official Report</h2>
-        <form method="POST" action="{{ url_for('admins.caseReport')}}">
+        <form method="POST" action="{{ url_for('admins.caseReport', crime_id=crime_details[0].crime_id)}}">
             <div class="mb-3">
                 <label for="crime_type" class="form-label">Crime Type:</label>
                 <select class="form-select" id="crime_type" name="crime_type" required>
@@ -295,7 +301,7 @@
                 </select>
             </div>
             <div class="text-center">
-                <button type="submit" name="officers.caseReport" class="btn btn-primary">Create Official Report</button>
+                <button type="submit" class="btn btn-primary">Create Official Report</button>
             </div>
         </form>
     <script>

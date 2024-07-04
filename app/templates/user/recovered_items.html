@@ -22,7 +22,8 @@
     padding: 10px;
   }
   .reduced-card-size:hover {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transform: translateY(-5px); /* Lift the card on hover */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15); /* Enhanced box shadow on hover */
   }
   
   .reduced-card-size .card-title {
@@ -39,17 +40,26 @@
     padding: 5px 10px;
     font-size: 0.85em;
   }
+  .no-recovered-items a:hover {
+    text-decoration: underline; /* Underline link on hover */
+  }
+  .status-recovered {
+    background-color: #2ecc71; /* Green */
+    color: white; /* White text on green background */
+  }
 </style>
 <h2 style="text-align: center;">Recovered Items</h2>
-{% if crimes %}
+{% if recovered_crimes %}
       <div class="row">
-        {% for crime in crimes %}
+        {% for crime in recovered_crimes %}
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card mb-4 reduced-card-size">
               <div class="card-body">
                 <h5 class="card-text"><strong>Place of Incident:</strong> {{ crime.incident_location }}</h5>
                 <h5 class="card-text"><strong>Description:</strong> {{ crime.incident_details }}</h5>
-                <h5 class="card-text" style="color: green;"><strong>Status:</strong> {{ crime.crime_status }}</h5>
+                <h5 class="card-text"><strong>Status:</strong>
+                  <span class="status status-recovered">{{ crime.crime_status }}</span>
+                </h5>
               </div>
             </div>
           </div>

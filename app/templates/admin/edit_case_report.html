@@ -1,0 +1,94 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Edit Official Report</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="POST" action="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}" class="bg-light p-4 rounded shadow">
+                <div class="mb-3">
+                    <label for="crime_type" class="form-label fw-bold">Crime Type:</label>
+                    <select class="form-select" id="crime_type" name="crime_type" required>
+                        <option value="">Select crime type</option>
+                        <option value="robbery" {% if report.crime_type == 'robbery' %}selected{% endif %}>Robbery</option>
+                        <option value="assault" {% if report.crime_type == 'assault' %}selected{% endif %}>Assault</option>
+                        <option value="burglary" {% if report.crime_type == 'burglary' %}selected{% endif %}>Burglary</option>
+                        <option value="theft" {% if report.crime_type == 'theft' %}selected{% endif %}>Theft</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label fw-bold">Location:</label>
+                    <input type="text" class="form-control" id="location" name="location" value="{{ report.location }}" required>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="date" class="form-label fw-bold">Date of Crime:</label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ report.date }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="time" class="form-label fw-bold">Time of Crime:</label>
+                        <input type="time" class="form-control" id="time" name="time" value="{{ report.time }}" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-bold">Official Description:</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required>{{ report.description }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="evidence" class="form-label fw-bold">Evidence:</label>
+                    <textarea class="form-control" id="evidence" name="evidence" rows="3">{{ report.evidence }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="urgency" class="form-label fw-bold">Urgency Level:</label>
+                    <select class="form-select" id="urgency" name="urgency" required>
+                        <option value="">Select urgency level</option>
+                        <option value="low" {% if report.urgency == 'low' %}selected{% endif %}>Low</option>
+                        <option value="medium" {% if report.urgency == 'medium' %}selected{% endif %}>Medium</option>
+                        <option value="high" {% if report.urgency == 'high' %}selected{% endif %}>High</option>
+                        <option value="critical" {% if report.urgency == 'critical' %}selected{% endif %}>Critical</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="assigned_officer" class="form-label fw-bold">Assign Officer:</label>
+                    <select class="form-select" id="assigned_officer" name="assigned_officer">
+                        <option value="">Select an officer</option>
+                        {% for officer in officers %}
+                            <option value="{{ officer.id }}">{{ officer.first_name }} - {{ officer.rank }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Update Report</button>
+                    <a href="{{ url_for('admins.case_reports') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label {
+        color: #495057;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-secondary:hover {
+        background-color: #545b62;
+        border-color: #4e555b;
+    }
+</style>
+{% endblock content %}
