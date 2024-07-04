@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 from flask_login import UserMixin
   
@@ -35,7 +36,11 @@ class CaseReport(db.Model, UserMixin):
     description = db.Column(db.Text, nullable=False)
     evidence = db.Column(db.Text, nullable=False)
     urgency = db.Column(db.String(10), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
     officer_id = db.Column(db.Integer, db.ForeignKey('officers.officer_id'))
+
+    def __repr__(self):
+        return f'<CaseReport {self.report_id}>'
 
     def to_dict(self):
        return {

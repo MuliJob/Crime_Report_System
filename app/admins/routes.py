@@ -257,7 +257,7 @@ def crimeStatus():
 
     return render_template('admin/crime_status.html', title='Crime Status', crimes_status=crimes_status)
 
-@admins.route('/admin/crime_details/<int:crime_id>')
+@admins.route('/admin/crime_details/<int:crime_id>', methods=['POST', 'GET'])
 @admin_required
 def crimeDetails(crime_id):
     try:
@@ -277,41 +277,78 @@ def crimeDetails(crime_id):
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
 
-@admins.route('/admin/crime_details/', methods=['POST'])
+@admins.route('/admin/crimes_details/<int:crime_id>', methods=['POST', 'GET'])
 @admin_required
-def caseReport():
-    try:
-        if request.method == 'POST':
-            crime_type = request.form.get('crime_type')
-            location = request.form.get('location')
-            date = request.form.get('date')
-            time = request.form.get('time')
-            description = request.form.get('description')
-            evidence = request.form.get('evidence')
-            urgency = request.form.get('urgency')
+def caseReport(crime_id):
+    if request.method == 'POST':
+        crime_type = request.form.get('crime_type')
+        location = request.form.get('location')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        description = request.form.get('description')
+        evidence = request.form.get('evidence')
+        urgency = request.form.get('urgency')
 
-            case_report = CaseReport(crime_type=crime_type,
-                                    location=location,
-                                    date=date,
-                                    time=time,
-                                    description=description,
-                                    evidence=evidence,
-                                    urgency=urgency)
-            
+        case_report = CaseReport(crime_type=crime_type,
+                                 location=location,
+                                 date=date,
+                                 time=time,
+                                 description=description,
+                                 evidence=evidence,
+                                 urgency=urgency)
+        try:
             db.session.add(case_report)
             db.session.commit()
-            flash('Success. Case Report created')
-    except:
-        # Log the error
-        current_app.logger.error("Database error:")
+            flash('Success. Case Report created', 'success')
+        except Exception as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            flash("An error occurred when creating report. Please try again later.", "danger")
         
-        # Flash an error message to the user
-        flash("An error occurred when creating report. Please try again later.", "danger")
-        
-        # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.caseReport'))
+        # Redirect to the same page (crime details) after processing
+        return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
+
+    # If it's a GET request, just render the page
+    return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
+
+@admins.route('/admin/case-reports')
+@admin_required
+def case_reports():
+    cases = CaseReport.query.all()
+
+    return render_template('admin/case_reports.html', cases=cases)
+
+@admins.route('/admin/case_report_details/<int:report_id>')
+@admin_required
+def case_report_details(report_id):
+    report = CaseReport.query.get_or_404(report_id)
+    return render_template('admin/case_report_details.html', report=report)
+
+@admins.route('/admin/edit_case_report/<int:report_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_case_report(report_id):
+    report = CaseReport.query.get_or_404(report_id)
     
-    return render_template('admin/crime_details.html')
+    if request.method == 'POST':
+        # Update the report with form data
+        report.crime_type = request.form['crime_type']
+        report.location = request.form['location']
+        report.date = request.form['date']
+        report.time = request.form['time']
+        report.description = request.form['description']
+        report.evidence = request.form['evidence']
+        report.urgency = request.form['urgency']
+        
+        try:
+            db.session.commit()
+            flash('Report updated successfully', 'success')
+            return redirect(url_for('admins.case_reports'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occurred: {str(e)}', 'danger')
+    
+    # For GET request, render the form with existing data
+    return render_template('admin/edit_case_report.html', report=report)
+    
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
 @admin_required
