@@ -48,6 +48,15 @@
                         <option value="critical" {% if report.urgency == 'critical' %}selected{% endif %}>Critical</option>
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label for="assigned_officer" class="form-label fw-bold">Assign Officer:</label>
+                    <select class="form-select" id="assigned_officer" name="assigned_officer">
+                        <option value="">Select an officer</option>
+                        {% for officer in officers %}
+                            <option value="{{ officer.id }}">{{ officer.first_name }} - {{ officer.rank }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Update Report</button>
                     <a href="{{ url_for('admins.case_reports') }}" class="btn btn-secondary">Cancel</a>

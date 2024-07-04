@@ -341,6 +341,7 @@ def case_report_details(report_id):
 @admin_required
 def edit_case_report(report_id):
     report = CaseReport.query.get_or_404(report_id)
+    officers = Officers.query.all()
     
     if request.method == 'POST':
         # Update the report with form data
@@ -361,7 +362,7 @@ def edit_case_report(report_id):
             flash(f'An error occurred: {str(e)}', 'danger')
     
     # For GET request, render the form with existing data
-    return render_template('admin/edit_case_report.html', report=report)
+    return render_template('admin/edit_case_report.html', report=report, officers=officers)
     
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
