@@ -41,14 +41,8 @@
                 <li class="new-item active">
                     <a class="nav-link" href="{{ url_for('users.user_dashboard') }}">Dashboard</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Report
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('posts.report_crime') }}">Crime</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('posts.report_crime') }}">Report Crime</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('users.history') }}">History</a>
