@@ -188,14 +188,13 @@ def history():
 @login_required
 def recovered():
     try:
-        # should query all theft data with recovered 
         recovered_crimes = Crime.query.filter_by(crime_status='Recovered').all()
     except:
         flash("An error occurred while fetching crime details. Please try again later.", "error")
         # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('users.recovered'))
     
-    return render_template('user/recovered_items.html', crime=recovered_crimes)
+    return render_template('user/recovered_items.html', recovered_crimes=recovered_crimes)
 
 # DOWNLOADING P3 FORM
 @users.route('/users/downloads', methods=['GET', 'POST'])
