@@ -9,6 +9,9 @@
     .search-input {
         width: 300px; /* Adjust the width as needed */
     }
+    .clickable-row:hover {
+        background-color: #f5f5f5;
+    }
 </style>
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
@@ -38,24 +41,18 @@
             <th scope="col">Reporter <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Location <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Time Reported <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Action <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Description <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
     <tbody>
         {% for crime in crimes %}
-            <tr>
+            <tr  onclick="crimeDetails('{{ crime.crime_id }}')" style="cursor: pointer;">
                 <td>{{ loop.index }}</td>
                 <td>{{ crime.date_of_incident }}</td>
                 <td>{{ crime.issued_by }}</td>
                 <td>{{ crime.incident_location }}</td>
                 <td>{{ crime.time_of_incident }}</td>
-                <td>{{ crime.date_crime_received }}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm" onclick="crimeDetails('{{ crime.crime_id }}')">
-                        View Details
-                    </button>
-                </td>
+                <td>{{ crime.incident_nature }}</td>
             </tr>
         {% endfor %}    
     </tbody>
