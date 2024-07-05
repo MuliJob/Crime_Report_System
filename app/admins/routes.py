@@ -45,21 +45,16 @@ def get_crime_data_by_month():
 
 # getting daily distribution
 def get_daily_crime_data():
-    # Get the current date and time
     now = datetime.now()
 
-    # Calculate the start of the current week (Monday)
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Calculate the end of the current week (Sunday)
     end_of_week = start_of_week + timedelta(days=6)
     end_of_week = end_of_week.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    # Initialize the dictionary for all days of the week
-    crime_dist = {day: {'crimes': 0} for day in range(7)}  # 0 = Monday, 6 = Sunday
+    crime_dist = {day: {'crimes': 0} for day in range(7)}  
 
-    # Query for crimes in the current week
     crime_results = db.session.query(
         extract('dow', Crime.date_crime_received).label('day'),
         func.count(Crime.crime_id).label('count')
@@ -70,7 +65,6 @@ def get_daily_crime_data():
 
     
 
-    # Populate the dictionary with results
     for day, count in crime_results:
         crime_dist[day]['crimes'] = count
 
@@ -80,7 +74,6 @@ def get_daily_crime_data():
 def get_monthly_averages():
     crime_average = {f'{i:02d}': 0 for i in range(1, 13)}
 
-    # Calculating monthly crime averages
     crime_results = db.session.query(
         extract('month', Crime.date_crime_received).label('month'),
         func.count(Crime.crime_id).label('count')
@@ -95,7 +88,6 @@ def get_monthly_averages():
 
 #getting annual crime distribution
 def get_annual_crime_data():
-    # Query to get annual counts of crimes
     annual_crime_data = db.session.query(
         func.strftime('%Y', Crime.date_crime_received).label('year'),
         func.count(Crime.crime_id).label('crime_count')
@@ -107,15 +99,12 @@ def get_annual_crime_data():
 @admins.route('/admin/', methods=['GET', 'POST'])
 def adminIndex():
     if request.method == 'POST':
-        # get the value of field
         username = request.form.get('username')
         password = request.form.get('password')
-        # check the value is not empty
         if username == '' and password == '':
             flash('Please fill all the field', category='danger')
             return redirect('/admin/')
         else:
-            # login admin by username
             admins = Admin().query.filter_by(username=username).first()
             if admins and check_password_hash(admins.password,password):
                 session['admin_id']=admins.id
@@ -185,20 +174,17 @@ def reports():
                 Crime.issued_by.ilike(f'%{search_query}%') |
                 Crime.date_of_incident.ilike(f'%{search_query}%') |
                 Crime.time_of_incident.ilike(f'%{search_query}%') |
-                Crime.date_theft_received.ilike(f'%{search_query}%') |
-                Crime.crime_status.ilike(f'%{search_query}%')
+                Crime.date_crime_received.ilike(f'%{search_query}%') |
+                Crime.crime_status.ilike(f'%{search_query}%') |
+                Crime.incident_nature.ilike(f'%{search_query}%')
             ).all()
-            
         else:
             crimes = Crime.query.all()
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("No reports with the keyword.", "warning")
         
-        # Redirect to a safe page
         return redirect(url_for('admins.reports'))
     
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
@@ -219,13 +205,10 @@ def updateCrimeStatus(crime_id):
         else:
             flash('Failed to update crime status.', 'danger')
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("An error occurred. Please try again later.", "danger")
         
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.crimeStatus'))
     return redirect(url_for('admins.crimeStatus'))
 
@@ -246,13 +229,10 @@ def crimeStatus():
         else:
             crimes_status = Crime.query.all()
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("No report with the keyword.", "warning")
         
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.crimeStatus'))
 
     return render_template('admin/crime_status.html', title='Crime Status', crimes_status=crimes_status)
