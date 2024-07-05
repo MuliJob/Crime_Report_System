@@ -5,7 +5,6 @@ from flask_login import LoginManager
 from app.config import SECRET_KEY, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER, SQLALCHEMY_DATABASE_URI
 from flask_session import Session
 from flask_migrate import Migrate
-#from flask_admin import Admin
 from flask_mail import Mail, Message
 
 convention = {
@@ -58,12 +57,18 @@ def load_user(user_id):
 # sending email
 def send_admin_email(subject, body):
     try:
+        admin = Admin.query.first()
+        if not admin:
+            print("Admin email not found")
+            return False
+        
         msg = Message(subject,
-                      recipients=['jobmuli60@gmail.com'])  # Admin's email address
+                      recipients=[admin.admin_email])  # Admin's email address
         msg.body = body
         mail.send(msg)
         print("Email send successful")
         return True
+    
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
         return False
@@ -75,6 +80,8 @@ from app.main.routes import main
 from app.admins.routes import admins
 from app.officers.routes import officers
 from app.users import models
+from app.admins.models import Admin
+
 
 app.register_blueprint(users)
 app.register_blueprint(posts)
