@@ -114,6 +114,15 @@ def officerDashboard():
                            all_cases_count=all_cases_count, 
                            completed_cases_count=completed_cases_count)
 
+@officers.route('/officer/assigned-cases', methods=['GET', 'POST'])
+@officer_required
+def assignedCase():
+    officer_id = session['officer_id']
+        
+    all_cases_assigned = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+
+    return render_template('officer/assigned-cases.html', all_cases_assigned=all_cases_assigned)
+
 @officers.route('/officer/logout')
 @officer_required
 def officerLogout():    

@@ -40,7 +40,7 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 mb-4">
-            <div class="card text-center assigned">
+            <div class="card text-center assigned" onclick="navigateTo('/officer/assigned-cases')">
                 <div class="card-body">
                     <h5 class="card-title">Assigned</h5>
                     <p class="card-text">{{ all_cases_count if all_cases_count > 0 else '0' }}</p>
@@ -49,7 +49,7 @@
         </div>
 
         <div class="col-md-6 mb-4">
-            <div class="card text-center completed">
+            <div class="card text-center completed" onclick="navigateTo('officers.completedCase')">
                 <div class="card-body">
                     <h5 class="card-title">Completed</h5>
                     <p class="card-text">{{ completed_cases_count if completed_cases_count > 0 else '0' }}</p>
@@ -58,4 +58,9 @@
         </div>
     </div>
 </div>
+<script>
+    function navigateTo(route) {
+        window.location.href = '' + route;
+    }
+</script>
 {% endblock content %}
