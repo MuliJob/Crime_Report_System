@@ -49,7 +49,7 @@ class CaseReport(db.Model, UserMixin):
 
     def to_dict(self):
         return {
-            'report_id': self.report_id,  # Changed from 'reporter_id' to 'report_id'
+            'report_id': self.report_id,  
             'crime_type': self.crime_type,
             'location': self.location,
             'date': self.date,
@@ -57,8 +57,8 @@ class CaseReport(db.Model, UserMixin):
             'description': self.description,
             "evidence": self.evidence,
             'urgency': self.urgency,
-            'assigned_officer_id': self.assigned_officer_id,  # Added this line
-            'status': self.status,  # Added this line
-            'created_at': self.created_at.isoformat() if self.created_at else None,  # Added this line
+            'assigned_officer_id': self.assigned_officer_id,  
+            'status': self.status, 
+            'created_at': self.created_at.isoformat() if self.created_at else None,  
         }
 

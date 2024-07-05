@@ -1,10 +1,10 @@
 from functools import wraps
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from flask_login import logout_user
+from flask_login import current_user, logout_user
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.officers.models import Officers
+from app.officers.models import CaseReport, Officers
 
 officers = Blueprint('officers', __name__)
 
@@ -91,7 +91,28 @@ def officerRegister():
 @officers.route('/officer/officer-dashboard', methods=['GET', 'POST'])
 @officer_required
 def officerDashboard():
-    return render_template('officer/officer-dashboard.html')
+    # Check if the user is logged in
+    if 'officer_id' not in session:
+        return redirect(url_for('login'))
+
+    officer_id = session['officer_id']
+    
+    # Get the officer
+    officer = Officers.query.get(officer_id)
+    if not officer:
+        return redirect(url_for('officers.officerLogin'))
+
+    # Get all cases assigned to the current officer
+    all_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+    all_cases_count = len(all_cases)
+
+    # Get completed cases
+    completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='completed').all()
+    completed_cases_count = len(completed_cases)
+
+    return render_template('officer/officer-dashboard.html', 
+                           all_cases_count=all_cases_count, 
+                           completed_cases_count=completed_cases_count)
 
 @officers.route('/officer/logout')
 @officer_required
