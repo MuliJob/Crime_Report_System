@@ -2,7 +2,13 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Official Report</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
+    <h2 class="text-center mb-4">Edit Official Report</h2>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <form method="POST" action="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}" class="bg-light p-4 rounded shadow">
@@ -53,7 +59,9 @@
                     <select class="form-select" id="assigned_officer" name="assigned_officer">
                         <option value="">Select an officer</option>
                         {% for officer in officers %}
-                            <option value="{{ officer.id }}">{{ officer.first_name }} - {{ officer.rank }}</option>
+                            <option value="{{ officer.officer_id }}" {% if report.assigned_officer_id == officer.officer_id %}selected{% endif %}>
+                                {{ officer.first_name }} - {{ officer.rank }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>

@@ -320,11 +320,11 @@ def case_report_details(report_id):
 @admins.route('/admin/edit_case_report/<int:report_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_case_report(report_id):
+    
     report = CaseReport.query.get_or_404(report_id)
     officers = Officers.query.all()
-    
+
     if request.method == 'POST':
-        # Update the report with form data
         report.crime_type = request.form['crime_type']
         report.location = request.form['location']
         report.date = request.form['date']
@@ -333,17 +333,23 @@ def edit_case_report(report_id):
         report.evidence = request.form['evidence']
         report.urgency = request.form['urgency']
         
+        # Assign officer
+        assigned_officer_id = request.form.get('assigned_officer')
+        if assigned_officer_id:
+            report.assigned_officer_id = int(assigned_officer_id)
+        else:
+            report.assigned_officer_id = None
+
         try:
             db.session.commit()
             flash('Report updated successfully', 'success')
-            return redirect(url_for('admins.case_reports'))
+            return redirect(url_for('admins.case_report_details', report_id=report.report_id))
         except Exception as e:
             db.session.rollback()
             flash(f'An error occurred: {str(e)}', 'danger')
-    
-    # For GET request, render the form with existing data
+
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
-    
+
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
 @admin_required

@@ -1,6 +1,12 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
 <div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
   <h2 class="text-center mb-0">Official Report</h2>
     <div class="card shadow" style="max-width: 650px; margin: auto;">
         <div class="card-body">
@@ -41,6 +47,10 @@
                     <div class="col-md-6 mb-3">
                         <label for="created_at" class="form-label">Created At:</label>
                         <input type="text" class="form-control" id="created_at" value="{{ report.created_at }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="created_at" class="form-label">Officer Assigned:</label>
+                        <input type="text" class="form-control" id="created_at" value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}" readonly>
                     </div>
                 </div>
             </form>

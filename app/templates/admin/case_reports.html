@@ -63,7 +63,7 @@
                 <td>{{ case.description }}</td>
                 <td>{{ case.status }}</td>
                 <td>{{ case.urgency }}</td>
-                <td></td>
+                <td>{{ case.assigned_officer.first_name }} {{ case.assigned_officer.rank }}</td>
             </tr>
         {% endfor %}    
     </tbody>
