@@ -218,7 +218,7 @@
     crimeLocations.forEach(location => {
       if (location.latitude && location.longitude) {
         L.marker([location.latitude, location.longitude]).addTo(map)
-          .bindPopup(`Crime ID: ${location.crime_id}<br>Description: ${location.incident_details}`)
+          .bindPopup(`Crime ID: ${location.crime_id}<br>Date: ${location.date_of_incident}<br> Time: ${location.time_of_incident}<br> Description: ${location.incident_nature}`)
           .openPopup();
       }
     });
