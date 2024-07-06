@@ -123,6 +123,12 @@ def assignedCase():
 
     return render_template('officer/assigned-cases.html', all_cases_assigned=all_cases_assigned)
 
+@officers.route('/officer/case-details/<int:report_id>')
+@officer_required
+def caseDetails(report_id):
+    report = CaseReport.query.get_or_404(report_id)
+    return render_template('/officer/officer-case-details.html', report=report)
+
 @officers.route('/officer/settled-cases')
 @officer_required
 def settledCase():

@@ -1,4 +1,4 @@
-{% extends 'admin/layout.html' %}
+{% extends 'officer/master.html' %}
 {% block content %}
 <div class="container mt-5">
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
@@ -48,17 +48,10 @@
                         <label for="created_at" class="form-label">Created At:</label>
                         <input type="text" class="form-control" id="created_at" value="{{ report.created_at }}" readonly>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Officer Assigned:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}" readonly>
-                    </div>
                 </div>
             </form>
         </div>
         <div class="card-footer text-center">
-            <a href="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil-square"></i> Edit
-            </a>
             <a href="{{ url_for('admins.case_reports') }}" class="btn btn-secondary ms-2">
                 <i class="bi bi-arrow-left"></i> Back
             </a>

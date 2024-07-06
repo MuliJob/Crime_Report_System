@@ -48,7 +48,7 @@
     </thead>
     <tbody>
         {% for cases in all_cases_assigned %}
-            <tr  onclick="crimeDetails('{{ cases.crime_id }}')" style="cursor: pointer;">
+            <tr  onclick="caseDetails('{{ cases.report_id }}')" style="cursor: pointer;">
                 <td>{{ loop.index }}</td>
                 <td>{{ cases.crime_type }}</td>
                 <td>{{ cases.date }}</td>
@@ -57,7 +57,7 @@
                 <td>{{ cases.evidence }}</td>
                 <td>{{ cases.urgency }}</td>
                 <td>{{ cases.status }}</td>
-            </tr>
+            </tr>caseDetails
         {% endfor %}    
     </tbody>
   </table>
@@ -82,8 +82,8 @@
 
 
 <script>
-    function crimeDetails(crime_id) {
-        window.location.href = '/admin/crime_details/' + crime_id;
+    function caseDetails(report_id) {
+        window.location.href = '/officer/case-details/' + report_id;
     }
 </script>
 {% endblock content %}
