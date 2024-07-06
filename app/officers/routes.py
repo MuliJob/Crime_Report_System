@@ -129,6 +129,22 @@ def caseDetails(report_id):
     report = CaseReport.query.get_or_404(report_id)
     return render_template('/officer/officer-case-details.html', report=report)
 
+@officers.route('/admin/edit_case_report/<int:report_id>', methods=['GET', 'POST'])
+@officer_required
+def edit_case_report(report_id):
+    
+    report = CaseReport.query.get_or_404(report_id)
+
+    try:
+        db.session.commit()
+        flash('Report updated successfully', 'success')
+        return redirect(url_for('officers.caseDetails', report_id=report.report_id))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+
+    return render_template('admin/edit_case_report.html', report=report, officers=officers)
+
 @officers.route('/officer/settled-cases')
 @officer_required
 def settledCase():
