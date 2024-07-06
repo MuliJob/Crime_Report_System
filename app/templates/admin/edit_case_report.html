@@ -47,7 +47,7 @@
                 <div class="mb-3">
                     <label for="urgency" class="form-label fw-bold">Urgency Level:</label>
                     <select class="form-select" id="urgency" name="urgency" required>
-                        <option value="">Select urgency level</option>
+                        <option value="">Select priority</option>
                         <option value="low" {% if report.urgency == 'low' %}selected{% endif %}>Low</option>
                         <option value="medium" {% if report.urgency == 'medium' %}selected{% endif %}>Medium</option>
                         <option value="high" {% if report.urgency == 'high' %}selected{% endif %}>High</option>

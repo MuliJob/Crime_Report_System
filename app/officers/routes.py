@@ -123,27 +123,32 @@ def assignedCase():
 
     return render_template('officer/assigned-cases.html', all_cases_assigned=all_cases_assigned)
 
-@officers.route('/officer/case-details/<int:report_id>')
+@officers.route('/officer/case-details/<int:report_id>', methods=['POST', 'GET'])
 @officer_required
 def caseDetails(report_id):
     report = CaseReport.query.get_or_404(report_id)
-    return render_template('/officer/officer-case-details.html', report=report)
-
-@officers.route('/admin/edit_case_report/<int:report_id>', methods=['GET', 'POST'])
-@officer_required
-def edit_case_report(report_id):
-    
-    report = CaseReport.query.get_or_404(report_id)
-
-    try:
-        db.session.commit()
-        flash('Report updated successfully', 'success')
+    if request.method == 'POST':
+        # Update case status
+        new_status = request.form.get('case_status')
+        if new_status and new_status != report.case_status:
+            report.case_status = new_status
+            
+        # Update officer report
+        officer_report = request.form.get('officer_report')
+        if officer_report:
+            report.officer_report = officer_report
+        
+        # Commit changes to the database
+        try:
+            db.session.commit()
+            flash('Report updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occurred: {str(e)}', 'danger')
+        
         return redirect(url_for('officers.caseDetails', report_id=report.report_id))
-    except Exception as e:
-        db.session.rollback()
-        flash(f'An error occurred: {str(e)}', 'danger')
-
-    return render_template('admin/edit_case_report.html', report=report, officers=officers)
+    
+    return render_template('/officer/officer-case-details.html', report=report)
 
 @officers.route('/officer/settled-cases')
 @officer_required

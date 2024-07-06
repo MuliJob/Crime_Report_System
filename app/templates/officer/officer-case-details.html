@@ -15,7 +15,7 @@
   <h2 class="text-center mb-0">Official Report</h2>
     <div class="card shadow" style="max-width: 650px; margin: auto;">
         <div class="card-body">
-            <form method="POST">
+            <form method="POST, GET">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="crime_type" class="form-label">Crime Type:</label>
@@ -53,6 +53,18 @@
                         <label for="created_at" class="form-label">Created At:</label>
                         <input type="text" class="form-control" id="created_at" value="{{ report.created_at }}" readonly>
                     </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="case_status" class="form-label">Case Status:</label>
+                      <select class="form-select" id="case_status" name="case_status">
+                          <option value="Solved" {% if report.status == 'Solved' %}selected{% endif %}>Solved</option>
+                          <option value="Under  Investigation" {% if report.status == 'Under Investigation' %}selected{% endif %}>Under  Investigation</option>
+                          <option value="Closed" {% if report.status == 'Closed' %}selected{% endif %}>Closed</option>
+                          <option value="Pending Prosecution" {% if report.status == 'Pending Prosecution' %}selected{% endif %}>Pending Prosecution</option>
+                          <option value="Adjudicated" {% if report.status == 'Adjudicated' %}selected{% endif %}>Adjudicated</option>
+                          <option value="Cleared by Arrest" {% if report.status == 'Cleared by Arrest' %}selected{% endif %}>Cleared by Arrest</option>
+                          <option value="Recovered" {% if report.status == 'Recovered' %}selected{% endif %}>Recovered</option>
+                      </select>
+                  </div>
                 </div>
             </form>
         </div>
@@ -60,7 +72,7 @@
         <br>
         <div class="container mt-5 align-text">
           <h3>Write Your Case Report About Case</h3>
-          <form action="" method="POST">
+          <form action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}" method="POST, GET">
             <div class="mb-3">
               <label for="officer_report" class="form-label">Please write your report below.</label>
               <textarea class="form-control" id="officer_report" name="officer_report" rows="6"></textarea>
