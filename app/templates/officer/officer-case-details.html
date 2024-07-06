@@ -58,12 +58,12 @@
         </div>
         
         <br>
-        <div class="align-text">
+        <div class="container mt-5 align-text">
           <h3>Write Your Case Report About Case</h3>
           <form action="" method="POST">
             <div class="mb-3">
-                <label for="officer_report" class="form-label">Please write your report below.</label>
-                <textarea class="form-control" id="officer_report" name="officer_report" rows="6"></textarea>
+              <label for="officer_report" class="form-label">Please write your report below.</label>
+              <textarea class="form-control" id="officer_report" name="officer_report" rows="6"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
           </form>
@@ -87,4 +87,13 @@
         border-color: #e9ecef; 
     }
 </style>
+<script>
+  tinymce.init({
+      selector: '#officer_report',
+      plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+      toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+      menubar: false,
+      branding: false
+    });
+</script>
 {% endblock content %}
