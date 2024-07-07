@@ -30,16 +30,78 @@
     .completed {
         background-color: #d1f1d1;
     }
+    .urgent {
+        background-color: #f8d7da;
+    }
+    .recent {
+        background-color: #fff3cd;
+    }
+    .stat-card {
+        background-color: #e9ecef;
+    }
+    .recent-activity {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .status {
+      font-weight: bold;
+      padding: 5px;
+      border-radius: 5px;
+      color: white;
+      display: inline-block;
+    }
+    .status-unsolved {
+      background-color: #e74c3c; /* Red */
+    }
+    
+    .status-recovered {
+      background-color: #2ecc71; /* Green */
+    }
+    
+    .status-under-investigation {
+      background-color: #3498db; /* Blue */
+    }
+    
+    .status-solved {
+      background-color: #27ae60; /* Light Green */
+    }
+    
+    .status-cleared-by-arrest {
+      background-color: #9b59b6; /* Purple */
+    }
+    
+    .status-cold-case {
+      background-color: #34495e; /* Dark Blue */
+    }
+    
+    .status-closed {
+      background-color: #f39c12; /* Orange */
+    }
+    
+    .status-pending-prosecution {
+      background-color: #f1c40f; /* Yellow */
+    }
+    
+    .status-adjudicated {
+      background-color: #95a5a6; /* Gray */
+    }
 </style>
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    {{ message }}
-</div>
-{% endfor %} {% endif%} {% endwith %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages%}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif%}
+{% endwith %}
+
 <div class="container mt-5">
+    <h2 class="mb-4">Officer Dashboard</h2>
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card text-center assigned" onclick="navigateTo('/officer/assigned-cases')">
                 <div class="card-body">
                     <h5 class="card-title">Assigned</h5>
@@ -47,8 +109,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6 mb-4">
+        
+        <div class="col-md-3 mb-4">
             <div class="card text-center completed" onclick="navigateTo('/officer/settled-cases')">
                 <div class="card-body">
                     <h5 class="card-title">Completed</h5>
@@ -56,11 +118,124 @@
                 </div>
             </div>
         </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card text-center urgent" onclick="navigateTo('/officer/assigned-cases')">
+                <div class="card-body">
+                    <h5 class="card-title">Urgent</h5>
+                    <p class="card-text">{{ urgent_cases_count if urgent_cases_count > 0 else '0' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card text-center recent" onclick="navigateTo('/officer/assigned-cases')">
+                <div class="card-body">
+                    <h5 class="card-title">Recent</h5>
+                    <p class="card-text">{{ recent_cases_count if recent_cases_count > 0 else '0' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Case Statistics</h5>
+                    <canvas id="caseStatistics"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity</h5>
+                    <div class="recent-activity">
+                        <ul class="list-group list-group-flush">
+                            {% for activity in recent_activities %}
+                            <li class="list-group-item">
+                                <strong>{{ activity.created_at.strftime('%Y-%m-%d') }}</strong> - New case assigned: {{ activity.crime_type }} (Case ID:{{ activity.report_id }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Deadlines</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Description</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deadline in upcoming_deadlines %}
+                            <tr>
+                                <td>{{ deadline.report_id }}</td>
+                                <td>{{ deadline.description }}</td>
+                                <td>{{ deadline.deadline }}</td>
+                                <td>
+                                    <span class="status 
+                                        {% if deadline.status == 'Unsolved' %} status-unsolved 
+                                        {% elif deadline.status == 'Recovered' %} status-recovered 
+                                        {% elif deadline.status == 'Under Investigation' %} status-under-investigation 
+                                        {% elif deadline.status == 'Solved' %} status-solved 
+                                        {% elif deadline.status == 'Cleared by Arrest' %} status-cleared-by-arrest 
+                                        {% elif deadline.status == 'Cold Case' %} status-cold-case 
+                                        {% elif deadline.status == 'Closed' %} status-closed 
+                                        {% elif deadline.status == 'Pending Prosecution' %} status-pending-prosecution 
+                                        {% elif deadline.status == 'Adjudicated' %} status-adjudicated 
+                                        {% endif %}
+                                    ">{{ deadline.status }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+
 <script>
     function navigateTo(route) {
         window.location.href = '' + route;
     }
+    
+    // Case Statistics Chart
+    var ctx = document.getElementById('caseStatistics').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ status_labels | tojson }},
+            datasets: [{
+                data: {{ status_counts | tojson }},
+                backgroundColor: ['#82E0AA', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+                '#F7DC6F', '#BB8FCE', '#FF6B6B', '#F1948A']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
 </script>
 {% endblock content %}
