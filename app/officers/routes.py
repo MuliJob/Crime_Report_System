@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, logout_user
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -166,8 +166,32 @@ def officerDashboard():
 @officer_required
 def assignedCase():
     officer_id = session['officer_id']
+
+    search_assigned = request.args.get('search_assigned', '')
+    try:
+        if search_assigned:
+            all_cases_assigned = CaseReport.query.filter(
+                CaseReport.assigned_officer_id == officer_id
+            ).filter(
+                or_(
+                CaseReport.crime_type.ilike(f'%{search_assigned}%') | 
+                CaseReport.location.ilike(f'%{search_assigned}%') |
+                CaseReport.date.ilike(f'%{search_assigned}%') |
+                CaseReport.time.ilike(f'%{search_assigned}%') |
+                CaseReport.created_at.ilike(f'%{search_assigned}%') |
+                CaseReport.status.ilike(f'%{search_assigned}%') |
+                CaseReport.urgency.ilike(f'%{search_assigned}%')
+                )
+            ).all()
+        else:
+            all_cases_assigned = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+    except:
+        current_app.logger.error("Database error:")
         
-    all_cases_assigned = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+        flash("No report with the keyword.", "warning")
+        
+        return redirect(url_for('officers.assignedCase'))
+        
 
     return render_template('officer/assigned-cases.html', all_cases_assigned=all_cases_assigned)
 
@@ -204,8 +228,32 @@ def caseDetails(report_id):
 @officer_required
 def caseStatus():
     officer_id = session['officer_id']
+
+    search_case_status = request.args.get('search_case_status', '')
+    try:
+        if search_case_status:
+            case_status = CaseReport.query.filter(
+                CaseReport.assigned_officer_id == officer_id
+            ).filter(
+                or_(
+                CaseReport.location.ilike(f'%{search_case_status}%') | 
+                CaseReport.status.ilike(f'%{search_case_status}%') |
+                CaseReport.date.ilike(f'%{search_case_status}%') |
+                CaseReport.time.ilike(f'%{search_case_status}%') |
+                CaseReport.crime_type.ilike(f'%{search_case_status}%') |
+                CaseReport.created_at.ilike(f'%{search_case_status}%') |
+                CaseReport.urgency.ilike(f'%{search_case_status}%')
+                )
+            ).all()
+        else:
+            case_status = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+    except:
+        current_app.logger.error("Database error:")
         
-    case_status = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+        flash("No report with the keyword.", "warning")
+        
+        return redirect(url_for('admins.caseStatus'))
+        
 
     return render_template('/officer/case-status.html', case_status=case_status)
 

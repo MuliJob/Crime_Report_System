@@ -21,9 +21,9 @@
     </div>
     {% endfor %} {% endif%} {% endwith %}
     <br>
-    <form method="GET, POST" action="" class="search-form">
+    <form method="GET, POST" action="{{ url_for('officers.assignedCase') }}" class="search-form">
         <div class="input-group search-input">
-            <input type="text" name="search_query" class="form-control" placeholder="Search">
+            <input type="text" name="search_assigned" class="form-control" placeholder="Search">
             <div class="input-group-append ms-2">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-search"></i>
