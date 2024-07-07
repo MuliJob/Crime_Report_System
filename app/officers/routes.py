@@ -131,7 +131,7 @@ def caseDetails(report_id):
 
         if report is None:
                 flash("Case details not found.", "warning")
-                return redirect(url_for('admins.reports'))
+                return redirect(url_for('officers.reports'))
         
         if request.method == 'POST':
             officer_report_text = request.form.get('officer_report')
@@ -151,6 +151,35 @@ def caseDetails(report_id):
         current_app.logger.error("Database error:")
         flash("An error occurred while fetching the case report details. Please try again later.", "danger")
         return redirect(url_for('officers.assignedCase'))
+    
+@officers.route('/officer/status')
+@officer_required
+def caseStatus():
+    officer_id = session['officer_id']
+        
+    case_status = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+
+    return render_template('/officer/case-status.html', case_status=case_status)
+
+@officers.route('/officer/status/<int:report_id>', methods=['POST'])
+@officer_required
+def updateCaseStatus(report_id):
+    try:
+        case = CaseReport.query.get_or_404(report_id)
+        case_status = request.form.get('case_status')
+        if case_status:
+            case.status = case_status
+            db.session.commit()
+            flash(f'Success. Case status updated to {case_status}.', 'success')
+        else:
+            flash('Failed to update case status.', 'danger')
+    except:
+        current_app.logger.error("Database error:")
+        
+        flash("An error occurred. Please try again later.", "danger")
+        
+        return redirect(url_for('officers.caseStatus'))
+    return redirect(url_for('officers.caseStatus'))
 
 @officers.route('/officer/settled-cases')
 @officer_required
