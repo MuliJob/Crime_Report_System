@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, logout_user
+from sqlalchemy import func
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -110,9 +112,55 @@ def officerDashboard():
     completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
     completed_cases_count = len(completed_cases)
 
+    high_urgency_count = CaseReport.query.filter_by(
+    assigned_officer_id=officer_id, 
+    urgency='high'
+    ).count()
+
+    critical_urgency_count = CaseReport.query.filter_by(
+        assigned_officer_id=officer_id, 
+        urgency='critical'
+    ).count()
+
+    urgent_cases_count = high_urgency_count + critical_urgency_count
+
+    recent_cases_count = CaseReport.query.filter_by(
+        assigned_officer_id=officer_id
+    ).filter(CaseReport.created_at >= (datetime.utcnow() - timedelta(days=7))).count()
+    
+    recent_activities = db.session.query(
+        CaseReport.report_id,
+        CaseReport.crime_type,
+        CaseReport.created_at
+    ).filter_by(
+        assigned_officer_id=officer_id
+    ).order_by(CaseReport.created_at.desc()).limit(5).all()
+
+    upcoming_deadlines = CaseReport.query.filter_by(
+        assigned_officer_id=officer_id
+    ).filter(
+        CaseReport.deadline >= datetime.utcnow()
+    ).order_by(CaseReport.deadline).limit(5).all()
+
+    case_stats = db.session.query(
+        CaseReport.status, 
+        func.count(CaseReport.report_id)
+    ).filter_by(
+        assigned_officer_id=officer_id
+    ).group_by(CaseReport.status).all()
+
+    status_labels = [stat[0] for stat in case_stats]
+    status_counts = [stat[1] for stat in case_stats]
+
     return render_template('officer/officer-dashboard.html', 
                            all_cases_count=all_cases_count, 
-                           completed_cases_count=completed_cases_count)
+                           completed_cases_count=completed_cases_count,
+                           urgent_cases_count=urgent_cases_count,
+                           recent_cases_count=recent_cases_count,
+                           recent_activities=recent_activities,
+                           upcoming_deadlines=upcoming_deadlines,
+                           status_labels=status_labels,
+                           status_counts=status_counts)
 
 @officers.route('/officer/assigned-cases')
 @officer_required

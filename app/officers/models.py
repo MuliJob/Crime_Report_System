@@ -39,6 +39,7 @@ class CaseReport(db.Model, UserMixin):
     description = db.Column(db.Text, nullable=False)
     evidence = db.Column(db.Text, nullable=False)
     urgency = db.Column(db.String(10), nullable=False)
+    deadline = db.Column(db.String(20), nullable=True)
     status = db.Column(db.String(50), nullable=True)
     reports = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
@@ -58,6 +59,7 @@ class CaseReport(db.Model, UserMixin):
             'description': self.description,
             "evidence": self.evidence,
             'urgency': self.urgency,
+            'deadline': self.deadline,
             'assigned_officer_id': self.assigned_officer_id,  
             'status': self.status, 
             'created_at': self.created_at.isoformat() if self.created_at else None,  

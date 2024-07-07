@@ -268,6 +268,7 @@ def caseReport(crime_id):
         description = request.form.get('description')
         evidence = request.form.get('evidence')
         urgency = request.form.get('urgency')
+        deadline = request.form.get('deadline')
 
         case_report = CaseReport(crime_type=crime_type,
                                  location=location,
@@ -275,7 +276,8 @@ def caseReport(crime_id):
                                  time=time,
                                  description=description,
                                  evidence=evidence,
-                                 urgency=urgency)
+                                 urgency=urgency,
+                                 deadline=deadline)
         try:
             db.session.add(case_report)
             db.session.commit()
@@ -332,6 +334,7 @@ def edit_case_report(report_id):
         report.description = request.form['description']
         report.evidence = request.form['evidence']
         report.urgency = request.form['urgency']
+        report.deadline = request.form['deadline']
         
         # Assign officer
         assigned_officer_id = request.form.get('assigned_officer')
