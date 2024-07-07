@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
   <style>
     body {
-      background-color: #f0f0f0;
+      background-color: #ffffff;
       color: black;
       margin: 0;
       padding: 20px;
@@ -218,7 +218,7 @@
     crimeLocations.forEach(location => {
       if (location.latitude && location.longitude) {
         L.marker([location.latitude, location.longitude]).addTo(map)
-          .bindPopup(`Crime ID: ${location.crime_id}<br>Description: ${location.incident_details}`)
+          .bindPopup(`Crime ID: ${location.crime_id}<br>Date: ${location.date_of_incident}<br> Time: ${location.time_of_incident}<br> Description: ${location.incident_nature}`)
           .openPopup();
       }
     });

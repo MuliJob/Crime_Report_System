@@ -1,5 +1,23 @@
-{% extends 'admin/layout.html' %}
+{% extends 'officer/master.html' %}
 {% block content %}
+<script src="https://cdn.tiny.cloud/1/n09jqk8dx7kscz6qa5vo40azjxmme44bjit60u4nymwhuws0/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<style>
+.align-text {
+  text-align: center;
+}
+.card {
+    border: none;
+    border-radius: 15px;
+}
+.card-header {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.form-control[readonly] {
+    background-color: #f8f9fa; 
+    border-color: #e9ecef; 
+}
+</style>
 <div class="container mt-5">
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
     <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
@@ -7,10 +25,10 @@
         {{ message }}
     </div>
     {% endfor %} {% endif%} {% endwith %}
-  <h2 class="text-center mb-0">Official Report</h2>
+  <h2 class="text-center mb-0">Report Details</h2>
     <div class="card shadow" style="max-width: 650px; margin: auto;">
         <div class="card-body">
-            <form method="POST">
+            <form>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="crime_type" class="form-label">Crime Type:</label>
@@ -46,42 +64,37 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="created_at" class="form-label">Created At:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Officer Assigned:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="deadline" class="form-label">Deadline:</label>
-                        <input type="text" class="form-control" id="deadline" value="{{ report.deadline }}" readonly>
+                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at }}" readonly>
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="card-footer text-center">
-            <a href="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil-square"></i> Edit
-            </a>
-            <a href="{{ url_for('admins.case_reports') }}" class="btn btn-secondary ms-2">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
-        </div>
+        </div>        
+    </div>
+</div>
+<br>
+<h3 class="text-center">Write Your Report About Case</h3>
+<div class="card shadow" style="max-width: 650px; margin: auto;">
+    <div class="card-body">
+        <form action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}" method="POST">
+            <div class="mb-3">
+                <label for="officer_report" class="form-label">Please write your report below.</label>
+                <textarea class="form-control" id="officer_report" name="officer_report" rows="15">{{ report.reports }}</textarea>
+            </div>
+            <div class="text-center">
+                <a href="{{ url_for('officers.assignedCase') }}"><button type="button" class="btn btn-primary"><i class="bi bi-arrow-left-circle"></i> Back</button></a>
+                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Report</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<style>
-    .card {
-        border: none;
-        border-radius: 15px;
-    }
-    .card-header {
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-    }
-    .form-control[readonly] {
-        background-color: #f8f9fa; 
-        border-color: #e9ecef; 
-    }
-</style>
+<script>
+  tinymce.init({
+      selector: '#officer_report',
+      plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+      toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+      menubar: false,
+      branding: false
+    });
+</script>
 {% endblock content %}
