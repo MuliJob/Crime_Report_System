@@ -40,6 +40,7 @@ class CaseReport(db.Model, UserMixin):
     evidence = db.Column(db.Text, nullable=False)
     urgency = db.Column(db.String(10), nullable=False)
     status = db.Column(db.String(50), nullable=True)
+    reports = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
     assigned_officer_id = db.Column(db.Integer, db.ForeignKey('officers.officer_id'))
     assigned_officer = db.relationship('Officers', back_populates='assignments')

@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, logout_user
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -123,32 +123,34 @@ def assignedCase():
 
     return render_template('officer/assigned-cases.html', all_cases_assigned=all_cases_assigned)
 
-@officers.route('/officer/case-details/<int:report_id>', methods=['POST', 'GET'])
+@officers.route('/officer/case-details/<int:report_id>', methods=['POST','GET'])
 @officer_required
 def caseDetails(report_id):
-    report = CaseReport.query.get_or_404(report_id)
-    if request.method == 'POST':
-        # Update case status
-        new_status = request.form.get('case_status')
-        if new_status and new_status != report.case_status:
-            report.case_status = new_status
+    try:
+        report = CaseReport.query.get_or_404(report_id)
+
+        if report is None:
+                flash("Case details not found.", "warning")
+                return redirect(url_for('admins.reports'))
+        
+        if request.method == 'POST':
+            officer_report_text = request.form.get('officer_report')
             
-        # Update officer report
-        officer_report = request.form.get('officer_report')
-        if officer_report:
-            report.officer_report = officer_report
-        
-        # Commit changes to the database
-        try:
-            db.session.commit()
-            flash('Report updated successfully', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'An error occurred: {str(e)}', 'danger')
-        
-        return redirect(url_for('officers.caseDetails', report_id=report.report_id))
-    
-    return render_template('/officer/officer-case-details.html', report=report)
+            report.reports = officer_report_text
+            
+            try:
+                db.session.commit()
+                flash('Report saved successfully', 'success')
+            except Exception as e:
+                db.session.rollback()
+                current_app.logger.error(f"Error saving officer report: {str(e)}")
+                flash(f'An error occurred while saving the report. Please try again.', 'danger')
+
+        return render_template('/officer/officer-case-details.html', report=report)
+    except:
+        current_app.logger.error("Database error:")
+        flash("An error occurred while fetching the case report details. Please try again later.", "danger")
+        return redirect(url_for('officers.assignedCase'))
 
 @officers.route('/officer/settled-cases')
 @officer_required

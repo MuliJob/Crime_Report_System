@@ -69,21 +69,21 @@
             </form>
         </div>        
     </div>
-    <br>
-    <h3 class="text-center">Write Your Report About Case</h3>
-    <div class="card shadow" style="max-width: 650px; margin: auto;">
-        <div class="card-body">
-            <form action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}" method="POST">
-                <div class="mb-3">
-                    <label for="officer_report" class="form-label">Please write your report below.</label>
-                    <textarea class="form-control" id="officer_report" name="officer_report" rows="15"></textarea>
-                </div>
-                <div class="text-center">
-                    <a href="{{ url_for('officers.assignedCase') }}"><button type="button" class="btn btn-primary"><i class="bi bi-arrow-left-circle"></i> Back</button></a>
-                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save</button>
-                </div>
-            </form>
-        </div>
+</div>
+<br>
+<h3 class="text-center">Write Your Report About Case</h3>
+<div class="card shadow" style="max-width: 650px; margin: auto;">
+    <div class="card-body">
+        <form action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}" method="POST">
+            <div class="mb-3">
+                <label for="officer_report" class="form-label">Please write your report below.</label>
+                <textarea class="form-control" id="officer_report" name="officer_report" rows="15">{{ report.reports }}</textarea>
+            </div>
+            <div class="text-center">
+                <a href="{{ url_for('officers.assignedCase') }}"><button type="button" class="btn btn-primary"><i class="bi bi-arrow-left-circle"></i> Back</button></a>
+                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Report</button>
+            </div>
+        </form>
     </div>
 </div>
 
