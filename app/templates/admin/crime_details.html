@@ -193,7 +193,7 @@
                     readonly>
 
                 <label for="date_received">Received On</label>
-                <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received }}"
+                <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}"
                     readonly>
 
                 <label for="phonenumber">Phone Number</label>
@@ -299,6 +299,10 @@
                     <option value="high">High</option>
                     <option value="critical">Critical</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="deadline">Deadline:</label>
+                <input type="date" class="form-control" id="deadline" name="deadline" required>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Create Official Report</button>

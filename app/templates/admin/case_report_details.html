@@ -46,11 +46,15 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="created_at" class="form-label">Created At:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at }}" readonly>
+                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="created_at" class="form-label">Officer Assigned:</label>
                         <input type="text" class="form-control" id="created_at" value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="deadline" class="form-label">Deadline:</label>
+                        <input type="text" class="form-control" id="deadline" value="{{ report.deadline }}" readonly>
                     </div>
                 </div>
             </form>
