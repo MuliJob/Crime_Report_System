@@ -126,7 +126,7 @@ def officerDashboard():
 
     recent_cases_count = CaseReport.query.filter_by(
         assigned_officer_id=officer_id
-    ).filter(CaseReport.created_at >= (datetime.utcnow() - timedelta(days=7))).count()
+    ).filter(CaseReport.created_at >= (datetime.utcnow() - timedelta(days=3))).count()
     
     recent_activities = db.session.query(
         CaseReport.report_id,
