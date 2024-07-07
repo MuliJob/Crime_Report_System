@@ -107,7 +107,7 @@ def officerDashboard():
     all_cases_count = len(all_cases)
 
     # Get completed cases
-    completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='completed').all()
+    completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
     completed_cases_count = len(completed_cases)
 
     return render_template('officer/officer-dashboard.html', 
@@ -184,7 +184,11 @@ def updateCaseStatus(report_id):
 @officers.route('/officer/settled-cases')
 @officer_required
 def settledCase():
-    return render_template('/officer/settled-cases.html', )
+    officer_id = session['officer_id']
+        
+    solved_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
+
+    return render_template('/officer/settled-cases.html', solved_cases=solved_cases)
 
 @officers.route('/officer/logout')
 @officer_required
