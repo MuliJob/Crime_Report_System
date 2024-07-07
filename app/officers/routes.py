@@ -12,7 +12,7 @@ def officer_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('officer_id'):
-            flash('You need to be logged in as an admin to access the page.', 'danger')
+            flash('You need to be logged in as an officer to access the page.', 'danger')
             return redirect(url_for('officers.officerLogin'))
         return f(*args, **kwargs)
     return decorated_function
