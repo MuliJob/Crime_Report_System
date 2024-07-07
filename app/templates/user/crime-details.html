@@ -162,7 +162,7 @@
             <input type="text" id="time_of_incident" name="time_of_incident" value="{{ crime.time_of_incident }}" readonly>
 
             <label for="date_received">Received On</label>
-            <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received }}" readonly>
+            <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
 
             <label for="phonenumber">Phone Number</label>
             <input type="text" id="phonenumber" name="phonenumber" value="{{ crime.phonenumber }}" readonly>
