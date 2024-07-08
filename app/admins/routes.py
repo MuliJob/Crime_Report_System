@@ -320,7 +320,7 @@ def case_reports():
     return render_template('admin/case_reports.html', cases=cases, officers=officers)
 
 
-@admins.route('/admin/case_report_details/<int:report_id>')
+@admins.route('/admin/case_report_details/<int:report_id>', methods=['GET', 'POST'])
 @admin_required
 def case_report_details(report_id):
     report = CaseReport.query.get_or_404(report_id)
