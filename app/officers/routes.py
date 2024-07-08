@@ -305,6 +305,23 @@ def settledCase():
         
     return render_template('/officer/settled-cases.html', solved_cases=solved_cases)
 
+@officers.route('/officer/officer-notification')
+@officer_required
+def officerNotification():
+    return render_template('officer/officer-notification.html')
+
+@officers.route('/officer/officer-setting')
+@officer_required
+def officerSetting():
+    officer_id = session.get('officer_id')  
+    officer_profile = Officers.query.get(officer_id)
+    
+    if not officer_profile:
+        flash("Officer details not found", "error")
+        return redirect(url_for('officers.officerSetting'))  
+    
+    return render_template('officer/officer-setting.html', officer=officer_profile)
+
 @officers.route('/officer/logout')
 @officer_required
 def officerLogout():    
