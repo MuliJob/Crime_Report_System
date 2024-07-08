@@ -145,22 +145,39 @@ def adminDashboard():
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
 @admin_required
 def adminChangePassword():
-    admin=Admin.query.get(1)
+    admin = Admin.query.get(1)  
+    
     if request.method == 'POST':
-        username=request.form.get('username')
-        password=request.form.get('password')
-        if username == "" or password=="":
-            flash('Please fill the field','danger')
-            return redirect('/admin/change-admin-password')
-        else:
-            Admin().query.filter_by(username=username).update(dict(password=generate_password_hash(
-                                password, 
-                                method='pbkdf2:sha256')))
-            db.session.commit()
-            flash('Admin Password update successfully','success')
-            return redirect('/admin/change-admin-password')
-    else:
-        return render_template('admin/admin-change-password.html',title='Admin Change Password',admin=admin)
+        if 'update_profile' in request.form:
+            username = request.form.get('username')
+            email = request.form.get('email')
+            
+            if not username or not email:
+                flash('Please fill all fields', 'danger')
+            else:
+                admin.username = username
+                admin.admin_email = email  
+                db.session.commit()
+                flash('Profile updated successfully', 'success')
+            
+        elif 'change_password' in request.form:
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+            
+            if not current_password or not new_password or not confirm_password:
+                flash('Please fill all password fields', 'danger')
+            elif not check_password_hash(admin.password, current_password):
+                flash('Current password is incorrect', 'danger')
+            elif new_password != confirm_password:
+                flash('New passwords do not match', 'danger')
+            else:
+                admin.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+                db.session.commit()
+                flash('Password changed successfully', 'success')
+        
+        return redirect(url_for('admins.adminChangePassword'))
+    return render_template('admin/admin-change-password.html',title='Admin Settings',admin=admin)
 
 
 @admins.route('/admin/reports')
