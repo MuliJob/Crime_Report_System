@@ -231,20 +231,62 @@ def crime_details(crime_id):
 
     return render_template('user/crime-details.html', crime_details=crime_details, )
 
-@users.route('/users/settings')
+@users.route('/users/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
     if not session.get('user_id'):
         return redirect('/users/dashboard')
-    if session.get('user_id'):
-        id=session.get('user_id')
+
+    users_id = session.get('user_id')
+    
     try:
-        users=User().query.filter_by(id=id).first()
-    except:
-        flash('An error has occurred. Please try again later', 'error')
-        redirect(url_for('users.settings'))
+        user = User.query.get(users_id)
+        user_details = Register.query.filter_by(users_id=users_id).first()
         
-    return render_template('user/settings.html',title="User Dashboard",users=users)
+        if not user_details:
+            user_details = Register(users_id=users_id)
+            db.session.add(user_details)
+            db.session.commit()
+
+    except Exception as e:
+        flash('An error has occurred. Please try again later', 'danger')
+        return redirect(url_for('users.settings'))
+
+    if request.method == 'POST':
+        if 'update_profile' in request.form:
+            user_details.fullname = request.form.get('fullname')
+            user_details.phonenumber = request.form.get('phonenumber')
+            user_details.residence = request.form.get('residence')
+            user_details.gender = request.form.get('gender')
+
+            try:
+                db.session.commit()
+                flash('Profile updated successfully', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'An error occurred while updating profile: {str(e)}', 'danger')
+
+        elif 'change_password' in request.form:
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+
+            if not check_password_hash(user.password, current_password):
+                flash('Current password is incorrect', 'danger')
+            elif new_password != confirm_password:
+                flash('New passwords do not match', 'danger')
+            else:
+                user.password = generate_password_hash(new_password)
+                try:
+                    db.session.commit()
+                    flash('Password changed successfully', 'success')
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'An error occurred while changing password: {str(e)}', 'danger')
+
+        return redirect(url_for('users.settings'))
+        
+    return render_template('user/settings.html',title="User Dashboard",user=user, user_details=user_details)
 
 # notifications
 @users.route('/users/notification')
@@ -265,64 +307,5 @@ def notification():
         return redirect(url_for('users.notification'))
     return render_template('user/notification.html', user_message=user_message)
 
-@users.route('/users/change-password',methods=["POST","GET"])
-@login_required
-def userChangePassword():
-    if not session.get('user_id'):
-        return redirect('/users/')
-    if request.method == 'POST':
-        email=request.form.get('email')
-        password=request.form.get('password')
-        if email == "" or password == "":
-            flash('Please fill the field','danger')
-            return redirect('/users/change-password')
-        elif len(password) < 8:
-            flash('Password should not be less than 8 characters', 'danger')
-            return redirect('/users/change-password')
-        else:
-            users=User.query.filter_by(email=email).first()
-            if users:
-               password=generate_password_hash(
-                                password, 
-                                method='pbkdf2:sha256')
-               User.query.filter_by(email=email).update(dict(password=password))
-               db.session.commit()
-               flash('Password Change Successfully','success')
-               return redirect('/users/settings')
-            else:
-                flash('Invalid Email','danger')
-                return redirect('/users/change-password')
-
-    else:
-        return render_template('user/change-password.html',title="Change Password")
-
-# user update profile
-@users.route('/users/update-profile', methods=["POST","GET"])
-@login_required
-def userUpdateProfile():
-    if not session.get('user_id'):
-        return redirect('/users/')
-    if session.get('user_id'):
-        id=session.get('user_id')
-    users=User.query.get(id)
-    if request.method == 'POST':
-        # get all input field name
-        fullname=request.form.get('fullname')
-        username=request.form.get('username')
-        email=request.form.get('email')
-        phonenumber=request.form.get('phonenumber')
-        residence=request.form.get('residence')
-        if fullname =="" or username=="" or email=="" or phonenumber=="" or residence=="":
-            flash('Please fill all the field','danger')
-            return redirect('/users/update-profile')
-        else:
-            session['username']=None
-            User.query.filter_by(id=id).update(dict(username=username,email=email))
-            db.session.commit()
-            session['username']=username
-            flash('Profile update Successfully','success')
-            return redirect('/users/settings')
-    else:
-        return render_template('user/update-profile.html',title="Update Profile",users=users)
 
 

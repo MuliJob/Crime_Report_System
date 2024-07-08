@@ -4,44 +4,115 @@ block content %}
     body {
         background-color: #ececec;
     }
-</style>
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
-%} {% for category, message in messages%}
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    {{ message }}
-</div>
-{% endfor %} {% endif%} {% endwith %}
-<h2>Hello, {{ current_user.username }}</h2>
-<div class="row d-flex justify-content-center">
+  </style>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endif %}
+  {% endwith %}
+  <h2>Hello, {{ user_details.fullname }}</h2>
+  <div class="row d-flex justify-content-center">
     <div class="col-xl-3 col-lg-3 col-md-3 my-2 col-sm-12">
-        <a href="/users/update-profile" class="btn btn-info w-full">Update Profile</a>
+        <a href="#" class="btn btn-info w-full" data-bs-toggle="modal" data-bs-target="#updateProfileModal">Update Profile</a>
     </div>
     <div class="col-xl-3 col-lg-3 col-md-3 my-2 col-sm-12">
-        <a href="/users/change-password" class="btn btn-info w-full">Change Password</a>
+        <a href="#" class="btn btn-info w-full" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
     </div>
-</div>
-
-<div class="container">
+  </div>
+  
+  <div class="container">
     <div class="container">
         <div class="my-2">
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Username</th>
-                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Phone Number</th>
+                            <th>Residence</th>
+                            <th>Gender</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{users.username}}</td>
-                            <td>{{users.email}}</td>
+                            <td>{{ user_details.fullname }}</td>
+                            <td>{{ user_details.phonenumber }}</td>
+                            <td>{{ user_details.residence }}</td>
+                            <td>{{ user_details.gender }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
+  </div>
+  
+  <!-- Modal for updating profile -->
+  <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('users.settings') }}" method="POST">
+            <input type="hidden" name="update_profile" value="1">
+            <div class="mb-3">
+              <label for="fullname" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="fullname" name="fullname" value="{{ user_details.fullname }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="phonenumber" class="form-label">Phone NUmber</label>
+              <input type="text" class="form-control" id="phonenumber" name="phonenumber" value="{{ user_details.phonenumber }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="residence" class="form-label">Residence</label>
+              <input type="text" class="form-control" id="residence" name="residence" value="{{ user_details.residence }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="gender" class="form-label">Gender</label>
+              <input type="gender" class="form-control" id="gender" name="gender" value="{{ user_details.gender }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for changing password -->
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('users.settings') }}" method="POST">
+            <input type="hidden" name="change_password" value="1">
+            <div class="mb-3">
+              <label for="current_password" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="current_password" name="current_password" required>
+            </div>
+            <div class="mb-3">
+              <label for="new_password" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="new_password" name="new_password" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
