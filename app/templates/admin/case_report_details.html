@@ -1,5 +1,23 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
+<style>
+    .printer-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: black;
+    }
+
+    @media print {
+        body {
+            font-size: 12pt;
+        }
+
+        button {
+            display: none;
+        }
+    }
+</style>
 <div class="container mt-5">
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
     <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
@@ -11,6 +29,9 @@
     <div class="card shadow" style="max-width: 650px; margin: auto;">
         <div class="card-body">
             <form method="POST">
+                <div class="ms-auto">
+                    <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button>
+                </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="crime_type" class="form-label">Crime Type:</label>

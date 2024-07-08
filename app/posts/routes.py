@@ -76,7 +76,6 @@ def report_crime():
 
             return redirect(url_for('users.user_dashboard'))
         except Exception:
-            # Handle database errors gracefully (e.g., log the error)
             flash(f"An error occurred! Please try again", category='danger')
             return render_template('user/report_crime.html')
         
@@ -106,7 +105,6 @@ def contact_us():
             db.session.add(sender_message)
             db.session.commit()
 
-            # notify admin
             subject = f"New Message Sent"
             body = f"""
                 You have a new message from: {sender_message.first_name}
@@ -118,7 +116,6 @@ def contact_us():
 
             return redirect(url_for('posts.contact_us'))
         except Exception:
-            # Handle database errors gracefully (e.g., log the error)
             flash(f"An error occurred! Please try again", category='danger')
             return render_template('user/contactus.html')
         

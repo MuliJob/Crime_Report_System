@@ -1,0 +1,130 @@
+{% extends 'officer/master.html' %}
+{% block content %}
+<style>
+  body {
+      background-color: #ececec;
+  }
+</style>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<h2>Hello, {{ officer.first_name }}</h2>
+<div class="row d-flex justify-content-center">
+  <div class="col-xl-3 col-lg-3 col-md-3 my-2 col-sm-12">
+      <a href="#" class="btn btn-info w-full" data-bs-toggle="modal" data-bs-target="#updateProfileModal">Update Profile</a>
+  </div>
+  <div class="col-xl-3 col-lg-3 col-md-3 my-2 col-sm-12">
+      <a href="#" class="btn btn-info w-full" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="container">
+      <div class="my-2">
+          <div class="table-responsive">
+              <table class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Username</th>
+                          <th>Email</th>
+                          <th>Rank</th>
+                          <th>Station</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>{{ officer.first_name }}</td>
+                          <td>{{ officer.last_name }}</td>
+                          <td>{{ officer.username }}</td>
+                          <td>{{ officer.officer_email }}</td>
+                          <td>{{ officer.rank }}</td>
+                          <td>{{ officer.station }}</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Modal for updating profile -->
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('officers.officerSetting') }}" method="POST">
+          <input type="hidden" name="update_profile" value="1">
+          <div class="mb-3">
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ officer.first_name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ officer.last_name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ officer.username }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ officer.officer_email }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="rank" class="form-label">Rank</label>
+            <input type="text" class="form-control" id="rank" name="rank" value="{{ officer.rank }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="station" class="form-label">Station</label>
+            <input type="text" class="form-control" id="station" name="station" value="{{ officer.station }}" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for changing password -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('officers.officerSetting') }}" method="POST">
+          <input type="hidden" name="change_password" value="1">
+          <div class="mb-3">
+            <label for="current_password" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="current_password" name="current_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="new_password" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="new_password" name="new_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -93,22 +93,18 @@ def officerRegister():
 @officers.route('/officer/officer-dashboard', methods=['GET', 'POST'])
 @officer_required
 def officerDashboard():
-    # Check if the user is logged in
     if 'officer_id' not in session:
         return redirect(url_for('login'))
 
     officer_id = session['officer_id']
     
-    # Get the officer
     officer = Officers.query.get(officer_id)
     if not officer:
         return redirect(url_for('officers.officerLogin'))
 
-    # Get all cases assigned to the current officer
     all_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
     all_cases_count = len(all_cases)
 
-    # Get completed cases
     completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
     completed_cases_count = len(completed_cases)
 
@@ -252,7 +248,7 @@ def caseStatus():
         
         flash("No report with the keyword.", "warning")
         
-        return redirect(url_for('admins.caseStatus'))
+        return redirect(url_for('officers.caseStatus'))
         
 
     return render_template('/officer/case-status.html', case_status=case_status)
@@ -281,10 +277,86 @@ def updateCaseStatus(report_id):
 @officer_required
 def settledCase():
     officer_id = session['officer_id']
+    search_settled_cases = request.args.get('search_settled_cases', '')
+    try:
+        if search_settled_cases:
+            solved_cases = CaseReport.query.filter(
+                CaseReport.assigned_officer_id == officer_id,
+                CaseReport.status == 'Solved'
+            ).filter(
+                or_(
+                CaseReport.location.ilike(f'%{search_settled_cases}%') | 
+                CaseReport.status.ilike(f'%{search_settled_cases}%') |
+                CaseReport.date.ilike(f'%{search_settled_cases}%') |
+                CaseReport.time.ilike(f'%{search_settled_cases}%') |
+                CaseReport.crime_type.ilike(f'%{search_settled_cases}%') |
+                CaseReport.created_at.ilike(f'%{search_settled_cases}%') |
+                CaseReport.urgency.ilike(f'%{search_settled_cases}%')
+                )
+            ).all()
+        else:
+            solved_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
+    except:
+        current_app.logger.error("Database error:")
         
-    solved_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
-
+        flash("No report with the keyword.", "warning")
+        
+        return redirect(url_for('officers.settledCase'))
+        
     return render_template('/officer/settled-cases.html', solved_cases=solved_cases)
+
+@officers.route('/officer/officer-notification')
+@officer_required
+def officerNotification():
+    return render_template('officer/officer-notification.html')
+
+@officers.route('/officer/officer-setting', methods=['POST', 'GET'])
+@officer_required
+def officerSetting():
+    officer_id = session.get('officer_id')  
+    officer_profile = Officers.query.get(officer_id)
+    
+    if not officer_profile:
+        flash("Officer details not found", "error")
+        return redirect(url_for('officers.officerSetting')) 
+
+    if request.method == 'POST':
+        if 'update_profile' in request.form:
+            officer_profile.first_name = request.form.get('first_name')
+            officer_profile.last_name = request.form.get('last_name')
+            officer_profile.username = request.form.get('username')
+            officer_profile.officer_email = request.form.get('email')
+            officer_profile.rank = request.form.get('rank')
+            officer_profile.station = request.form.get('station')
+            
+            try:
+                db.session.commit()
+                flash("Profile updated successfully", "success")
+            except Exception as e:
+                db.session.rollback()
+                flash(f"An error occurred: {str(e)}", "error")
+        
+        elif 'change_password' in request.form:
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+            
+            if not check_password_hash(officer_profile.password, current_password):
+                flash("Current password is incorrect", "danger")
+            elif new_password != confirm_password:
+                flash("New passwords do not match", "danger")
+            else:
+                officer_profile.password = generate_password_hash(new_password)
+                try:
+                    db.session.commit()
+                    flash("Password changed successfully", "success")
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f"An error occurred: {str(e)}", "error")
+        
+        return redirect(url_for('officers.officerSetting'))
+    
+    return render_template('officer/officer-setting.html', officer=officer_profile)
 
 @officers.route('/officer/logout')
 @officer_required

@@ -28,7 +28,7 @@
     <br>
     <form method="GET" action="{{ url_for('admins.case_reports') }}" class="search-form">
         <div class="input-group search-input">
-            <input type="text" name="search_query" class="form-control" placeholder="Search Crimes and Thefts...">
+            <input type="text" name="search_case_reports" class="form-control" placeholder="Search">
             <div class="input-group-append ms-2">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-search"></i>
@@ -42,14 +42,14 @@
     <thead>
         <tr>
             <th scope="col">No. <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Crime Type <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Type <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Location <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Date <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Description <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Status <i class="bi bi-arrow-down-up"></i></th>
             <th scope="col">Priority <i class="bi bi-arrow-down-up"></i></th>
-            <th scope="col">Assigned Officer <i class="bi bi-arrow-down-up"></i></th>
+            <th scope="col">Assigned To <i class="bi bi-arrow-down-up"></i></th>
         </tr>
     </thead>
     <tbody>
