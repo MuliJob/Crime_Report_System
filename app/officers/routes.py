@@ -310,7 +310,7 @@ def settledCase():
 def officerNotification():
     return render_template('officer/officer-notification.html')
 
-@officers.route('/officer/officer-setting')
+@officers.route('/officer/officer-setting', methods=['POST', 'GET'])
 @officer_required
 def officerSetting():
     officer_id = session.get('officer_id')  
@@ -318,7 +318,43 @@ def officerSetting():
     
     if not officer_profile:
         flash("Officer details not found", "error")
-        return redirect(url_for('officers.officerSetting'))  
+        return redirect(url_for('officers.officerSetting')) 
+
+    if request.method == 'POST':
+        if 'update_profile' in request.form:
+            officer_profile.first_name = request.form.get('first_name')
+            officer_profile.last_name = request.form.get('last_name')
+            officer_profile.username = request.form.get('username')
+            officer_profile.officer_email = request.form.get('email')
+            officer_profile.rank = request.form.get('rank')
+            officer_profile.station = request.form.get('station')
+            
+            try:
+                db.session.commit()
+                flash("Profile updated successfully", "success")
+            except Exception as e:
+                db.session.rollback()
+                flash(f"An error occurred: {str(e)}", "error")
+        
+        elif 'change_password' in request.form:
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+            
+            if not check_password_hash(officer_profile.password, current_password):
+                flash("Current password is incorrect", "danger")
+            elif new_password != confirm_password:
+                flash("New passwords do not match", "danger")
+            else:
+                officer_profile.password = generate_password_hash(new_password)
+                try:
+                    db.session.commit()
+                    flash("Password changed successfully", "success")
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f"An error occurred: {str(e)}", "error")
+        
+        return redirect(url_for('officers.officerSetting'))
     
     return render_template('officer/officer-setting.html', officer=officer_profile)
 
