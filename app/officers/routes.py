@@ -93,22 +93,18 @@ def officerRegister():
 @officers.route('/officer/officer-dashboard', methods=['GET', 'POST'])
 @officer_required
 def officerDashboard():
-    # Check if the user is logged in
     if 'officer_id' not in session:
         return redirect(url_for('login'))
 
     officer_id = session['officer_id']
     
-    # Get the officer
     officer = Officers.query.get(officer_id)
     if not officer:
         return redirect(url_for('officers.officerLogin'))
 
-    # Get all cases assigned to the current officer
     all_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
     all_cases_count = len(all_cases)
 
-    # Get completed cases
     completed_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
     completed_cases_count = len(completed_cases)
 
@@ -252,7 +248,7 @@ def caseStatus():
         
         flash("No report with the keyword.", "warning")
         
-        return redirect(url_for('admins.caseStatus'))
+        return redirect(url_for('officers.caseStatus'))
         
 
     return render_template('/officer/case-status.html', case_status=case_status)
@@ -281,9 +277,32 @@ def updateCaseStatus(report_id):
 @officer_required
 def settledCase():
     officer_id = session['officer_id']
+    search_settled_cases = request.args.get('search_settled_cases', '')
+    try:
+        if search_settled_cases:
+            solved_cases = CaseReport.query.filter(
+                CaseReport.assigned_officer_id == officer_id,
+                CaseReport.status == 'Solved'
+            ).filter(
+                or_(
+                CaseReport.location.ilike(f'%{search_settled_cases}%') | 
+                CaseReport.status.ilike(f'%{search_settled_cases}%') |
+                CaseReport.date.ilike(f'%{search_settled_cases}%') |
+                CaseReport.time.ilike(f'%{search_settled_cases}%') |
+                CaseReport.crime_type.ilike(f'%{search_settled_cases}%') |
+                CaseReport.created_at.ilike(f'%{search_settled_cases}%') |
+                CaseReport.urgency.ilike(f'%{search_settled_cases}%')
+                )
+            ).all()
+        else:
+            solved_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
+    except:
+        current_app.logger.error("Database error:")
         
-    solved_cases = CaseReport.query.filter_by(assigned_officer_id=officer_id, status='Solved').all()
-
+        flash("No report with the keyword.", "warning")
+        
+        return redirect(url_for('officers.settledCase'))
+        
     return render_template('/officer/settled-cases.html', solved_cases=solved_cases)
 
 @officers.route('/officer/logout')
