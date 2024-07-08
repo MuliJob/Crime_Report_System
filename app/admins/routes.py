@@ -296,21 +296,28 @@ def caseReport(crime_id):
 @admins.route('/admin/case-reports')
 @admin_required
 def case_reports():
-    cases = CaseReport.query.all()
-    officers = Officers.query.all()
+    search_case_reports = request.args.get('search_case_reports', '')
+    try:
+        if search_case_reports:
+            cases = CaseReport.query.filter(
+                CaseReport.location.ilike(f'%{search_case_reports}%') |
+                CaseReport.status.ilike(f'%{search_case_reports}%') |
+                CaseReport.date.ilike(f'%{search_case_reports}%') |
+                CaseReport.time.ilike(f'%{search_case_reports}%') |
+                CaseReport.crime_type.ilike(f'%{search_case_reports}%') |
+                CaseReport.created_at.ilike(f'%{search_case_reports}%') |
+                CaseReport.urgency.ilike(f'%{search_case_reports}%')
+            ).all()
+        else:
+            cases = CaseReport.query.all()
+        
+        officers = Officers.query.all()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while retrieving the reports.", "error")
+        return redirect(url_for('admins.case_reports'))
+
     return render_template('admin/case_reports.html', cases=cases, officers=officers)
-
-# @admins.route('/admins/assign_officer/<int:report_id>', methods=['POST'])
-# def assign_officer(report_id):
-#     officer_id = request.form.get('officer_id')
-
-#     # Update case report with assigned officer
-#     case_report = CaseReport.query.get_or_404(report_id)
-#     case_report.assigned_officer_id = officer_id
-
-#     db.session.commit()
-
-#     return redirect(url_for('admins.case_reports', case_report=case_report))
 
 
 @admins.route('/admin/case_report_details/<int:report_id>')
