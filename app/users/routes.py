@@ -79,6 +79,7 @@ def sign_up():
     return render_template('user/signup.html')
 
 @users.route('/users/register', methods=['GET', 'POST'])
+@login_required
 def register():
     if  session.get('user_id'):
         return redirect('/users/dashboard')
@@ -186,7 +187,7 @@ def recovered():
     try:
         recovered_crimes = Crime.query.filter_by(crime_status='Recovered').all()
     except:
-        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        flash("An error occurred while fetching crime details. Please try again later.", "danger")
         return redirect(url_for('users.recovered'))
     
     return render_template('user/recovered_items.html', recovered_crimes=recovered_crimes)
@@ -215,7 +216,7 @@ def crime_details(crime_id):
         crime_details = Crime.query.filter_by(crime_id=crime_id).all()
         
     except:
-        flash("An error occurred while fetching crime details. Please try again later.", "error")
+        flash("An error occurred while fetching crime details. Please try again later.", "danger")
         return redirect(url_for('users.history'))
 
     return render_template('user/crime-details.html', crime_details=crime_details, )
