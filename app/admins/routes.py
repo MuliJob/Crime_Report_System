@@ -6,7 +6,7 @@ import folium
 from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db, send_assignment_email
+from app import db, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
@@ -219,15 +219,18 @@ def updateCrimeStatus(crime_id):
         if crime_status:
             crime.crime_status = crime_status
             db.session.commit()
+            
+            # Send email to the user who posted the report
+            send_status_update_email(crime)
+            
             flash(f'Crime status updated to {crime_status}.', 'success')
         else:
             flash('Failed to update crime status.', 'danger')
-    except:
-        current_app.logger.error("Database error:")
-        
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        db.session.rollback()
         flash("An error occurred. Please try again later.", "danger")
-        
-        return redirect(url_for('admins.crimeStatus'))
+    
     return redirect(url_for('admins.crimeStatus'))
 
 @admins.route('/admin/crime_status')

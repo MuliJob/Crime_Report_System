@@ -105,6 +105,36 @@ def send_assignment_email(officer, report):
         current_app.logger.error(f"Failed to send email: {str(e)}")
         flash('Failed to send email notification', 'warning')
 
+# sending email when status is updated
+def send_status_update_email(crime):
+    try:
+        user = models.User.query.get(crime.reporter_id)  # Assuming there's a user_id field in Crime model
+        if user and user.email:
+            subject = f"Update on Your Crime Report #{crime.crime_id}"
+            body = f"""
+            Dear {user.username},
+
+            The status of your crime report (Crime: {crime.incident_nature}) has been updated.
+
+            New Status: {crime.crime_status}
+
+            If you have any questions, please don't hesitate to contact us.
+
+            Best regards,
+            Crime Reporting System
+            """
+            
+            msg = Message(subject,
+                          sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                          recipients=[user.email])
+            msg.body = body
+            mail.send(msg)
+            current_app.logger.info(f"Status update email sent to {user.email} for crime ID {crime.crime_id}")
+        else:
+            current_app.logger.warning(f"Could not send email for crime ID {crime.crime_id}. User not found or no email address.")
+    except Exception as e:
+        current_app.logger.error(f"Failed to send status update email: {str(e)}")
+
 # from app.officers.models import Officers
 from app.users.routes import users
 from app.posts.routes import posts
