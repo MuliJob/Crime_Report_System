@@ -22,7 +22,7 @@ class Crime(db.Model, UserMixin):
     crime_file_upload = db.Column(db.Text, nullable=True)
     crime_file_name = db.Column(db.Text, nullable=True)
     crime_mimetype = db.Column(db.Text, nullable=True)
-    date_crime_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
+    date_crime_received = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.current_timestamp())
     reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
@@ -58,7 +58,7 @@ class Message(db.Model, UserMixin):
     email_address = db.Column(db.String(120), nullable=False)
     message = db.Column(db.Text, nullable=False)
     reply = db.Column(db.Text, nullable=True)
-    date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=func.now())
+    date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.current_timestamp())
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 

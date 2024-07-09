@@ -3,16 +3,16 @@ from io import BytesIO
 from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
 from flask_login import logout_user
 import folium
-from sqlalchemy import desc, extract, func
+from sqlalchemy import desc, extract, func, or_
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db, send_assignment_email, send_status_update_email
+from app import db, send_assignment_email, send_status_update_email, mail
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
-from flask_mail import Message
+# from flask_mail import Message as FlaskMessage
 
 
 admins = Blueprint('admins', __name__)
@@ -447,22 +447,30 @@ def analytics():
 @admin_required
 def notifications():
     search_notifications = request.args.get('search_notifications', '')
+    messages = []  
+
     try:
         if search_notifications:
             messages = Message.query.filter(
-                Message.incident_location.ilike(f'%{search_notifications}%') | 
-                Message.issued_by.ilike(f'%{search_notifications}%') |
-                Message.date_of_incident.ilike(f'%{search_notifications}%') |
-                Message.time_of_incident.ilike(f'%{search_notifications}%') |
-                Message.date_received.ilike(f'%{search_notifications}%') |
-                Message.crime_status.ilike(f'%{search_notifications}%')
-            ).all()
+                or_(
+                    Message.incident_location.ilike(f'%{search_notifications}%'),
+                    Message.issued_by.ilike(f'%{search_notifications}%'),
+                    Message.date_of_incident.ilike(f'%{search_notifications}%'),
+                    Message.time_of_incident.ilike(f'%{search_notifications}%'),
+                    Message.date_received.ilike(f'%{search_notifications}%'),
+                    Message.crime_status.ilike(f'%{search_notifications}%')
+                )
+            ).order_by(Message.date_received.desc()).all()
         else:
-            messages = Message.query.all()
-    except:
-        current_app.logger.error("Database error:")
-        flash("No report with the keyword.", "warning")
-        return redirect(url_for('admins.notifications'))
+            messages = Message.query.order_by(Message.date_received.desc()).all()
+
+        if not messages:
+            flash("No messages found.", "info")
+
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while retrieving messages. Please try again later.", "danger")
+
     return render_template('/admin/notifications.html', messages=messages)
 
 @admins.route('/admin/message/<int:id>', methods=['GET', 'POST'])
@@ -479,20 +487,60 @@ def view_message(id):
             if message_reply:
                 message.reply = message_reply
                 db.session.commit()
-                flash('Reply sent.', 'success')
+                
+                flash('Success, Reply sent', 'success')
+                
+                # Send email to the user
+                # if send_reply_email(message):
+                #     flash('Reply sent and email notification sent to the user.', 'success')
+                # else:
+                #     flash('Reply sent, but failed to send email notification.', 'warning')
             else:
                 flash('Failed to send reply.', 'danger')
-                
+            
             return redirect(url_for('admins.view_message', id=id))
 
     except Exception as e:
         current_app.logger.error(f"Database error: {e}")
-        
         flash("An error occurred. Please try again later.", "danger")
-        
         return redirect(url_for('admins.notifications'))
-    
+
     return render_template('/admin/message_details.html', message=message)
+
+# sending email to sender when message is sent
+# def send_reply_email(message):
+#     try:
+#         user = User.query.get(message.sender_id)  # Assuming there's a user_id field in Message model
+#         if user and user.email:
+#             subject = f"Reply to your message: {message.subject}"
+#             body = f"""
+#             Dear {user.username},
+
+#             Your message has received a reply:
+
+#             Original Message: {message.content}
+
+#             Reply: {message.reply}
+
+#             If you have any further questions, please don't hesitate to contact us.
+
+#             Best regards,
+#             Admin Team
+#             """
+            
+#             email = FlaskMessage(subject,
+#                                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+#                                  recipients=[user.email])
+#             email.body = body
+#             mail.send(email)
+#             current_app.logger.info(f"Reply email sent to {user.email} for message ID {message.id}")
+#             return True
+#         else:
+#             current_app.logger.warning(f"Could not send email for message ID {message.id}. User not found or no email address.")
+#             return False
+#     except Exception as e:
+#         current_app.logger.error(f"Failed to send reply email: {str(e)}")
+#         return False
 
 @admins.route('/admin/logout')
 @admin_required
