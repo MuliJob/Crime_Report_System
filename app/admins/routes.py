@@ -3,7 +3,7 @@ from io import BytesIO
 from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
 from flask_login import logout_user
 import folium
-from sqlalchemy import extract, func
+from sqlalchemy import desc, extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, send_assignment_email, send_status_update_email
@@ -188,27 +188,25 @@ def reports():
     try:
         if search_query:
             crimes = Crime.query.filter(
-                Crime.incident_location.ilike(f'%{search_query}%') | 
+                Crime.incident_location.ilike(f'%{search_query}%') |
                 Crime.issued_by.ilike(f'%{search_query}%') |
                 Crime.date_of_incident.ilike(f'%{search_query}%') |
                 Crime.time_of_incident.ilike(f'%{search_query}%') |
                 Crime.date_crime_received.ilike(f'%{search_query}%') |
                 Crime.crime_status.ilike(f'%{search_query}%') |
                 Crime.incident_nature.ilike(f'%{search_query}%')
-            ).all()
+            ).order_by(desc(Crime.date_crime_received)).all()
         else:
-            crimes = Crime.query.all()
-    except:
-        current_app.logger.error("Database error:")
-        
-        flash("No reports with the keyword.", "warning")
-        
+            crimes = Crime.query.order_by(desc(Crime.date_crime_received)).all()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while fetching reports.", "danger")
         return redirect(url_for('admins.reports'))
     
+    if not crimes:
+        flash("No reports found.", "info")
+    
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
-
-
-
 
 @admins.route('/admin/crime_status/<int:crime_id>', methods=['POST'])
 @admin_required
@@ -240,22 +238,23 @@ def crimeStatus():
     try:
         if search_crime:
             crimes_status = Crime.query.filter(
-                Crime.incident_location.ilike(f'%{search_crime}%') | 
+                Crime.incident_location.ilike(f'%{search_crime}%') |
                 Crime.issued_by.ilike(f'%{search_crime}%') |
                 Crime.date_of_incident.ilike(f'%{search_crime}%') |
                 Crime.time_of_incident.ilike(f'%{search_crime}%') |
                 Crime.date_crime_received.ilike(f'%{search_crime}%') |
                 Crime.crime_status.ilike(f'%{search_crime}%')
-            ).all()
+            ).order_by(desc(Crime.date_crime_received)).all()
         else:
-            crimes_status = Crime.query.all()
-    except:
-        current_app.logger.error("Database error:")
-        
-        flash("No report with the keyword.", "warning")
-        
+            crimes_status = Crime.query.order_by(desc(Crime.date_crime_received)).all()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while fetching crime status reports.", "danger")
         return redirect(url_for('admins.crimeStatus'))
-
+    
+    if not crimes_status:
+        flash("No crime status reports found.", "info")
+    
     return render_template('admin/crime_status.html', title='Crime Status', crimes_status=crimes_status)
 
 @admins.route('/admin/crime_details/<int:crime_id>', methods=['POST', 'GET'])
@@ -328,16 +327,19 @@ def case_reports():
                 CaseReport.crime_type.ilike(f'%{search_case_reports}%') |
                 CaseReport.created_at.ilike(f'%{search_case_reports}%') |
                 CaseReport.urgency.ilike(f'%{search_case_reports}%')
-            ).all()
+            ).order_by(desc(CaseReport.created_at)).all()
         else:
-            cases = CaseReport.query.all()
+            cases = CaseReport.query.order_by(desc(CaseReport.created_at)).all()
         
         officers = Officers.query.all()
     except Exception as e:
         current_app.logger.error(f"Database error: {str(e)}")
         flash("An error occurred while retrieving the reports.", "error")
         return redirect(url_for('admins.case_reports'))
-
+    
+    if not cases:
+        flash("No case reports found.", "info")
+    
     return render_template('admin/case_reports.html', cases=cases, officers=officers)
 
 
@@ -364,7 +366,6 @@ def edit_case_report(report_id):
         report.urgency = request.form['urgency']
         report.deadline = request.form['deadline']
         
-        # Assign officer
         assigned_officer_id = request.form.get('assigned_officer')
         if assigned_officer_id:
             new_officer_id = int(assigned_officer_id)
@@ -406,7 +407,6 @@ def download(crime_id):
             mimetype=upload.crime_mimetype
         )
     except Exception as e:
-        # Log the error
         print(f"Error downloading file: {str(e)}")
         abort(500, description="Internal server error")
     
@@ -460,13 +460,8 @@ def notifications():
         else:
             messages = Message.query.all()
     except:
-        # Log the error
         current_app.logger.error("Database error:")
-        
-        # Flash an error message to the user
         flash("No report with the keyword.", "warning")
-        
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.notifications'))
     return render_template('/admin/notifications.html', messages=messages)
 
@@ -491,13 +486,10 @@ def view_message(id):
             return redirect(url_for('admins.view_message', id=id))
 
     except Exception as e:
-        # Log the error with details
         current_app.logger.error(f"Database error: {e}")
         
-        # Flash an error message to the user
         flash("An error occurred. Please try again later.", "danger")
         
-        # Redirect to a safe page
         return redirect(url_for('admins.notifications'))
     
     return render_template('/admin/message_details.html', message=message)
