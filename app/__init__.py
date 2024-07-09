@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app, flash
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -54,7 +54,7 @@ def load_user(user_id):
 #def load_user(id):
 #  return models.User.query.get(int(id))
 
-# sending email
+# sending email to admin
 def send_admin_email(subject, body):
     try:
         admin = Admin.query.first()
@@ -72,6 +72,38 @@ def send_admin_email(subject, body):
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
         return False
+    
+# sending email when officer is assigned
+def send_assignment_email(officer, report):
+    subject = f"New Case Assignment: Report #{report.report_id}"
+    body = f"""
+    Dear {officer.first_name},
+
+    You have been assigned to a new case:
+
+    Report ID: {report.report_id}
+    Crime Type: {report.crime_type}
+    Location: {report.location}
+    Date: {report.date}
+    Time: {report.time}
+    Priority: {report.urgency}
+    Deadline: {report.deadline}
+
+    Please log in to the system for more details.
+
+    Best regards,
+    Admin Team
+    """
+    try:
+        msg = Message(subject,
+                      sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                      recipients=[officer.officer_email])
+        msg.body = body
+        mail.send(msg)
+        flash('Email notification sent', 'success')
+    except Exception as e:
+        current_app.logger.error(f"Failed to send email: {str(e)}")
+        flash('Failed to send email notification', 'warning')
 
 # from app.officers.models import Officers
 from app.users.routes import users

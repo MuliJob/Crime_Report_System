@@ -6,12 +6,13 @@ import folium
 from sqlalchemy import extract, func
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db
+from app import db, send_assignment_email
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
+from flask_mail import Message
 
 
 admins = Blueprint('admins', __name__)
@@ -363,7 +364,12 @@ def edit_case_report(report_id):
         # Assign officer
         assigned_officer_id = request.form.get('assigned_officer')
         if assigned_officer_id:
-            report.assigned_officer_id = int(assigned_officer_id)
+            new_officer_id = int(assigned_officer_id)
+            if new_officer_id != report.assigned_officer_id:
+                report.assigned_officer_id = new_officer_id
+                assigned_officer = Officers.query.get(new_officer_id)
+                if assigned_officer:
+                    send_assignment_email(assigned_officer, report)
         else:
             report.assigned_officer_id = None
 
@@ -376,6 +382,7 @@ def edit_case_report(report_id):
             flash(f'An error occurred: {str(e)}', 'danger')
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
+
 
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
