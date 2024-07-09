@@ -70,7 +70,7 @@
             <a href="{{ url_for('admins.view_message', id=message.id) }}" class="notification-link">
                 <div class="notification-title">{{ message.first_name }}</div>
                 <div class="notification-description">{{ message.message }}</div>
-                <div class="notification-time">{{ message.date_received }}</div>
+                <div class="notification-time">{{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}</div>
             </a>
         </div>
     </div>  
