@@ -79,6 +79,7 @@ def sign_up():
     return render_template('user/signup.html')
 
 @users.route('/users/register', methods=['GET', 'POST'])
+@login_required
 def register():
     if  session.get('user_id'):
         return redirect('/users/dashboard')
@@ -147,7 +148,6 @@ def user_dashboard():
         if user:
             login_user(user)   
 
-            # fetching news data
             url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={NEWS_API}'
 
             try:
@@ -161,11 +161,9 @@ def user_dashboard():
 
             return render_template('user/userdashboard.html', articles=articles, latitude=latitude, longitude=longitude)
         else:
-            # If user not found, clear session and redirect to signin
             session.clear()
             return redirect('/users/signin')
     else:
-        # If no user_id in session, redirect to signin
         return redirect('/users/signin')
         
 @users.route('/users/history')
@@ -174,7 +172,6 @@ def history():
     try:
         reporter = current_user.id
 
-        # filter with current user login
         crimes = Crime.query.filter_by(reporter_id=reporter).all()
 
         return render_template('user/history.html', crimes=crimes)
@@ -190,8 +187,7 @@ def recovered():
     try:
         recovered_crimes = Crime.query.filter_by(crime_status='Recovered').all()
     except:
-        flash("An error occurred while fetching crime details. Please try again later.", "error")
-        # Redirect to a safe page, like the admin dashboard
+        flash("An error occurred while fetching crime details. Please try again later.", "danger")
         return redirect(url_for('users.recovered'))
     
     return render_template('user/recovered_items.html', recovered_crimes=recovered_crimes)
@@ -201,15 +197,12 @@ def recovered():
 @login_required
 def download():
     if request.method == 'POST':
-        # Handle the download request
-        filename = "P3.pdf"  # Replace with your actual filename
+        filename = "P3.pdf"  
         directory = os.path.join(current_app.root_path, 'static', 'files')
         
-        # Check if file exists
         if os.path.exists(os.path.join(directory, filename)):
             return send_from_directory(directory, filename, as_attachment=True)
         else:
-            # Handle file not found error
             flash('Unable to download file', 'warning')
             return redirect(url_for('users.download'))
         
@@ -220,13 +213,10 @@ def download():
 @login_required
 def crime_details(crime_id):
     try:
-        # Finding crime by id
         crime_details = Crime.query.filter_by(crime_id=crime_id).all()
         
-
     except:
-        flash("An error occurred while fetching crime details. Please try again later.", "error")
-        # Redirect to a safe page, like the admin dashboard
+        flash("An error occurred while fetching crime details. Please try again later.", "danger")
         return redirect(url_for('users.history'))
 
     return render_template('user/crime-details.html', crime_details=crime_details, )
@@ -297,13 +287,10 @@ def notification():
         user_message = Message.query.filter_by(sender_id=sender).all()
 
     except:
-        # Log the error
         current_app.logger.error("Database error occurred:")
         
-        # Flash an error message to the user
         flash("No report with the keyword.", "warning")
         
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('users.notification'))
     return render_template('user/notification.html', user_message=user_message)
 

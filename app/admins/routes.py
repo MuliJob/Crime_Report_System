@@ -3,15 +3,16 @@ from io import BytesIO
 from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
 from flask_login import logout_user
 import folium
-from sqlalchemy import extract, func
+from sqlalchemy import desc, extract, func, or_
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db
+from app import db, send_assignment_email, send_status_update_email, mail
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
+# from flask_mail import Message as FlaskMessage
 
 
 admins = Blueprint('admins', __name__)
@@ -187,27 +188,25 @@ def reports():
     try:
         if search_query:
             crimes = Crime.query.filter(
-                Crime.incident_location.ilike(f'%{search_query}%') | 
+                Crime.incident_location.ilike(f'%{search_query}%') |
                 Crime.issued_by.ilike(f'%{search_query}%') |
                 Crime.date_of_incident.ilike(f'%{search_query}%') |
                 Crime.time_of_incident.ilike(f'%{search_query}%') |
                 Crime.date_crime_received.ilike(f'%{search_query}%') |
                 Crime.crime_status.ilike(f'%{search_query}%') |
                 Crime.incident_nature.ilike(f'%{search_query}%')
-            ).all()
+            ).order_by(desc(Crime.date_crime_received)).all()
         else:
-            crimes = Crime.query.all()
-    except:
-        current_app.logger.error("Database error:")
-        
-        flash("No reports with the keyword.", "warning")
-        
+            crimes = Crime.query.order_by(desc(Crime.date_crime_received)).all()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while fetching reports.", "danger")
         return redirect(url_for('admins.reports'))
     
+    if not crimes:
+        flash("No reports found.", "info")
+    
     return render_template('admin/reports.html', title='Reports Dashboard', crimes=crimes)
-
-
-
 
 @admins.route('/admin/crime_status/<int:crime_id>', methods=['POST'])
 @admin_required
@@ -218,15 +217,18 @@ def updateCrimeStatus(crime_id):
         if crime_status:
             crime.crime_status = crime_status
             db.session.commit()
+            
+            # Send email to the user who posted the report
+            send_status_update_email(crime)
+            
             flash(f'Crime status updated to {crime_status}.', 'success')
         else:
             flash('Failed to update crime status.', 'danger')
-    except:
-        current_app.logger.error("Database error:")
-        
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        db.session.rollback()
         flash("An error occurred. Please try again later.", "danger")
-        
-        return redirect(url_for('admins.crimeStatus'))
+    
     return redirect(url_for('admins.crimeStatus'))
 
 @admins.route('/admin/crime_status')
@@ -236,22 +238,23 @@ def crimeStatus():
     try:
         if search_crime:
             crimes_status = Crime.query.filter(
-                Crime.incident_location.ilike(f'%{search_crime}%') | 
+                Crime.incident_location.ilike(f'%{search_crime}%') |
                 Crime.issued_by.ilike(f'%{search_crime}%') |
                 Crime.date_of_incident.ilike(f'%{search_crime}%') |
                 Crime.time_of_incident.ilike(f'%{search_crime}%') |
                 Crime.date_crime_received.ilike(f'%{search_crime}%') |
                 Crime.crime_status.ilike(f'%{search_crime}%')
-            ).all()
+            ).order_by(desc(Crime.date_crime_received)).all()
         else:
-            crimes_status = Crime.query.all()
-    except:
-        current_app.logger.error("Database error:")
-        
-        flash("No report with the keyword.", "warning")
-        
+            crimes_status = Crime.query.order_by(desc(Crime.date_crime_received)).all()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while fetching crime status reports.", "danger")
         return redirect(url_for('admins.crimeStatus'))
-
+    
+    if not crimes_status:
+        flash("No crime status reports found.", "info")
+    
     return render_template('admin/crime_status.html', title='Crime Status', crimes_status=crimes_status)
 
 @admins.route('/admin/crime_details/<int:crime_id>', methods=['POST', 'GET'])
@@ -324,16 +327,19 @@ def case_reports():
                 CaseReport.crime_type.ilike(f'%{search_case_reports}%') |
                 CaseReport.created_at.ilike(f'%{search_case_reports}%') |
                 CaseReport.urgency.ilike(f'%{search_case_reports}%')
-            ).all()
+            ).order_by(desc(CaseReport.created_at)).all()
         else:
-            cases = CaseReport.query.all()
+            cases = CaseReport.query.order_by(desc(CaseReport.created_at)).all()
         
         officers = Officers.query.all()
     except Exception as e:
         current_app.logger.error(f"Database error: {str(e)}")
         flash("An error occurred while retrieving the reports.", "error")
         return redirect(url_for('admins.case_reports'))
-
+    
+    if not cases:
+        flash("No case reports found.", "info")
+    
     return render_template('admin/case_reports.html', cases=cases, officers=officers)
 
 
@@ -360,10 +366,14 @@ def edit_case_report(report_id):
         report.urgency = request.form['urgency']
         report.deadline = request.form['deadline']
         
-        # Assign officer
         assigned_officer_id = request.form.get('assigned_officer')
         if assigned_officer_id:
-            report.assigned_officer_id = int(assigned_officer_id)
+            new_officer_id = int(assigned_officer_id)
+            if new_officer_id != report.assigned_officer_id:
+                report.assigned_officer_id = new_officer_id
+                assigned_officer = Officers.query.get(new_officer_id)
+                if assigned_officer:
+                    send_assignment_email(assigned_officer, report)
         else:
             report.assigned_officer_id = None
 
@@ -376,6 +386,7 @@ def edit_case_report(report_id):
             flash(f'An error occurred: {str(e)}', 'danger')
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
+
 
 # download route for download files
 @admins.route('/admin/crime_details/<int:crime_id>')
@@ -396,7 +407,6 @@ def download(crime_id):
             mimetype=upload.crime_mimetype
         )
     except Exception as e:
-        # Log the error
         print(f"Error downloading file: {str(e)}")
         abort(500, description="Internal server error")
     
@@ -437,27 +447,30 @@ def analytics():
 @admin_required
 def notifications():
     search_notifications = request.args.get('search_notifications', '')
+    messages = []  
+
     try:
         if search_notifications:
             messages = Message.query.filter(
-                Message.incident_location.ilike(f'%{search_notifications}%') | 
-                Message.issued_by.ilike(f'%{search_notifications}%') |
-                Message.date_of_incident.ilike(f'%{search_notifications}%') |
-                Message.time_of_incident.ilike(f'%{search_notifications}%') |
-                Message.date_received.ilike(f'%{search_notifications}%') |
-                Message.crime_status.ilike(f'%{search_notifications}%')
-            ).all()
+                or_(
+                    Message.incident_location.ilike(f'%{search_notifications}%'),
+                    Message.issued_by.ilike(f'%{search_notifications}%'),
+                    Message.date_of_incident.ilike(f'%{search_notifications}%'),
+                    Message.time_of_incident.ilike(f'%{search_notifications}%'),
+                    Message.date_received.ilike(f'%{search_notifications}%'),
+                    Message.crime_status.ilike(f'%{search_notifications}%')
+                )
+            ).order_by(Message.date_received.desc()).all()
         else:
-            messages = Message.query.all()
-    except:
-        # Log the error
-        current_app.logger.error("Database error:")
-        
-        # Flash an error message to the user
-        flash("No report with the keyword.", "warning")
-        
-        # Redirect to a safe page, like the admin dashboard
-        return redirect(url_for('admins.notifications'))
+            messages = Message.query.order_by(Message.date_received.desc()).all()
+
+        if not messages:
+            flash("No messages found.", "info")
+
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while retrieving messages. Please try again later.", "danger")
+
     return render_template('/admin/notifications.html', messages=messages)
 
 @admins.route('/admin/message/<int:id>', methods=['GET', 'POST'])
@@ -474,23 +487,60 @@ def view_message(id):
             if message_reply:
                 message.reply = message_reply
                 db.session.commit()
-                flash('Reply sent.', 'success')
+                
+                flash('Success, Reply sent', 'success')
+                
+                # Send email to the user
+                # if send_reply_email(message):
+                #     flash('Reply sent and email notification sent to the user.', 'success')
+                # else:
+                #     flash('Reply sent, but failed to send email notification.', 'warning')
             else:
                 flash('Failed to send reply.', 'danger')
-                
+            
             return redirect(url_for('admins.view_message', id=id))
 
     except Exception as e:
-        # Log the error with details
         current_app.logger.error(f"Database error: {e}")
-        
-        # Flash an error message to the user
         flash("An error occurred. Please try again later.", "danger")
-        
-        # Redirect to a safe page
         return redirect(url_for('admins.notifications'))
-    
+
     return render_template('/admin/message_details.html', message=message)
+
+# sending email to sender when message is sent
+# def send_reply_email(message):
+#     try:
+#         user = User.query.get(message.sender_id)  # Assuming there's a user_id field in Message model
+#         if user and user.email:
+#             subject = f"Reply to your message: {message.subject}"
+#             body = f"""
+#             Dear {user.username},
+
+#             Your message has received a reply:
+
+#             Original Message: {message.content}
+
+#             Reply: {message.reply}
+
+#             If you have any further questions, please don't hesitate to contact us.
+
+#             Best regards,
+#             Admin Team
+#             """
+            
+#             email = FlaskMessage(subject,
+#                                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+#                                  recipients=[user.email])
+#             email.body = body
+#             mail.send(email)
+#             current_app.logger.info(f"Reply email sent to {user.email} for message ID {message.id}")
+#             return True
+#         else:
+#             current_app.logger.warning(f"Could not send email for message ID {message.id}. User not found or no email address.")
+#             return False
+#     except Exception as e:
+#         current_app.logger.error(f"Failed to send reply email: {str(e)}")
+#         return False
 
 @admins.route('/admin/logout')
 @admin_required

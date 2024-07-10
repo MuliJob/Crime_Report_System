@@ -55,6 +55,12 @@
     </style>
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
     <h1>Notifications</h1>
 
   {% if messages %}
@@ -64,7 +70,9 @@
             <a href="{{ url_for('admins.view_message', id=message.id) }}" class="notification-link">
                 <div class="notification-title">{{ message.first_name }}</div>
                 <div class="notification-description">{{ message.message }}</div>
-                <div class="notification-time">{{ message.date_received }}</div>
+                <div class="notification-title">You</div>
+                <div class="notification-description">{{ message.reply }}</div>
+                <div class="notification-time">{{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}</div>
             </a>
         </div>
     </div>  
