@@ -1,8 +1,10 @@
+import pytz
+from datetime import datetime
 from app import db
 from flask_login import UserMixin
-from sqlalchemy.sql import func
 
-
+def current_time():
+    return datetime.now(pytz.timezone('Africa/Nairobi'))
 class Crime(db.Model, UserMixin):
     crime_id = db.Column(db.Integer, primary_key=True)
     date_of_incident = db.Column(db.String(10), nullable=False)
@@ -22,7 +24,7 @@ class Crime(db.Model, UserMixin):
     crime_file_upload = db.Column(db.Text, nullable=True)
     crime_file_name = db.Column(db.Text, nullable=True)
     crime_mimetype = db.Column(db.Text, nullable=True)
-    date_crime_received = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.current_timestamp())
+    date_crime_received = db.Column(db.DateTime(timezone=True), nullable=False, default=current_time())
     reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
@@ -58,7 +60,7 @@ class Message(db.Model, UserMixin):
     email_address = db.Column(db.String(120), nullable=False)
     message = db.Column(db.Text, nullable=False)
     reply = db.Column(db.Text, nullable=True)
-    date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=db.func.current_timestamp())
+    date_received = db.Column(db.DateTime(timezone=True), nullable=False, default=current_time)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
