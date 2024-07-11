@@ -121,15 +121,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const crimeAnnualData = {{ annual_crime_data | safe
-    }};
+    // const crimeAnnualData = {{ annual_crime_data | safe }};
     const crimeData = {{ crime_data | tojson }};
     const crimeDist = {{ crime_dist | tojson }};
     const crimeAverage = {{ crime_average | tojson }};
 
     // Extract years, crime counts, and theft counts
-    const crimeYears = crimeAnnualData.map(data => data.year);
-    const crimeAnnualCounts = crimeAnnualData.map(data => data.crime_count);
+    // const crimeYears = crimeAnnualData.map(data => data.year);
+    // const crimeAnnualCounts = crimeAnnualData.map(data => data.crime_count);
 
 
     // crime monthly analysis
@@ -269,47 +268,29 @@
     });
 
     // Annual Distribution
-    const ctxAnnualDistribution = document.getElementById('annualCrimeChart').getContext('2d');
-    new Chart(ctxAnnualDistribution, {
-      type: 'bar',
-      data: {
-        labels: crimeYears,
-        datasets: [
-          {
-            label: 'Crimes',
-            data: crimeAnnualCounts,
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          },
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-        },
-        scales: {
-          x: {
-            stacked: true,
-            title: {
-              display: true,
-              text: 'Year'
-            }
-          },
-          y: {
-            stacked: true,
-            title: {
-              display: true,
-              text: 'Count'
-            },
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    var ctx = document.getElementById('annualCrimeChart').getContext('2d');
+            var chartData = {
+                labels: {{ annual_crime_data | map(attribute='year') | list | tojson }},
+                datasets: [{
+                    label: 'Crime Count',
+                    data: {{ annual_crime_data | map(attribute='crime_count') | list | tojson }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            var crimeChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
     });
   </script>
 </body>
