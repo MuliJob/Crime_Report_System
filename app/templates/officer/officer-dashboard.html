@@ -181,6 +181,7 @@
                                 <th>Case ID</th>
                                 <th>Description</th>
                                 <th>Deadline</th>
+                                <th>Time Remaining</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -190,6 +191,9 @@
                                 <td>{{ deadline.report_id }}</td>
                                 <td>{{ deadline.description }}</td>
                                 <td>{{ deadline.deadline }}</td>
+                                <td>
+                                    {{ deadline.remaining_time }}
+                                </td>
                                 <td>
                                     <span class="status 
                                         {% if deadline.status == 'Unsolved' %} status-unsolved 
