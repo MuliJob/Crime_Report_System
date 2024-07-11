@@ -1,4 +1,3 @@
-import io
 import os
 from flask import Blueprint, current_app, render_template, redirect, send_from_directory, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
