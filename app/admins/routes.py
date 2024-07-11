@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime, timedelta
 from io import BytesIO
 from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
@@ -46,7 +47,8 @@ def get_crime_data_by_month():
 
 # getting daily distribution
 def get_daily_crime_data():
-    now = datetime.now()
+    timezone = pytz.timezone('Africa/Nairobi')
+    now = datetime.now(timezone)
 
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -54,7 +56,7 @@ def get_daily_crime_data():
     end_of_week = start_of_week + timedelta(days=6)
     end_of_week = end_of_week.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    crime_dist = {day: {'crimes': 0} for day in range(7)}  
+    crime_dist = {day: {'crimes': 0} for day in range(7)}
 
     crime_results = db.session.query(
         extract('dow', Crime.date_crime_received).label('day'),
@@ -63,8 +65,6 @@ def get_daily_crime_data():
         Crime.date_crime_received >= start_of_week,
         Crime.date_crime_received <= end_of_week
     ).group_by('day').all()
-
-    
 
     for day, count in crime_results:
         crime_dist[day]['crimes'] = count
