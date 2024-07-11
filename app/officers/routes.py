@@ -138,6 +138,19 @@ def officerDashboard():
         CaseReport.deadline >= datetime.utcnow()
     ).order_by(CaseReport.deadline).limit(5).all()
 
+    for case in upcoming_deadlines:
+    # Convert case.deadline to a datetime object if it's a string
+        if isinstance(case.deadline, str):
+            case_deadline = datetime.strptime(case.deadline, '%Y-%m-%d')  # Adjust format as needed
+        else:
+            case_deadline = case.deadline
+
+        remaining = case_deadline - datetime.utcnow()
+        days = remaining.days
+        hours, remainder = divmod(remaining.seconds, 3600)
+        minutes, _ = divmod(remainder, 60)
+        case.remaining_time = f"{days}d {hours}h {minutes}m"
+        
     case_stats = db.session.query(
         CaseReport.status, 
         func.count(CaseReport.report_id)
