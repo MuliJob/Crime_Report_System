@@ -318,6 +318,22 @@ def settledCase():
         
     return render_template('/officer/settled-cases.html', solved_cases=solved_cases)
 
+@officers.route('/officer/settled-case-details/<int:report_id>', methods=['POST','GET'])
+@officer_required
+def settledCaseDetails(report_id):
+    try:
+        settled_report = CaseReport.query.get_or_404(report_id)
+
+        if settled_report is None:
+                flash("Case details not found.", "warning")
+                return redirect(url_for('officers.settledCase'))
+
+        return render_template('/officer/settled-case-details.html', settled_report=settled_report)
+    except:
+        current_app.logger.error("Database error:")
+        flash("An error occurred while fetching the case report details. Please try again later.", "danger")
+        return redirect(url_for('officers.settledCase'))
+
 @officers.route('/officer/officer-notification')
 @officer_required
 def officerNotification():
