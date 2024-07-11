@@ -283,6 +283,7 @@ def caseReport(crime_id):
     if request.method == 'POST':
         crime_type = request.form.get('crime_type')
         location = request.form.get('location')
+        phone_number = request.form.get('phone_number')
         date = request.form.get('date')
         time = request.form.get('time')
         description = request.form.get('description')
@@ -297,6 +298,7 @@ def caseReport(crime_id):
                                  description=description,
                                  evidence=evidence,
                                  urgency=urgency,
+                                 phone_number=phone_number,
                                  deadline=deadline)
         try:
             db.session.add(case_report)
@@ -306,10 +308,8 @@ def caseReport(crime_id):
             current_app.logger.error(f"Database error: {str(e)}")
             flash("An error occurred when creating report. Please try again later.", "danger")
         
-        # Redirect to the same page (crime details) after processing
         return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
 
-    # If it's a GET request, just render the page
     return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
 
 
