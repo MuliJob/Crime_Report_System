@@ -253,8 +253,6 @@
                         class="bi bi-arrow-left"></i></button></a>
         </div>
     </form>
-    {% endfor %}
-
     <br>
     <h2 style="text-align: center;">Official Report</h2>
         <form method="POST" action="{{ url_for('admins.caseReport', crime_id=crime_details[0].crime_id)}}">
@@ -267,6 +265,10 @@
                     <option value="burglary">Burglary</option>
                     <option value="theft">Theft</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Phone Number:</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{  crime.phonenumber }}" required>
             </div>
             <div class="mb-3">
                 <label for="location" class="form-label">Location:</label>
@@ -293,7 +295,7 @@
             <div class="mb-3">
                 <label for="urgency" class="form-label">Priority:</label>
                 <select class="form-select" id="urgency" name="urgency" required>
-                    <option value="">Select urgency level</option>
+                    <option value="">Set priority</option>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -308,6 +310,8 @@
                 <button type="submit" class="btn btn-primary">Create Official Report</button>
             </div>
         </form>
+    {% endfor %}
+        
     <script>
 
     </script>
