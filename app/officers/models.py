@@ -1,7 +1,10 @@
+import pytz
 from datetime import datetime
 from app import db
 from flask_login import UserMixin
   
+def current_time():
+    return datetime.now(pytz.timezone('Africa/Nairobi'))
 class Officers(db.Model, UserMixin):
     officer_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -34,6 +37,7 @@ class CaseReport(db.Model, UserMixin):
     report_id = db.Column(db.Integer, primary_key=True)
     crime_type = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(40), nullable=False)
+    phone_number = db.Column(db.String(10))
     date = db.Column(db.String(10), nullable=False)
     time = db.Column(db.String(10), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -42,7 +46,7 @@ class CaseReport(db.Model, UserMixin):
     deadline = db.Column(db.String(20), nullable=True)
     status = db.Column(db.String(50), nullable=True)
     reports = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime(timezone=True), default=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime(timezone=True), default=current_time())
     assigned_officer_id = db.Column(db.Integer, db.ForeignKey('officers.officer_id'))
     assigned_officer = db.relationship('Officers', back_populates='assignments')
 
@@ -64,4 +68,13 @@ class CaseReport(db.Model, UserMixin):
             'status': self.status, 
             'created_at': self.created_at.isoformat() if self.created_at else None,  
         }
+    # @classmethod
+    # def get_recent_cases_count(cls, officer_id, hours=12):
+    #     try:
+    #         return db.session.query(cls).filter_by(
+    #             assigned_officer_id=officer_id
+    #         ).filter(cls.created_at >= func.date_sub(func.now(), interval=f'{hours} day')).count()
+    #     except Exception as e:
+    #         current_app.logger.error(f"Error querying recent cases: {str(e)}")
+    #         return 0
 
