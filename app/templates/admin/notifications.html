@@ -1,87 +1,99 @@
-{% extends 'admin/layout.html' %}
-{% block content %}
+{% extends 'admin/layout.html' %} {% block content %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notification Cards</title>
     <style>
-        body {
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 40px;
-        }
-        .notification-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20;
-        }
-        .notification-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-            overflow: hidden;
-            transition: box-shadow 0.3s ease;
-        }
-        .notification-card:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .notification-link {
-            display: block;
-            padding: 20px;
-            color: inherit;
-            text-decoration: none;
-        }
-        .notification-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .notification-description {
-            font-size: 14px;
-            color: #666;
-        }
-        .notification-time {
-            font-size: 12px;
-            color: #999;
-            margin-top: 10px;
-        }
-        h1 {
-            text-align: center;
-        
-        }
+      body {
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 40px;
+      }
+      .notification-container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20;
+      }
+      .notification-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+      }
+      .notification-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .notification-link {
+        display: block;
+        padding: 20px;
+        color: inherit;
+        text-decoration: none;
+      }
+      .notification-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .notification-description {
+        font-size: 14px;
+        color: #666;
+      }
+      .notification-time {
+        font-size: 12px;
+        color: #999;
+        margin-top: 10px;
+      }
+      h1 {
+        text-align: center;
+      }
     </style>
-</head>
-<body>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
+  </head>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages%}
+    <div
+      class="alert alert-{{ category }} alert-dismissible fade show"
+      role="alert"
+    >
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+      {{ message }}
     </div>
     {% endfor %} {% endif%} {% endwith %}
     <h1>Notifications</h1>
 
-  {% if messages %}
+    {% if messages %}
     <div class="notification-container">
-    {% for message in messages %}
-        <div class="notification-card" data-notification-id="{{ message.id }}">
-            <a href="{{ url_for('admins.view_message', id=message.id) }}" class="notification-link">
-                <div class="notification-title">{{ message.first_name }}</div>
-                <div class="notification-description">{{ message.message }}</div>
-                <div class="notification-title">You</div>
-                <div class="notification-description">{{ message.reply }}</div>
-                <div class="notification-time">{{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}</div>
-            </a>
-        </div>
-    </div>  
-    {% endfor %}
-  {% else %}
-  <h3 style="text-align: center;"><i class="bi bi-envelope-x-fill h2"></i> No Notifications.</h3>
-  {% endif %}
-    <script>
-    </script>
-</body>
+      {% for message in messages %}
+      <div class="notification-card" data-notification-id="{{ message.id }}">
+        <a
+          href="{{ url_for('admins.view_message', id=message.id) }}"
+          class="notification-link"
+        >
+          <div class="notification-title">{{ message.first_name }}</div>
+          <div class="notification-description">{{ message.message }}</div>
+          <div class="notification-title">You</div>
+          <div class="notification-description">{{ message.reply }}</div>
+          <div class="notification-time">
+            {{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}
+          </div>
+        </a>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <h3 style="text-align: center">
+      <i class="bi bi-envelope-x-fill h2"></i> No Notifications.
+    </h3>
+    {% endif %}
+    <script></script>
+  </body>
 </html>
 {% endblock content %}

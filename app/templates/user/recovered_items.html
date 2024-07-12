@@ -1,7 +1,4 @@
-{% extends 'user/base.html' %}
-{% block title %}
-  Recovered Items
-{% endblock %}
+{% extends 'user/base.html' %} {% block title %} Recovered Items {% endblock %}
 {% block content %}
 <style>
   body {
@@ -12,29 +9,29 @@
     margin-bottom: 10px;
     font-size: 0.9em;
   }
-  
+
   .reduced-card-size .card-header {
     padding: 5px 10px;
     font-size: 1.1em;
   }
-  
+
   .reduced-card-size .card-body {
     padding: 10px;
   }
   .reduced-card-size:hover {
     transform: translateY(-5px); /* Lift the card on hover */
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15); /* Enhanced box shadow on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Enhanced box shadow on hover */
   }
-  
+
   .reduced-card-size .card-title {
     font-size: 1.2em;
   }
-  
+
   .reduced-card-size .card-text {
     font-size: 0.9em;
   }
   .card {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
   .reduced-card-size .btn {
     padding: 5px 10px;
@@ -44,34 +41,39 @@
     text-decoration: underline; /* Underline link on hover */
   }
   .status {
-      font-weight: bold;
-      padding: 5px;
-      border-radius: 5px;
-      color: white;
-      display: inline-block;
-    }
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    display: inline-block;
+  }
   .status-recovered {
     background-color: #2ecc71; /* Green */
     color: white; /* White text on green background */
   }
 </style>
-<h2 style="text-align: center;">Recovered Items</h2>
+<h2 style="text-align: center">Recovered Items</h2>
 {% if recovered_crimes %}
-      <div class="row">
-        {% for crime in recovered_crimes %}
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="card mb-4 reduced-card-size">
-              <div class="card-body">
-                <h5 class="card-text"><strong>Place of Incident:</strong> {{ crime.incident_location }}</h5>
-                <h5 class="card-text"><strong>Description:</strong> {{ crime.incident_details }}</h5>
-                <h5 class="card-text"><strong>Status:</strong>
-                  <span class="status status-recovered">{{ crime.crime_status }}</span>
-                </h5>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
+<div class="row">
+  {% for crime in recovered_crimes %}
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="card mb-4 reduced-card-size">
+      <div class="card-body">
+        <h5 class="card-text">
+          <strong>Place of Incident:</strong> {{ crime.incident_location }}
+        </h5>
+        <h5 class="card-text">
+          <strong>Description:</strong> {{ crime.incident_details }}
+        </h5>
+        <h5 class="card-text">
+          <strong>Status:</strong>
+          <span class="status status-recovered">{{ crime.crime_status }}</span>
+        </h5>
       </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% else %}
 <div class="container d-flex justify-content-center align-items-center">
   <div class="col-lg-4 col-md-6 col-sm-12">
@@ -82,5 +84,4 @@
     </div>
   </div>
 </div>
-{% endif %}
-{% endblock %}
+{% endif %} {% endblock %}

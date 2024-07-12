@@ -1,84 +1,138 @@
-{% extends 'officer/master.html' %}
-{% block content %}
+{% extends 'officer/master.html' %} {% block content %}
 <style>
-.align-text {
-  text-align: center;
-}
-.card {
+  .align-text {
+    text-align: center;
+  }
+  .card {
     border: none;
     border-radius: 15px;
-}
-.card-header {
+  }
+  .card-header {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-}
-.form-control[readonly] {
-    background-color: #f8f9fa; 
-    border-color: #e9ecef; 
-}
+  }
+  .form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+  }
 </style>
 <div class="container mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
-    </div>
-    {% endfor %} {% endif%} {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages%}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+    {{ message }}
+  </div>
+  {% endfor %} {% endif%} {% endwith %}
   <h2 class="text-center mb-0">Report Details</h2>
-    <div class="card shadow" style="max-width: 650px; margin: auto;">
-        <div class="card-body">
-            <form >
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="crime_type" class="form-label">Crime Type:</label>
-                        <input type="text" class="form-control" id="crime_type" value="{{ settled_report.crime_type }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="location" class="form-label">Location:</label>
-                        <input type="text" class="form-control" id="location" value="{{ settled_report.location }}" readonly>
-                    </div>
-                    
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="date" class="form-label">Date of Crime:</label>
-                        <input type="date" class="form-control" id="date" value="{{ settled_report.date }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="time" class="form-label">Time of Crime:</label>
-                        <input type="time" class="form-control" id="time" value="{{ settled_report.time }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="phone_number" class="form-label">Phone Number:</label>
-                        <input type="text" class="form-control" id="phone_number" value="{{ settled_report.phone_number }}" readonly>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Official Description:</label>
-                    <textarea class="form-control" id="description" rows="4" readonly>{{ settled_report.description }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="evidence" class="form-label">Evidence:</label>
-                    <textarea class="form-control" id="evidence" rows="3" readonly>{{ settled_report.evidence }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="urgency" class="form-label">Priority:</label>
-                        <input type="text" class="form-control" id="urgency" value="{{ settled_report.urgency }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Created At:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ settled_report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
-                    </div>
-                    <a href="{{ url_for('officers.settledCase') }}"><i class="bi bi-arrow-left-circle-fill"></i></a>
-                </div>
-            </form>
-        </div>        
+  <div class="card shadow" style="max-width: 650px; margin: auto">
+    <div class="card-body">
+      <form>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="crime_type" class="form-label">Crime Type:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="crime_type"
+              value="{{ settled_report.crime_type }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              value="{{ settled_report.location }}"
+              readonly
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="date" class="form-label">Date of Crime:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              value="{{ settled_report.date }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="time" class="form-label">Time of Crime:</label>
+            <input
+              type="time"
+              class="form-control"
+              id="time"
+              value="{{ settled_report.time }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="phone_number" class="form-label">Phone Number:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="phone_number"
+              value="{{ settled_report.phone_number }}"
+              readonly
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label"
+            >Official Description:</label
+          >
+          <textarea class="form-control" id="description" rows="4" readonly>
+{{ settled_report.description }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="evidence" class="form-label">Evidence:</label>
+          <textarea class="form-control" id="evidence" rows="3" readonly>
+{{ settled_report.evidence }}</textarea
+          >
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="urgency" class="form-label">Priority:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="urgency"
+              value="{{ settled_report.urgency }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="created_at" class="form-label">Created At:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="created_at"
+              value="{{ settled_report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}"
+              readonly
+            />
+          </div>
+          <a href="{{ url_for('officers.settledCase') }}"
+            ><i class="bi bi-arrow-left-circle-fill"></i
+          ></a>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
-
-<script>
-  
-</script>
+<script></script>
 {% endblock content %}

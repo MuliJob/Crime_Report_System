@@ -1,60 +1,104 @@
-{% extends "user/base.html" %}
-{% block title %}
-Register
-{% endblock %}
-{% block content %}
+{% extends "user/base.html" %} {% block title %} Register {% endblock %} {%
+block content %}
 <body class="my-login-page">
-	<section class="h-100">
-		<div>
-			<div class="row justify-content-md-center h-100">
-				<div class="card-wrapper">
-          {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              {{ message }}
+  <section class="h-100">
+    <div>
+      <div class="row justify-content-md-center h-100">
+        <div class="card-wrapper">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages%}
+          <div
+            class="alert alert-{{ category }} alert-dismissible fade show"
+            role="alert"
+          >
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+            {{ message }}
           </div>
           {% endfor %} {% endif%} {% endwith %}
-					<div class="card fat">
-            <p>Welcome to E-security. Thank you for helping improve security. Fill in the details below.</p>
-                            <div>
-                                <h1>Personal Details</h1>
-                                <form method="POST"> 
-                                    <div class="mb-3">
-                                    <label for="fullname" class="form-label">Full Name:</label>
-                                    <input type="text" class="form-control" id="fullname" name="fullname" required>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="idno" class="form-label">Identification Number:</label>
-                                    <input type="number" class="form-control" id="idno" name="idno" required>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="phonenumber" class="form-label">Phone Number:</label>
-                                    <input type="tel" class="form-control" id="phonenumber" name="phonenumber" required> </div>
-                                  <div class="mb-3">
-                                    <label for="residence" class="form-label">Location of Residence:</label>
-                                    <input type="text" class="form-control" id="residence" name="residence" required>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="gender" class="form-label">Gender:</label>
-                                    <select class="form-select" id="gender" name="gender" required>
-                                      <option disabled selected>Select Gender</option>
-                                      <option value="male">Male</option>
-                                      <option value="female">Female</option>
-                                    </select>
-                                  </div>
-                                  <div align="center">
-                                    <button type="submit" class="btn btn-primary">
-                                      Update User
-                                    </button>
-                                  </div>
-                                </form>
-                            </div>							
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+          <div class="card fat">
+            <p>
+              Welcome to E-security. Thank you for helping improve security.
+              Fill in the details below.
+            </p>
+            <div>
+              <h1>Personal Details</h1>
+              <form method="POST">
+                <div class="mb-3">
+                  <label for="fullname" class="form-label">Full Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="fullname"
+                    name="fullname"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="idno" class="form-label"
+                    >Identification Number:</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="idno"
+                    name="idno"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="phonenumber" class="form-label"
+                    >Phone Number:</label
+                  >
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phonenumber"
+                    name="phonenumber"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="residence" class="form-label"
+                    >Location of Residence:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="residence"
+                    name="residence"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="gender" class="form-label">Gender:</label>
+                  <select
+                    class="form-select"
+                    id="gender"
+                    name="gender"
+                    required
+                  >
+                    <option disabled selected>Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <div align="center">
+                  <button type="submit" class="btn btn-primary">
+                    Update User
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 
 {% endblock %}
-

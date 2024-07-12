@@ -1,112 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <title>
-        {% block title%} Crime Reporting System {% endblock %}
-    </title>
-</head>
-<style>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <title>{% block title%} Crime Reporting System {% endblock %}</title>
+  </head>
+  <style>
     /* Custom Dropdown Menu Positioning */
     .custom-dropdown-menu {
-        transform: translateX(-70%);
-        /* Adjust as needed to move left or right */
-        margin-top: 20px;
-        /* Adjust to move up or down */
-        /* Alternatively, use position */
-        /* position: absolute; */
-        /* top: 50px;  Adjust to move down */
-        /* left: -100px;  Adjust to move left */
+      transform: translateX(-70%);
+      /* Adjust as needed to move left or right */
+      margin-top: 20px;
+      /* Adjust to move up or down */
+      /* Alternatively, use position */
+      /* position: absolute; */
+      /* top: 50px;  Adjust to move down */
+      /* left: -100px;  Adjust to move left */
     }
-</style>
+  </style>
 
-<body>
+  <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        <a class="navbar-brand nav-link active" href="{{ url_for('main.home_page') }}">E-Security <span
-                class="sr-only"></span></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            {% if current_user.is_authenticated %}
-            <ul class="navbar-nav">
-                <li class="new-item active">
-                    <a class="nav-link" href="{{ url_for('users.user_dashboard') }}">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('posts.report_crime') }}">Report Crime</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users.history') }}">History</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users.recovered') }}">Recovered Items</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users.download') }}">Download</a>
-                </li>
+      <a
+        class="navbar-brand nav-link active"
+        href="{{ url_for('main.home_page') }}"
+        >E-Security <span class="sr-only"></span
+      ></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if current_user.is_authenticated %}
+        <ul class="navbar-nav">
+          <li class="new-item active">
+            <a class="nav-link" href="{{ url_for('users.user_dashboard') }}"
+              >Dashboard</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('posts.report_crime') }}"
+              >Report Crime</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.history') }}"
+              >History</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.recovered') }}"
+              >Recovered Items</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.download') }}"
+              >Download</a
+            >
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.notification') }}"
+              ><i class="bi bi-bell-fill h5" style="color: white"></i
+            ></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person-circle h4"></i>
+            </a>
+            <ul class="dropdown-menu custom-dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="{{ url_for('users.settings') }}"
+                  ><i class="bi bi-gear-fill h4"></i> Settings</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('users.sign_out') }}"
+                  ><i class="bi bi-arrow-right-circle-fill h4"></i> Logout</a
+                >
+              </li>
             </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users.notification') }}"><i class="bi bi-bell-fill h5"
-                            style="color: white;"></i></a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="bi bi-person-circle h4"></i>
-                    </a>
-                    <ul class="dropdown-menu custom-dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('users.settings') }}"><i
-                                    class="bi bi-gear-fill h4"></i> Settings</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('users.sign_out') }}"><i
-                                    class="bi bi-arrow-right-circle-fill h4"></i> Logout</a></li>
-                    </ul>
-                </li>
+          </li>
+        </ul>
+        {% else %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Login
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="{{ url_for('admins.adminIndex') }}"
+                  >Admin</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="{{ url_for('officers.officerLogin') }}"
+                  >Officer</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('users.sign_in') }}"
+                  >User</a
+                >
+              </li>
             </ul>
-            {% else %}
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Login
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('admins.adminIndex') }}">Admin</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('officers.officerLogin') }}">Officer</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('users.sign_in') }}">User</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('users.sign_up') }}">Register</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ url_for('posts.report_crime') }}">Quick Report</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
-                </li>
-            </ul>
-            {% endif %}
-        </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.sign_up') }}"
+              >Register</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="{{ url_for('posts.report_crime') }}"
+              >Quick Report</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
     </nav>
     {% block content %} {% endblock content %}
-    <br>
+    <br />
     <footer class="text-center mt-5">
-        <p>&copy; 2024 Crime Reporting System</p>
+      <p>&copy; 2024 Crime Reporting System</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
     <script src="{{url_for('static', filename='js/main.js')}}"></script>
-</body>
-
+  </body>
 </html>

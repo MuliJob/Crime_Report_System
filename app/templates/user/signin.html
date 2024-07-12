@@ -1,49 +1,73 @@
-{% extends "user/base.html" %}
-{% block title %}
-SignIn
-{% endblock %}
-{% block content %}
+{% extends "user/base.html" %} {% block title %} SignIn {% endblock %} {% block
+content %}
 <body class="my-login-page">
-	<section class="h-100">
-		<div>
-			<div class="row justify-content-md-center h-100">
-				<div class="card-wrapper">
-					{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-					<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							{{ message }}
-					</div>
-					{% endfor %} {% endif%} {% endwith %}
-					<div class="card fat">
-						<div class="card-body">
-							<h4 class="card-title" align="center">User Login</h4>
-							<form method="POST">
-								<div id="msg">{{ msg }}</div>
-								<div class="form-group">
-									<label for="username">User Name</label>
-									<input id="username" type="username" class="form-control" name="username" value="" required>
-								</div>
-                <br>
-								<div class="form-group">
-									<label for="password">Password
-									</label>
-									<input id="password" type="password" class="form-control" name="password" required data-eye>
-								</div>
-                <br>
-								<div class="form-group m-0" align="center">
-									<button type="submit" class="btn btn-primary btn-block" href="{{ url_for('users.user_dashboard') }}">
-										Login
-									</button>
-								</div>
-								<div class="mt-4 text-center">
-									Don't have an account? <a href="{{ url_for('users.sign_up') }}">Register</a>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+  <section class="h-100">
+    <div>
+      <div class="row justify-content-md-center h-100">
+        <div class="card-wrapper">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages%}
+          <div
+            class="alert alert-{{ category }} alert-dismissible fade show"
+            role="alert"
+          >
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+            {{ message }}
+          </div>
+          {% endfor %} {% endif%} {% endwith %}
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title" align="center">User Login</h4>
+              <form method="POST">
+                <div id="msg">{{ msg }}</div>
+                <div class="form-group">
+                  <label for="username">User Name</label>
+                  <input
+                    id="username"
+                    type="username"
+                    class="form-control"
+                    name="username"
+                    value=""
+                    required
+                  />
+                </div>
+                <br />
+                <div class="form-group">
+                  <label for="password">Password </label>
+                  <input
+                    id="password"
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    required
+                    data-eye
+                  />
+                </div>
+                <br />
+                <div class="form-group m-0" align="center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block"
+                    href="{{ url_for('users.user_dashboard') }}"
+                  >
+                    Login
+                  </button>
+                </div>
+                <div class="mt-4 text-center">
+                  Don't have an account?
+                  <a href="{{ url_for('users.sign_up') }}">Register</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 {% endblock %}

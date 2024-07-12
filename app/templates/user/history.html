@@ -1,128 +1,133 @@
-{% extends 'user/base.html' %}
-{% block title %}
-  History
-{% endblock %}
-{% block content %}
+{% extends 'user/base.html' %} {% block title %} History {% endblock %} {% block
+content %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background-color: #ececec;
-    }
-    .reduced-card-size {
-      padding: 10px;
-      margin-bottom: 10px;
-      font-size: 0.9em;
-      border-radius: 10px;
-      transition: transform 0.3s ease;
-    }
-    
-    .reduced-card-size:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .card-text {
-      font-size: 0.9em;
-    }
-    
-    .status {
-      font-weight: bold;
-      padding: 5px;
-      border-radius: 5px;
-      color: white;
-      display: inline-block;
-    }
-    
-    .status-unsolved {
-      background-color: #e74c3c; /* Red */
-    }
-    
-    .status-recovered {
-      background-color: #2ecc71; /* Green */
-    }
-    
-    .status-under-investigation {
-      background-color: #3498db; /* Blue */
-    }
-    
-    .status-solved {
-      background-color: #27ae60; /* Light Green */
-    }
-    
-    .status-cleared-by-arrest {
-      background-color: #9b59b6; /* Purple */
-    }
-    
-    .status-cold-case {
-      background-color: #34495e; /* Dark Blue */
-    }
-    
-    .status-closed {
-      background-color: #f39c12; /* Orange */
-    }
-    
-    .status-pending-prosecution {
-      background-color: #f1c40f; /* Yellow */
-    }
-    
-    .status-adjudicated {
-      background-color: #95a5a6; /* Gray */
-    }
-  </style>
-</head>
-<body>
-  <div class="container mt-4">
-    <h2 class="text-center">Your Crime Reports</h2>
-    {% if crimes %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background-color: #ececec;
+      }
+      .reduced-card-size {
+        padding: 10px;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+      }
+
+      .reduced-card-size:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-text {
+        font-size: 0.9em;
+      }
+
+      .status {
+        font-weight: bold;
+        padding: 5px;
+        border-radius: 5px;
+        color: white;
+        display: inline-block;
+      }
+
+      .status-unsolved {
+        background-color: #e74c3c; /* Red */
+      }
+
+      .status-recovered {
+        background-color: #2ecc71; /* Green */
+      }
+
+      .status-under-investigation {
+        background-color: #3498db; /* Blue */
+      }
+
+      .status-solved {
+        background-color: #27ae60; /* Light Green */
+      }
+
+      .status-cleared-by-arrest {
+        background-color: #9b59b6; /* Purple */
+      }
+
+      .status-cold-case {
+        background-color: #34495e; /* Dark Blue */
+      }
+
+      .status-closed {
+        background-color: #f39c12; /* Orange */
+      }
+
+      .status-pending-prosecution {
+        background-color: #f1c40f; /* Yellow */
+      }
+
+      .status-adjudicated {
+        background-color: #95a5a6; /* Gray */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h2 class="text-center">Your Crime Reports</h2>
+      {% if crimes %}
       <div class="row">
         {% for crime in crimes %}
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="card mb-4 reduced-card-size" onclick="crime_details('{{ crime.crime_id }}')" style="cursor: pointer;">
-              <div class="card-body">
-                <h5 class="card-text"><strong>Incident:</strong> {{ crime.incident_nature }}</h5>
-                <h5 class="card-text"><strong>Date of Incident:</strong> {{ crime.date_of_incident }}</h5>
-                <h5 class="card-text"><strong>Location:</strong> {{ crime.incident_location }}</h5>
-                <h5 class="card-text"><strong>Status:</strong> 
-                  <span class="status 
-                    {% if crime.crime_status == 'Unsolved' %} status-unsolved 
-                    {% elif crime.crime_status == 'Recovered' %} status-recovered 
-                    {% elif crime.crime_status == 'Under Investigation' %} status-under-investigation 
-                    {% elif crime.crime_status == 'Solved' %} status-solved 
-                    {% elif crime.crime_status == 'Cleared by Arrest' %} status-cleared-by-arrest 
-                    {% elif crime.crime_status == 'Cold Case' %} status-cold-case 
-                    {% elif crime.crime_status == 'Closed' %} status-closed 
-                    {% elif crime.crime_status == 'Pending Prosecution' %} status-pending-prosecution 
-                    {% elif crime.crime_status == 'Adjudicated' %} status-adjudicated 
-                    {% endif %}
-                  ">{{ crime.crime_status }}</span>
-                </h5>
-              </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div
+            class="card mb-4 reduced-card-size"
+            onclick="crime_details('{{ crime.crime_id }}')"
+            style="cursor: pointer"
+          >
+            <div class="card-body">
+              <h5 class="card-text">
+                <strong>Incident:</strong> {{ crime.incident_nature }}
+              </h5>
+              <h5 class="card-text">
+                <strong>Date of Incident:</strong> {{ crime.date_of_incident }}
+              </h5>
+              <h5 class="card-text">
+                <strong>Location:</strong> {{ crime.incident_location }}
+              </h5>
+              <h5 class="card-text">
+                <strong>Status:</strong>
+                <span
+                  class="status {% if crime.crime_status == 'Unsolved' %} status-unsolved {% elif crime.crime_status == 'Recovered' %} status-recovered {% elif crime.crime_status == 'Under Investigation' %} status-under-investigation {% elif crime.crime_status == 'Solved' %} status-solved {% elif crime.crime_status == 'Cleared by Arrest' %} status-cleared-by-arrest {% elif crime.crime_status == 'Cold Case' %} status-cold-case {% elif crime.crime_status == 'Closed' %} status-closed {% elif crime.crime_status == 'Pending Prosecution' %} status-pending-prosecution {% elif crime.crime_status == 'Adjudicated' %} status-adjudicated {% endif %}"
+                  >{{ crime.crime_status }}</span
+                >
+              </h5>
             </div>
           </div>
+        </div>
         {% endfor %}
       </div>
-    {% else %}
-      <div class="container d-flex justify-content-center align-items-center mt-4">
+      {% else %}
+      <div
+        class="container d-flex justify-content-center align-items-center mt-4"
+      >
         <div class="col-lg-4 col-md-6 col-sm-12">
           <div class="card mb-4 reduced-card-size">
             <div class="card-body text-center">
-              <h4><i class="bi bi-database-x"></i> No crime history found. <a href="{{ url_for('posts.report_crime') }}">Report Now</a></h4>
+              <h4>
+                <i class="bi bi-database-x"></i> No crime history found.
+                <a href="{{ url_for('posts.report_crime') }}">Report Now</a>
+              </h4>
             </div>
           </div>
         </div>
       </div>
-    {% endif %}
-  </div>
+      {% endif %}
+    </div>
 
-<script>
-  function crime_details(crime_id) {
-      window.location.href = '/users/crime-details/' + crime_id;
-  }
-</script>
-</body>
+    <script>
+      function crime_details(crime_id) {
+        window.location.href = "/users/crime-details/" + crime_id;
+      }
+    </script>
+  </body>
 </html>
 {% endblock %}
