@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, current_app, render_template, redirect, send_from_directory, session, url_for, request, flash
+from flask import Blueprint, Response, current_app, render_template, redirect, send_from_directory, session, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
@@ -212,13 +212,29 @@ def download():
 @login_required
 def crime_details(crime_id):
     try:
-        crime_details = Crime.query.filter_by(crime_id=crime_id).all()
+        crime_details = Crime.query.filter_by(crime_id=crime_id)
         
     except:
         flash("An error occurred while fetching crime details. Please try again later.", "danger")
         return redirect(url_for('users.history'))
 
     return render_template('user/crime-details.html', crime_details=crime_details, )
+
+@users.route('/users/download-image/<int:crime_id>')
+@login_required
+def download_image(crime_id):
+    crime_details = Crime.query.get_or_404(crime_id)
+    if not crime_details.crime_file_upload:
+        flash('No image found', 'danger')
+        return redirect(url_for('users.crime_details', crime_id=crime_id))
+    
+    return Response(
+        crime_details.crime_file_upload,
+        mimetype=crime_details.crime_mimetype,
+        headers={
+            "Content-Disposition": f"attachment;filename={crime_details.crime_file_name}"
+        }
+    )
 
 @users.route('/users/settings', methods=['GET', 'POST'])
 @login_required
