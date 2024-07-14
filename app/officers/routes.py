@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, Response, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import logout_user
 from sqlalchemy import func, or_
 from app import db
@@ -239,6 +239,22 @@ def caseDetails(report_id):
         current_app.logger.error("Database error:")
         flash("An error occurred while fetching the case report details. Please try again later.", "danger")
         return redirect(url_for('officers.assignedCase'))
+    
+@officers.route('/officer/download-image/<int:report_id>')
+@officer_required
+def download_image(report_id):
+    report = CaseReport.query.get_or_404(report_id)
+    if not report.media:
+        flash('No image found', 'danger')
+        return redirect(url_for('officers.caseDetails', report_id=report_id))
+    
+    return Response(
+        report.media,
+        mimetype=report.mimetype,
+        headers={
+            "Content-Disposition": f"attachment;filename={report.filename}"
+        }
+    )
     
 @officers.route('/officer/status')
 @officer_required

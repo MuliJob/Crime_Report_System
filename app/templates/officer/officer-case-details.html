@@ -11,6 +11,9 @@
     border: none;
     border-radius: 15px;
   }
+  label {
+    font-weight: bold;
+  }
   .card-header {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -45,6 +48,16 @@
     top: 0;
     left: 0;
     z-index: 1000;
+  }
+  .evidence-container {
+      max-width: 300px;
+  }
+  .download-button {
+      width: 100%;
+      font-size: 0.9rem;
+      display: block;
+      text-align: center;
+      margin-top: 10px;
   }
 </style>
 <div class="container mt-5">
@@ -156,6 +169,17 @@
               readonly
             />
           </div>
+          <div class="form-group evidence-container">
+            <label for="mediaUpload">Attached Evidence:</label>
+            {% if report.media %}
+                <img src="{{ url_for('officers.download_image', report_id=report.report_id) }}" alt="{{ report.filename }}" class="img-fluid">
+                <a href="{{ url_for('officers.download_image', report_id=report.report_id) }}" class="btn btn-primary download-button" download>
+                    <i class="bi bi-download"></i> Download
+                </a>
+            {% else %}
+                <p>No attached evidence.</p>
+            {% endif %}
+        </div>
         </div>
       </form>
     </div>
