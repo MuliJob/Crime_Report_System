@@ -5,7 +5,7 @@ from flask_login import current_user, logout_user
 from sqlalchemy import func, or_
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from werkzeug.utils import secure_filename
 from app.officers.models import CaseReport, Officers
 
 officers = Blueprint('officers', __name__)
@@ -216,8 +216,14 @@ def caseDetails(report_id):
         
         if request.method == 'POST':
             officer_report_text = request.form.get('officer_report')
+            media = request.files['media']
+            filename = secure_filename(media.filename)
+            mimetype = media.mimetype
             
             report.reports = officer_report_text
+            report.media = media.read()
+            report.filename = filename
+            report.mimetype = mimetype
             
             try:
                 db.session.commit()

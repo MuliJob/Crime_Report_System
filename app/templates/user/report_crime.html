@@ -441,7 +441,7 @@ block content %}
         var file = event.target.files[0];
         var reader = new FileReader();
         reader.onload = function () {
-          var mediaType = file.type.split("/")[0]; // Get the media type (image or video)
+          var mediaType = file.type.split("/")[0]; 
           if (mediaType === "image") {
             document.getElementById("imagePreview").src = reader.result;
             document.getElementById("imagePreview").style.display = "block";
