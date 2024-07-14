@@ -1,0 +1,147 @@
+{% extends 'officer/master.html' %} {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification Cards</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 40px;
+      }
+      .notification-container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20;
+      }
+      .notification-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+        padding: 20px;
+      }
+      .notification-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .notification-link {
+        display: block;
+        padding: 20px;
+        color: inherit;
+        text-decoration: none;
+      }
+      .notification-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .notification-description {
+        font-size: 14px;
+        color: #666;
+      }
+      .notification-time {
+        font-size: 12px;
+        color: #999;
+        margin-top: 10px;
+      }
+      h1 {
+        text-align: center;
+      }
+      .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 1rem);
+      }
+      @media (max-width: 576px) {
+        .modal-dialog-centered {
+          min-height: calc(100vh - 3.5rem);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages%}
+    <div
+      class="alert alert-{{ category }} alert-dismissible fade show"
+      role="alert"
+    >
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+      {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
+    <h1>Reports</h1>
+    {% if my_reports %} {% for myreports in my_reports %}
+    <div class="notification-container">
+      <div
+        class="notification-card"
+        style="cursor: pointer"
+        data-bs-toggle="modal"
+        data-bs-target="#reportModal{{ myreports.report_id }}"
+      >
+        <div class="notification-title">{{ myreports.crime_type }}</div>
+        <div class="notification-description">{{ myreports.plain_text }}</div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="reportModal{{ myreports.report_id }}"
+      tabindex="-1"
+      aria-labelledby="reportModalLabel{{ myreports.report_id }}"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5
+              class="modal-title"
+              id="reportModalLabel{{ myreports.report_id }}"
+            >
+              Crime Type: {{ myreports.crime_type }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {% if myreports.plain_text %}
+            <p>{{ myreports.plain_text }}</p>
+            {% else %}
+            <p><em>No reports available.</em></p>
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <h3 style="text-align: center">
+      <i class="bi bi-envelope-x-fill h2"></i> You have no reports.
+    </h3>
+    {% endif %}
+    <script>
+      
+    </script>
+  </body>
+</html>
+{% endblock content %}
