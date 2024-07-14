@@ -1,14 +1,13 @@
 from typing import List, Tuple
 import pytz
 from datetime import datetime, timedelta
-from io import BytesIO
-from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
+from flask import Blueprint, Response, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 import folium
 from sqlalchemy import and_, desc, extract, func, or_
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db, send_assignment_email, send_status_update_email, mail
+from app import db, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
@@ -280,16 +279,29 @@ def crimeDetails(crime_id):
             flash("Crime details not found.", "warning")
             return redirect(url_for('admins.reports'))
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("An error occurred while fetching the reports crime details. Please try again later.", "danger")
         
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reports'))
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
+
+@admins.route('/admin/download-image/<int:crime_id>')
+@admin_required
+def download_image(crime_id):
+    crime_details = Crime.query.get_or_404(crime_id)
+    if not crime_details.crime_file_upload:
+        flash('No image found', 'danger')
+        return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
+    
+    return Response(
+        crime_details.crime_file_upload,
+        mimetype=crime_details.crime_mimetype,
+        headers={
+            "Content-Disposition": f"attachment;filename={crime_details.crime_file_name}"
+        }
+    )
 
 @admins.route('/admin/crimes_details/<int:crime_id>', methods=['POST', 'GET'])
 @admin_required
@@ -401,28 +413,6 @@ def edit_case_report(report_id):
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
 
-
-# download route for download files
-@admins.route('/admin/crime_details/<int:crime_id>')
-@admin_required
-def download(crime_id):
-    try:
-        upload = Crime.query.filter_by(crime_id=crime_id).first()
-        if not upload:
-            abort(404, description="Crime record not found")
-        
-        if not upload.crime_file_upload or not upload.crime_file_name:
-            abort(404, description="File not found")
-        
-        return send_file(
-            BytesIO(upload.crime_file_upload),
-            download_name=upload.crime_file_name,
-            as_attachment=True,
-            mimetype=upload.crime_mimetype
-        )
-    except Exception as e:
-        print(f"Error downloading file: {str(e)}")
-        abort(500, description="Internal server error")
     
 
 @admins.route('/admin/analytics')
