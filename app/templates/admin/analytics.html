@@ -1,76 +1,79 @@
-{% extends 'admin/layout.html' %}
-{% block content %}
+{% extends 'admin/layout.html' %} {% block content %}
 <style>
-    #map {
-        width: 100%;
-        height: 400px;
-    }
-    .map-card, .analysis-card {
-        max-width: 800px;
-        margin: 0 auto;
-    }
+  #map {
+    width: 100%;
+    height: 400px;
+  }
+  .map-card,
+  .analysis-card {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 </style>
 <div class="container mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %} 
-        {% if messages %} 
-            {% for category, message in messages%}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    {{ message }}
-                </div>
-            {% endfor %} 
-        {% endif%} 
-    {% endwith %}
-    <h2 style="text-align: center;">Crimes Heatmap</h2>
-    <div class="card mb-4 map-card">
-        <div class="card-body">
-            <div class="row">
-                <div>
-                    {{ map_html|safe }}
-                </div>
-            </div>
-        </div>
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages%}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+    {{ message }}
+  </div>
+  {% endfor %} {% endif%} {% endwith %}
+  <h2 style="text-align: center">Crimes Heatmap</h2>
+  <div class="card mb-4 map-card">
+    <div class="card-body">
+      <div class="row">
+        <div>{{ map_html|safe }}</div>
+      </div>
     </div>
-    <br>
-    <h2 style="text-align: center;">Crime Analysis By Location</h2>
-    <div class="card mb-4 analysis-card">
-        <div class="card-body">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <canvas id="crimeByLocation" height="150"></canvas>
-                </div>
-            </div>
+  </div>
+  <br />
+  <h2 style="text-align: center">Crime Analysis By Location</h2>
+  <div class="card mb-4 analysis-card">
+    <div class="card-body">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <canvas id="crimeByLocation" height="150"></canvas>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/folium/0.13.1/folium.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-      // Crime by Location Data
-      var crimeCtx = document.getElementById('crimeByLocation').getContext('2d');
-      var crimeByLocation = new Chart(crimeCtx, {
-          type: 'bar',
-          data: {
-              labels: {{ crime_labels|tojson }},
-              datasets: [{
-                  label: 'Crimes',
-                  data: {{ crime_counts|tojson }},
-                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-  });
+  document.addEventListener('DOMContentLoaded', function() {
+        // Crime by Location Data
+        var crimeCtx = document.getElementById('crimeByLocation').getContext('2d');
+        var crimeByLocation = new Chart(crimeCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ crime_labels|tojson }},
+                datasets: [{
+                    label: 'Crimes',
+                    data: {{ crime_counts|tojson }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
 </script>
 {% endblock content %}

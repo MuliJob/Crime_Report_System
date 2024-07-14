@@ -1,105 +1,333 @@
-{% extends 'officer/master.html' %}
-{% block content %}
-<script src="https://cdn.tiny.cloud/1/n09jqk8dx7kscz6qa5vo40azjxmme44bjit60u4nymwhuws0/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+{% extends 'officer/master.html' %} {% block content %}
+<script
+  src="https://cdn.tiny.cloud/1/n09jqk8dx7kscz6qa5vo40azjxmme44bjit60u4nymwhuws0/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"
+></script>
 <style>
-.align-text {
-  text-align: center;
-}
-.card {
+  .align-text {
+    text-align: center;
+  }
+  .card {
     border: none;
     border-radius: 15px;
-}
-.card-header {
+  }
+  label {
+    font-weight: bold;
+  }
+  .card-header {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-}
-.form-control[readonly] {
-    background-color: #f8f9fa; 
-    border-color: #e9ecef; 
-}
+  }
+  .form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+  }
+  #imagePreview {
+    max-width: 100%;
+    height: auto;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .image-container {
+    position: relative;
+    max-width: 50%;
+    height: auto;
+  }
+
+  #imagePreview,
+  #videoPreview {
+    max-width: 100%;
+    height: auto;
+  }
+
+  #cancelButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  .evidence-container {
+      max-width: 300px;
+  }
+  .download-button {
+      width: 100%;
+      font-size: 0.9rem;
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+  }
 </style>
 <div class="container mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
-    </div>
-    {% endfor %} {% endif%} {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages%}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+    {{ message }}
+  </div>
+  {% endfor %} {% endif%} {% endwith %}
   <h2 class="text-center mb-0">Report Details</h2>
-    <div class="card shadow" style="max-width: 650px; margin: auto;">
-        <div class="card-body">
-            <form>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="crime_type" class="form-label">Crime Type:</label>
-                        <input type="text" class="form-control" id="crime_type" value="{{ report.crime_type }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="location" class="form-label">Location:</label>
-                        <input type="text" class="form-control" id="location" value="{{ report.location }}" readonly>
-                    </div>
-                    
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="date" class="form-label">Date of Crime:</label>
-                        <input type="date" class="form-control" id="date" value="{{ report.date }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="time" class="form-label">Time of Crime:</label>
-                        <input type="time" class="form-control" id="time" value="{{ report.time }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="phone_number" class="form-label">Phone Number:</label>
-                        <input type="text" class="form-control" id="phone_number" value="{{ report.phone_number }}" readonly>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Official Description:</label>
-                    <textarea class="form-control" id="description" rows="4" readonly>{{ report.description }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="evidence" class="form-label">Evidence:</label>
-                    <textarea class="form-control" id="evidence" rows="3" readonly>{{ report.evidence }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="urgency" class="form-label">Priority:</label>
-                        <input type="text" class="form-control" id="urgency" value="{{ report.urgency }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Created At:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
-                    </div>
-                </div>
-            </form>
-        </div>        
-    </div>
-</div>
-<br>
-<h3 class="text-center">Write Your Report About Case</h3>
-<div class="card shadow" style="max-width: 650px; margin: auto;">
+  <div class="card shadow" style="max-width: 650px; margin: auto">
     <div class="card-body">
-        <form action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}" method="POST">
-            <div class="mb-3">
-                <label for="officer_report" class="form-label">Please write your report below.</label>
-                <textarea class="form-control" id="officer_report" name="officer_report" rows="15">{{ report.reports }}</textarea>
-            </div>
-            <div class="text-center">
-                <a href="{{ url_for('officers.assignedCase') }}"><button type="button" class="btn btn-primary"><i class="bi bi-arrow-left-circle"></i> Back</button></a>
-                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Report</button>
-            </div>
-        </form>
+      <form>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="crime_type" class="form-label">Crime Type:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="crime_type"
+              value="{{ report.crime_type }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              value="{{ report.location }}"
+              readonly
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="date" class="form-label">Date of Crime:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              value="{{ report.date }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="time" class="form-label">Time of Crime:</label>
+            <input
+              type="time"
+              class="form-control"
+              id="time"
+              value="{{ report.time }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="phone_number" class="form-label">Phone Number:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="phone_number"
+              value="{{ report.phone_number }}"
+              readonly
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label"
+            >Official Description:</label
+          >
+          <textarea class="form-control" id="description" rows="4" readonly>
+{{ report.description }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="evidence" class="form-label">Evidence:</label>
+          <textarea class="form-control" id="evidence" rows="3" readonly>
+{{ report.evidence }}</textarea
+          >
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="urgency" class="form-label">Priority:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="urgency"
+              value="{{ report.urgency }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="created_at" class="form-label">Created At:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="created_at"
+              value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}"
+              readonly
+            />
+          </div>
+          <div class="form-group evidence-container">
+            <label for="mediaUpload">Attached Evidence:</label>
+            {% if report.media %}
+                <img src="{{ url_for('officers.download_image', report_id=report.report_id) }}" alt="{{ report.filename }}" class="img-fluid">
+                <a href="{{ url_for('officers.download_image', report_id=report.report_id) }}" class="btn btn-primary download-button" download>
+                    <i class="bi bi-download"></i> Download
+                </a>
+            {% else %}
+                <p>No attached evidence.</p>
+            {% endif %}
+        </div>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
+<br />
+<h3 class="text-center">Write Your Report About Case</h3>
+<div class="card shadow" style="max-width: 650px; margin: auto">
+  <div class="card-body">
+    <form
+      action="{{ url_for('officers.caseDetails', report_id=report.report_id) }}"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <div class="form-group">
+        <label for="mediaUpload">Attach Evidence:</label>
+        <input
+          type="file"
+          class="form-control-file"
+          id="mediaUpload"
+          name="media"
+        />
+      </div>
+      <div class="form-group image-container">
+        <button
+          type="button"
+          id="cancelButton"
+          class="btn btn-danger"
+          style="display: none"
+        >
+          Cancel
+        </button>
+        <img
+          id="imagePreview"
+          src="#"
+          alt="Image preview"
+          style="display: none"
+        />
+        <video id="videoPreview" controls style="display: none"></video>
+      </div>
+      <br />
+      <div class="mb-3">
+        <label for="officer_report" class="form-label"
+          >Please write your report below.</label
+        >
+        <textarea
+          class="form-control"
+          id="officer_report"
+          name="officer_report"
+          rows="15"
+        >
+{{ report.reports }}</textarea
+        >
+      </div>
+      <div class="text-center">
+        <a href="{{ url_for('officers.assignedCase') }}"
+          ><button type="button" class="btn btn-primary">
+            <i class="bi bi-arrow-left-circle"></i> Back
+          </button></a
+        >
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-save"></i> Save
+        </button>
+        <button type="button" class="btn btn-info" onclick="printReport()">
+          <i class="bi bi-printer"></i> Print
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
-  tinymce.init({
-      selector: '#officer_report',
-      plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
-      toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-      menubar: false,
-      branding: false
+  document
+    .getElementById("mediaUpload")
+    .addEventListener("change", function (event) {
+      var file = event.target.files[0];
+      var reader = new FileReader();
+      reader.onload = function () {
+        var mediaType = file.type.split("/")[0];
+        if (mediaType === "image") {
+          document.getElementById("imagePreview").src = reader.result;
+          document.getElementById("imagePreview").style.display = "block";
+          document.getElementById("videoPreview").style.display = "none";
+        } else if (mediaType === "video") {
+          document.getElementById("videoPreview").src = reader.result;
+          document.getElementById("videoPreview").style.display = "block";
+          document.getElementById("imagePreview").style.display = "none";
+        }
+        document.getElementById("cancelButton").style.display = "inline-block";
+      };
+      reader.readAsDataURL(file);
     });
+
+  document
+    .getElementById("cancelButton")
+    .addEventListener("click", function () {
+      document.getElementById("mediaUpload").value = "";
+      document.getElementById("imagePreview").style.display = "none";
+      document.getElementById("videoPreview").style.display = "none";
+      document.getElementById("imagePreview").src = "#";
+      document.getElementById("videoPreview").src = "";
+      this.style.display = "none";
+    });
+
+  tinymce.init({
+    selector: "#officer_report",
+    plugins:
+      "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount",
+    toolbar:
+      "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+    menubar: false,
+    branding: false,
+  });
+  function printReport() {
+    const reportContent = document.getElementById("officer_report").value;
+    const printWindow = window.open("", "_blank");
+
+    printWindow.document.write(`
+    <html>
+    <head>
+      <title>Officer Report</title>
+      <style>
+        body {
+          line-height: 1.6;
+          padding: 20px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        h1 {
+          text-align: center;
+        }
+        .report-content {
+          white-space: pre-wrap;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Officer Report</h1>
+      <div class="report-content">${reportContent}</div>
+    </body>
+    </html>
+  `);
+
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.onafterprint = function () {
+      printWindow.close();
+    };
+  }
 </script>
 {% endblock content %}

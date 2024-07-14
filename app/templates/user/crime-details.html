@@ -136,82 +136,99 @@
         body { font-size: 12pt; }
         button { display: none; }
     }
+    .evidence-container {
+        max-width: 300px;
+    }
+    .download-button {
+        width: 100%;
+        font-size: 0.9rem;
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  {% for crime in crime_details %}
+  <!-- {% for crime_details in crime_details %} -->
   <form method="POST, GET">
     <div class="ms-auto">
         <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button> 
      </div>
-    <h1 style="text-align: left;"><strong>Report On: {{ crime.incident_nature }}</strong></h1>
+    <h1 style="text-align: left;"><strong>Report On: {{ crime_details.incident_nature }}</strong></h1>
     <div class="form-row">
         <div class="form-column">
             <label for="date_of_incident">Date when incident occurred</label>
-            <input type="date" id="date_of_incident" name="date_of_incident" value="{{ crime.date_of_incident }}" readonly>
+            <input type="date" id="date_of_incident" name="date_of_incident" value="{{ crime_details.date_of_incident }}" readonly>
 
             <label for="issued_by">Incident reported by</label>
-            <input type="text" id="issued_by" name="issued_by" value="{{ crime.issued_by }}" readonly>
+            <input type="text" id="issued_by" name="issued_by" value="{{ crime_details.issued_by }}" readonly>
 
             <label for="status">Status</label>
-            <input type="text" id="status" name="status" value="{{ crime.crime_status }}" readonly>
+            <input type="text" id="status" name="status" value="{{ crime_details.crime_status }}" readonly>
         </div>
 
         <div class="form-column">
             <label for="time_of_incident">Time when incident occurred</label>
-            <input type="text" id="time_of_incident" name="time_of_incident" value="{{ crime.time_of_incident }}" readonly>
+            <input type="text" id="time_of_incident" name="time_of_incident" value="{{ crime_details.time_of_incident }}" readonly>
 
             <label for="date_received">Received On</label>
-            <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
+            <input type="text" id="date_received" name="date_received" value="{{ crime_details.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
 
             <label for="phonenumber">Phone Number</label>
-            <input type="text" id="phonenumber" name="phonenumber" value="{{ crime.phonenumber }}" readonly>
+            <input type="text" id="phonenumber" name="phonenumber" value="{{ crime_details.phonenumber }}" readonly>
         </div>
     </div>
 
     <div class="form-row">
         <label for="incident_location">Incident location:</label>
-        <textarea id="incident_location" name="incident_location" value="" style="width: calc(100% - 22px);" readonly>{{ crime.incident_location }}</textarea>
+        <textarea id="incident_location" name="incident_location" value="" style="width: calc(100% - 22px);" readonly>{{ crime_details.incident_location }}</textarea>
     </div>
 
     <div class="form-row">
         <label for="incident_nature">Nature of incident:</label>
-        <textarea id="incident_nature" name="incident_nature" style="width: calc(100% - 22px);" readonly>{{ crime.incident_nature }}</textarea>
+        <textarea id="incident_nature" name="incident_nature" style="width: calc(100% - 22px);" readonly>{{ crime_details.incident_nature }}</textarea>
     </div>
 
     <div class="form-row">
       <label for="incident_details">More Details</label>
-      <textarea id="incident_details" name="incident_details" style="width: calc(100% - 22px);" readonly>{{ crime.incident_details }}</textarea>
+      <textarea id="incident_details" name="incident_details" style="width: calc(100% - 22px);" readonly>{{ crime_details.incident_details }}</textarea>
     </div>
 
     <div class="form-row">
       <label for="suspect_details">Suspect History</label>
-      <textarea id="suspect_details" name="suspect_details" style="width: calc(100% - 22px);" readonly>{{ crime.suspect_details }}</textarea>
+      <textarea id="suspect_details" name="suspect_details" style="width: calc(100% - 22px);" readonly>{{ crime_details.suspect_details }}</textarea>
     </div>
 
     <div class="form-row">
       <label for="arrest_history">Arrest in relation to Incident</label>
-      <textarea id="arrest_history" name="arrest_history" style="width: calc(100% - 22px);" readonly>{{ crime.arrest_history }}</textarea>
+      <textarea id="arrest_history" name="arrest_history" style="width: calc(100% - 22px);" readonly>{{ crime_details.arrest_history }}</textarea>
     </div>
     <hr>
     <label for="suspect_name">Suspect Name:</label>
-    <input type="text" id="suspect_name" name="suspect_name" value="{{ crime.suspect_name }}">
+    <input type="text" id="suspect_name" name="suspect_name" value="{{ crime_details.suspect_name }}">
 
     <div class="form-row">
       <label for="comments">Further Comments</label>
-      <textarea id="comments" name="comments" style="width: calc(100% - 22px);" readonly>{{ crime.comments }}</textarea>
+      <textarea id="comments" name="comments" style="width: calc(100% - 22px);" readonly>{{ crime_details.comments }}</textarea>
     </div>
 
-    <div class="form-group">
+    <div class="form-group evidence-container">
         <label for="mediaUpload">Attached Evidence:</label>
-        <img src="{{ crime.crime_file_upload }}" alt="{{ crime.crime_file_name }}" style="max-width: 300px;">
+        {% if crime_details.crime_file_upload %}
+            <img src="{{ url_for('users.download_image', crime_id=crime_details.crime_id) }}" alt="{{ crime_details.crime_file_name }}" class="img-fluid">
+            <a href="{{ url_for('users.download_image', crime_id=crime_details.crime_id) }}" class="btn btn-primary download-button" download>
+                <i class="bi bi-download"></i> Download
+            </a>
+        {% else %}
+            <p>No attached evidence.</p>
+        {% endif %}
     </div>
   </br>
     <div class="form-row">
-        <a href="{{ url_for('users.history') }}"><button type="button" class="info"><i class="bi bi-arrow-left h4"></i></button></a>
+        <a href="{{ url_for('users.history') }}"><i class="bi bi-arrow-left-circle-fill h4"></i></a>
     </div>
   </form>
-{% endfor %}
+<!-- {% endfor %} -->
 <script>
   
 </script>

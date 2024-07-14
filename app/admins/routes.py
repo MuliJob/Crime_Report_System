@@ -1,18 +1,19 @@
+from typing import List, Tuple
 import pytz
 from datetime import datetime, timedelta
-from io import BytesIO
-from flask import Blueprint, abort, current_app, render_template, redirect, request, flash, send_file, session, url_for
+from flask import Blueprint, Response, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 import folium
-from sqlalchemy import desc, extract, func, or_
+from sqlalchemy import and_, desc, extract, func, or_
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db, send_assignment_email, send_status_update_email, mail
+from app import db, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
+from sqlalchemy.exc import SQLAlchemyError
 # from flask_mail import Message as FlaskMessage
 
 
@@ -29,8 +30,22 @@ def admin_required(f):
     return decorated_function
 
 # getting coordinates
-def get_coordinates():
-    return db.session.query(Crime.latitude, Crime.longitude).all()
+def get_coordinates() -> List[Tuple[float, float]]:
+    try:
+        coordinates = db.session.query(Crime.latitude, Crime.longitude).filter(
+            and_(Crime.latitude.isnot(None), Crime.longitude.isnot(None))
+        ).all()
+        
+        valid_coordinates = [
+            (float(lat), float(lon)) 
+            for lat, lon in coordinates 
+            if lat is not None and lon is not None and lat != '' and lon != ''
+        ]
+        
+        return valid_coordinates
+    except Exception as e:
+        current_app.logger.error(f"Error in get_coordinates: {str(e)}")
+        return []
 
 # function to get crime by month
 def get_crime_data_by_month():
@@ -82,8 +97,6 @@ def get_monthly_averages():
 
     for month, count in crime_results:
         crime_average[f'{month:02d}'] = count
-
-    
 
     return crime_average
 
@@ -266,16 +279,29 @@ def crimeDetails(crime_id):
             flash("Crime details not found.", "warning")
             return redirect(url_for('admins.reports'))
     except:
-        # Log the error
         current_app.logger.error("Database error:")
         
-        # Flash an error message to the user
         flash("An error occurred while fetching the reports crime details. Please try again later.", "danger")
         
-        # Redirect to a safe page, like the admin dashboard
         return redirect(url_for('admins.reports'))
     
     return render_template('admin/crime_details.html', crime_details=crime_details)
+
+@admins.route('/admin/download-image/<int:crime_id>')
+@admin_required
+def download_image(crime_id):
+    crime_details = Crime.query.get_or_404(crime_id)
+    if not crime_details.crime_file_upload:
+        flash('No image found', 'danger')
+        return redirect(url_for('admins.crimeDetails', crime_id=crime_id))
+    
+    return Response(
+        crime_details.crime_file_upload,
+        mimetype=crime_details.crime_mimetype,
+        headers={
+            "Content-Disposition": f"attachment;filename={crime_details.crime_file_name}"
+        }
+    )
 
 @admins.route('/admin/crimes_details/<int:crime_id>', methods=['POST', 'GET'])
 @admin_required
@@ -387,61 +413,51 @@ def edit_case_report(report_id):
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
 
-
-# download route for download files
-@admins.route('/admin/crime_details/<int:crime_id>')
-@admin_required
-def download(crime_id):
-    try:
-        upload = Crime.query.filter_by(crime_id=crime_id).first()
-        if not upload:
-            abort(404, description="Crime record not found")
-        
-        if not upload.crime_file_upload or not upload.crime_file_name:
-            abort(404, description="File not found")
-        
-        return send_file(
-            BytesIO(upload.crime_file_upload),
-            download_name=upload.crime_file_name,
-            as_attachment=True,
-            mimetype=upload.crime_mimetype
-        )
-    except Exception as e:
-        print(f"Error downloading file: {str(e)}")
-        abort(500, description="Internal server error")
     
 
 @admins.route('/admin/analytics')
 @admin_required
 def analytics():
-    # Get coordinates from database
-    coordinates = get_coordinates()
-    
-    map_center = [sum(lat for lat, _ in coordinates) / len(coordinates),
-                  sum(lon for _, lon in coordinates) / len(coordinates)]
-    m = folium.Map(location=map_center, zoom_start=6)
-    
-    HeatMap(coordinates).add_to(m)
-    
-    map_html = m._repr_html_()
     try:
+        coordinates = get_coordinates()
+        
+        if not coordinates:
+            flash("No valid coordinates found.", "warning")
+            return redirect(url_for('admins.analytics'))
+        
+        map_center = [
+            sum(lat for lat, _ in coordinates) / len(coordinates),
+            sum(lon for _, lon in coordinates) / len(coordinates)
+        ]
+        
+        m = folium.Map(location=map_center, zoom_start=6)
+        
+        HeatMap(coordinates).add_to(m)
+        
+        map_html = m._repr_html_()
+        
         crime_data = db.session.query(
-            Crime.incident_location, db.func.count(Crime.crime_id)
+            Crime.incident_location,
+            db.func.count(Crime.crime_id)
         ).group_by(Crime.incident_location).all()
-
-        crime_labels = [row[0] for row in crime_data]
-        crime_counts = [row[1] for row in crime_data]
         
-    except:
-        current_app.logger.error("Database error:")
+        crime_labels = [row[0] for row in crime_data if row[0] is not None]
+        crime_counts = [row[1] for row in crime_data if row[0] is not None]
         
-        flash("An error occurred generating the analysis.", "danger")
-        
-        return redirect(url_for('admins.analytics'))
-
-    return render_template('admin/analytics.html', title='Analytics Dashboard', 
-                            crime_labels=crime_labels, crime_counts=crime_counts,
-                            map_html=map_html)
+        return render_template('admin/analytics.html',
+                               title='Analytics Dashboard',
+                               crime_labels=crime_labels,
+                               crime_counts=crime_counts,
+                               map_html=map_html)
+    
+    except SQLAlchemyError as e:
+        current_app.logger.error(f"Database error in analytics: {str(e)}")
+        flash("An error occurred while querying the database.", "danger")
+    except Exception as e:
+        current_app.logger.error(f"Unexpected error in analytics: {str(e)}")
+        flash("An unexpected error occurred generating the analysis.", "danger")
+    
+    return redirect(url_for('admins.analytics'))
 
 @admins.route('/admin/notifications')
 @admin_required

@@ -1,57 +1,95 @@
-{% extends "user/base.html" %}
-{% block title %}
-SignUp
-{% endblock %}
-{% block content %}
+{% extends "user/base.html" %} {% block title %} SignUp {% endblock %} {% block
+content %}
 <body class="my-login-page">
-	<section>
-		<div>
-			<div class="row justify-content-md-center h-100">
-				<div class="card-wrapper">
-					{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-					<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							{{ message }}
-					</div>
-					{% endfor %} {% endif%} {% endwith %}
-					<div class="card fat">
-						<div class="card-body">
-							<h4 class="card-title" align="center">Register</h4>
-							<form method="POST">			
-								<div class="form-group">
-									<label for="username">Username</label>
-									<input id="username" type="text" class="form-control" name="username" required>
-								</div>
-                <br>
-								<div class="form-group">
-									<label for="email">Email Address</label>
-									<input id="email" type="email" class="form-control" name="email" required>
-								</div>
-                <br>
-								<div class="form-group">
-									<label for="password1">Password</label>
-									<input id="password1" type="password" class="form-control" name="password1" required data-eye>
-								</div>
-                <br>
+  <section>
+    <div>
+      <div class="row justify-content-md-center h-100">
+        <div class="card-wrapper">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages%}
+          <div
+            class="alert alert-{{ category }} alert-dismissible fade show"
+            role="alert"
+          >
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+            {{ message }}
+          </div>
+          {% endfor %} {% endif%} {% endwith %}
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title" align="center">Register</h4>
+              <form method="POST">
                 <div class="form-group">
-									<label for="password2">Confirm Password</label>
-									<input id="password2" type="password" class="form-control" name="password2" required data-eye>
-								</div>
-                <br>
-								<div class="form-group m-0" align="center">
-									<button type="submit" class="btn btn-primary btn-block"  href="{{ url_for('users.register') }}">
-									Register
-									</button>
-								</div>
-								<div class="mt-4 text-center">
-									Already have an account? <a href="{{ url_for('users.sign_in') }}">Login</a>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>	
+                  <label for="username">Username</label>
+                  <input
+                    id="username"
+                    type="text"
+                    class="form-control"
+                    name="username"
+                    required
+                  />
+                </div>
+                <br />
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    required
+                  />
+                </div>
+                <br />
+                <div class="form-group">
+                  <label for="password1">Password</label>
+                  <input
+                    id="password1"
+                    type="password"
+                    class="form-control"
+                    name="password1"
+                    required
+                    data-eye
+                  />
+                </div>
+                <br />
+                <div class="form-group">
+                  <label for="password2">Confirm Password</label>
+                  <input
+                    id="password2"
+                    type="password"
+                    class="form-control"
+                    name="password2"
+                    required
+                    data-eye
+                  />
+                </div>
+                <br />
+                <div class="form-group m-0" align="center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block w-100"
+                    href="{{ url_for('users.register') }}"
+                  >
+									<i class="bi bi-person-plus"></i>
+                    Register
+                  </button>
+                </div>
+                <div class="mt-4 text-center">
+                  Already have an account?
+                  <a href="{{ url_for('users.sign_in') }}">Login</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 {% endblock %}

@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
-from flask_login import current_user, logout_user
+from flask import Blueprint, Response, current_app, flash, redirect, render_template, request, session, url_for
+from flask_login import logout_user
 from sqlalchemy import func, or_
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from werkzeug.utils import secure_filename
 from app.officers.models import CaseReport, Officers
+from bs4 import BeautifulSoup
 
 officers = Blueprint('officers', __name__)
 
@@ -216,8 +217,14 @@ def caseDetails(report_id):
         
         if request.method == 'POST':
             officer_report_text = request.form.get('officer_report')
+            media = request.files['media']
+            filename = secure_filename(media.filename)
+            mimetype = media.mimetype
             
             report.reports = officer_report_text
+            report.media = media.read()
+            report.filename = filename
+            report.mimetype = mimetype
             
             try:
                 db.session.commit()
@@ -232,6 +239,22 @@ def caseDetails(report_id):
         current_app.logger.error("Database error:")
         flash("An error occurred while fetching the case report details. Please try again later.", "danger")
         return redirect(url_for('officers.assignedCase'))
+    
+@officers.route('/officer/download-image/<int:report_id>')
+@officer_required
+def download_image(report_id):
+    report = CaseReport.query.get_or_404(report_id)
+    if not report.media:
+        flash('No image found', 'danger')
+        return redirect(url_for('officers.caseDetails', report_id=report_id))
+    
+    return Response(
+        report.media,
+        mimetype=report.mimetype,
+        headers={
+            "Content-Disposition": f"attachment;filename={report.filename}"
+        }
+    )
     
 @officers.route('/officer/status')
 @officer_required
@@ -333,6 +356,26 @@ def settledCaseDetails(report_id):
         current_app.logger.error("Database error:")
         flash("An error occurred while fetching the case report details. Please try again later.", "danger")
         return redirect(url_for('officers.settledCase'))
+    
+@officers.route('/officer/officer-reports')
+@officer_required
+def officerReports():
+    officer_id = session['officer_id']
+    try:
+        my_reports = CaseReport.query.filter_by(assigned_officer_id=officer_id).all()
+        
+        for report in my_reports:
+            if report.reports is None:
+                report.plain_text = "No report for case"
+            else:
+                report.plain_text = BeautifulSoup(report.reports, "html.parser").get_text()
+    except Exception as e:
+        current_app.logger.error(f"Database error: {str(e)}")
+        flash("An error occurred while fetching the case report details. Please try again later.", "danger")
+        return redirect(url_for('officers.officerReports'))
+    
+    return render_template('officer/officer-reports.html', my_reports=my_reports)
+
 
 @officers.route('/officer/officer-notification')
 @officer_required

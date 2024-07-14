@@ -1,116 +1,198 @@
-{% extends 'admin/layout.html' %}
-{% block content %}
+{% extends 'admin/layout.html' %} {% block content %}
 <style>
-    .printer-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: black;
+  .printer-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+  }
+
+  @media print {
+    body {
+      font-size: 12pt;
     }
 
-    @media print {
-        body {
-            font-size: 12pt;
-        }
-
-        button {
-            display: none;
-        }
+    button {
+      display: none;
     }
+  }
 </style>
 <div class="container mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages%}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        {{ message }}
-    </div>
-    {% endfor %} {% endif%} {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages%}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+    {{ message }}
+  </div>
+  {% endfor %} {% endif%} {% endwith %}
   <h2 class="text-center mb-0">Official Report</h2>
-    <div class="card shadow" style="max-width: 650px; margin: auto;">
-        <div class="card-body">
-            <form method="POST">
-                <div class="ms-auto">
-                    <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="crime_type" class="form-label">Crime Type:</label>
-                        <input type="text" class="form-control" id="crime_type" value="{{ report.crime_type }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="location" class="form-label">Location:</label>
-                        <input type="text" class="form-control" id="location" value="{{ report.location }}" readonly>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="date" class="form-label">Date of Crime:</label>
-                        <input type="date" class="form-control" id="date" value="{{ report.date }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="time" class="form-label">Time of Crime:</label>
-                        <input type="time" class="form-control" id="time" value="{{ report.time }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="phone_number" class="form-label">Phone Number:</label>
-                        <input type="text" class="form-control" id="phone_number" value="{{ report.phone_number }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Date of Crime:</label>
-                        <input type="text" class="form-control" id="status" value="{{ report.status }}" readonly>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Official Description:</label>
-                    <textarea class="form-control" id="description" rows="4" readonly>{{ report.description }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="evidence" class="form-label">Evidence:</label>
-                    <textarea class="form-control" id="evidence" rows="3" readonly>{{ report.evidence }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="urgency" class="form-label">Priority:</label>
-                        <input type="text" class="form-control" id="urgency" value="{{ report.urgency }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Created At:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="created_at" class="form-label">Officer Assigned:</label>
-                        <input type="text" class="form-control" id="created_at" value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}" readonly>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="deadline" class="form-label">Deadline:</label>
-                        <input type="text" class="form-control" id="deadline" value="{{ report.deadline }}" readonly>
-                    </div>
-                </div>
-            </form>
+  <div class="card shadow" style="max-width: 650px; margin: auto">
+    <div class="card-body">
+      <form method="POST">
+        <div class="ms-auto">
+          <button class="printer-button" onclick="window.print()">
+            <i class="bi bi-printer h4"></i>
+          </button>
         </div>
-        <div class="card-footer text-center">
-            <a href="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil-square"></i> Edit
-            </a>
-            <a href="{{ url_for('admins.case_reports') }}" class="btn btn-secondary ms-2">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="crime_type" class="form-label">Crime Type:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="crime_type"
+              value="{{ report.crime_type }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              value="{{ report.location }}"
+              readonly
+            />
+          </div>
         </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="date" class="form-label">Date of Crime:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              value="{{ report.date }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="time" class="form-label">Time of Crime:</label>
+            <input
+              type="time"
+              class="form-control"
+              id="time"
+              value="{{ report.time }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="phone_number" class="form-label">Phone Number:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="phone_number"
+              value="{{ report.phone_number }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="status" class="form-label">Date of Crime:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="status"
+              value="{{ report.status }}"
+              readonly
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label"
+            >Official Description:</label
+          >
+          <textarea class="form-control" id="description" rows="4" readonly>
+{{ report.description }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="evidence" class="form-label">Evidence:</label>
+          <textarea class="form-control" id="evidence" rows="3" readonly>
+{{ report.evidence }}</textarea
+          >
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="urgency" class="form-label">Priority:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="urgency"
+              value="{{ report.urgency }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="created_at" class="form-label">Created At:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="created_at"
+              value="{{ report.created_at.strftime('%Y-%m-%d %H:%M:%S') }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="created_at" class="form-label">Officer Assigned:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="created_at"
+              value="{{ report.assigned_officer.first_name }}  {{ report.assigned_officer.rank }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="deadline" class="form-label">Deadline:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="deadline"
+              value="{{ report.deadline }}"
+              readonly
+            />
+          </div>
+        </div>
+      </form>
     </div>
+    <div class="card-footer text-center">
+      <a
+        href="{{ url_for('admins.case_reports') }}"
+        class="btn btn-secondary"
+      >
+      <i class="bi bi-arrow-left-circle-fill"></i> Back
+      </a>
+      <a
+        href="{{ url_for('admins.edit_case_report', report_id=report.report_id) }}"
+        class="btn btn-primary ms-2"
+      >
+      <i class="bi bi-pencil-square"></i> Edit
+      </a>
+    </div>
+  </div>
 </div>
 
 <style>
-    .card {
-        border: none;
-        border-radius: 15px;
-    }
-    .card-header {
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-    }
-    .form-control[readonly] {
-        background-color: #f8f9fa; 
-        border-color: #e9ecef; 
-    }
+  .card {
+    border: none;
+    border-radius: 15px;
+  }
+  .card-header {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+  }
+  .form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+  }
 </style>
 {% endblock content %}
