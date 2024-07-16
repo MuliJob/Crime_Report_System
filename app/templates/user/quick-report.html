@@ -187,7 +187,7 @@
     </div>
     {% endfor %} {% endif%} {% endwith %}
     <h1>Police Crime Report Form</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" id="crimeReportForm" enctype="multipart/form-data">
       <p style="text-align: center">
         To report a crime or incident, please provide the following information's
       </p>
@@ -292,7 +292,8 @@
         placeholder="Full Name"
       />
       </div>
-  
+      <input type="hidden" id="latitude" name="latitude">
+      <input type="hidden" id="longitude" name="longitude">
       <div class="form-group">
         <label for="mediaUpload">Attach Evidence:</label>
         <input
@@ -431,52 +432,76 @@
           this.style.display = "none";
         });
         
-        function getCoordinates() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
+        let permissionGranted = false;
 
-                        // Send coordinates to the server
-                        fetch('/save-coordinates', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ latitude: latitude, longitude: longitude })
-                        }).then(response => {
-                            if (response.ok) {
-                                toastr.success('Location coordinates saved successfully.');
-                            } else {
-                                toastr.error('Failed to save location coordinates.');
-                            }
-                        }).catch(() => {
-                            toastr.error('An error occurred while saving location coordinates.');
-                        });
-                    },
-                    function (error) {
-                        if (error.code === error.PERMISSION_DENIED) {
-                            toastr.warning('Location access denied.');
-                        } else {
-                            toastr.error('An error occurred while retrieving location coordinates.');
-                        }
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 5000,
-                        maximumAge: 0
+        function requestLocationPermission() {
+            if (navigator.permissions && navigator.permissions.query) {
+                navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+                    if (result.state === 'granted') {
+                        permissionGranted = true;
+                        getLocation();
+                    } else if (result.state === 'prompt') {
+                        showPermissionPrompt();
+                    } else {
+                        alert("Location permission is denied. Please enable it in your browser settings. This form requires your location.");
                     }
-                );
+                });
             } else {
-                toastr.error('Geolocation is not supported by this browser.');
+                // Fallback for browsers that don't support the Permissions API
+                showPermissionPrompt();
             }
         }
 
-        
-        window.onload = function() {
-            setTimeout(getCoordinates, 1000); 
-        };
+        function showPermissionPrompt() {
+            if (confirm("This form requires your location. Do you want to allow access to your location?")) {
+                getLocation();
+            } else {
+                alert("Location access denied. Some features may not work correctly.");
+            }
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+            permissionGranted = true;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        window.onload = requestLocationPermission;
+
+        function checkLocationBeforeSubmit(event) {
+            if (!permissionGranted) {
+                event.preventDefault(); // Prevent form submission
+                alert("Please allow location access to submit the form.");
+                requestLocationPermission();
+            }
+        }
+
+        document.getElementById('crimeReportForm').addEventListener('submit', checkLocationBeforeSubmit);
     </script>
   </body>
   {% endblock %}
