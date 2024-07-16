@@ -16,7 +16,7 @@ class Crime(db.Model, UserMixin):
     incident_nature = db.Column(db.Text, nullable=False)
     incident_details = db.Column(db.Text, nullable=False)
     suspect_details = db.Column(db.Text, nullable=True)
-    arrest_history = db.Column(db.Text, nullable=False)
+    arrest_history = db.Column(db.Text, nullable=True)
     suspect_name = db.Column(db.String(10), nullable=True)
     comments = db.Column(db.Text, nullable=True)
     crime_status = db.Column(db.String(10), nullable=True)
