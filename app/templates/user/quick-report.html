@@ -1,0 +1,483 @@
+{% extends 'user/base.html' %} {% block title %} Crime Report {% endblock %} {%
+  block content %}
+  
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Crime</title>
+    <link rel="stylesheet" href="./include/footer.css" />
+  
+    <style>  
+      form {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+  
+      .form-column {
+        float: left;
+        width: 50%;
+        padding-right: 20px;
+        box-sizing: border-box;
+      }
+  
+      .form-row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+  
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+  
+      input[type="text"],
+      input[type="number"],
+      textarea,
+      input[type="date"],
+      button {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+  
+      textarea {
+        height: 150px;
+      }
+  
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 8px 16px;
+        font-size: 16px;
+        width: auto;
+        display: block;
+        margin: 0 auto;
+        float: right;
+      }
+  
+      button.cancel {
+        background-color: #dc3545;
+        float: left;
+        margin-right: 10px;
+      }
+  
+      button.cancel:hover {
+        background-color: #e20a20;
+      }
+  
+      button.submit:hover {
+        background-color: #056ad5;
+      }
+  
+      @media (max-width: 768px) {
+        .form-column {
+          width: 50%;
+          padding: 20px;
+        }
+  
+        .form-row {
+          display: flex;
+          flex-wrap: wrap;
+        }
+      }
+  
+      h1 {
+        text-align: center;
+      }
+  
+      #imagePreview {
+        max-width: 100%;
+        height: auto;
+        margin-top: 15px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 5px;
+      }
+  
+      .image-container {
+        position: relative;
+        max-width: 50%;
+        height: auto;
+      }
+  
+      #imagePreview,
+      #videoPreview {
+        max-width: 100%;
+        height: auto;
+      }
+  
+      #cancelButton {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+  
+      /* Modal styles */
+      .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+      }
+  
+      .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+  
+      .modal-header {
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      }
+  
+      .modal-footer {
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+      }
+  
+      .form-check-label {
+        font-weight: 500;
+      }
+  
+      #certifyCheckbox {
+        width: 1.25em;
+        height: 1.25em;
+        margin-right: 10px;
+      }
+  
+      #confirmSubmit {
+        background-color: #007bff;
+        border-color: #0777e6;
+      }
+  
+      #confirmSubmit:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+    </style>
+  </head>
+  
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages%}
+    <div
+      class="alert alert-{{ category }} alert-dismissible fade show"
+      role="alert"
+    >
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+      {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
+    <h1>Police Crime Report Form</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <p style="text-align: center">
+        To report a crime or incident, please provide the following information's
+      </p>
+      <hr />
+      <div class="form-row">
+        <div class="form-column">
+          <label for="date_of_incident">Date when incident occurred:</label>
+          <input
+            type="date"
+            id="date_of_incident"
+            class="form-control"
+            name="date_of_incident"
+            required
+          />
+          <label for="phonenumber" class="phonenumber">Phone Number:</label>
+          <input
+            type="text"
+            id="phonenumber"
+            class="form-control"
+            name="phonenumber"
+            required
+          />
+        </div>
+  
+        <div class="form-column">
+          <label for="time_of_incident">Time when incident occurred:</label>
+          <input
+            type="time"
+            id="time_of_incident"
+            class="form-control"
+            name="time_of_incident"
+            required
+          />
+  
+          
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <label for="incident_location"
+          >Incident location (Please provide specific details):</label
+        >
+        <textarea
+          id="incident_location"
+          name="incident_location"
+          style="width: calc(100% - 22px)"
+          required
+        ></textarea>
+      </div>
+  
+      <div class="form-row">
+        <label for="incident_nature">Nature of incident:</label>
+        <textarea
+          id="incident_nature"
+          name="incident_nature"
+          style="width: calc(100% - 22px)"
+          required
+        ></textarea>
+      </div>
+  
+      <div class="form-row">
+        <label for="incident_details">Incident_details:</label>
+        <textarea
+          id="incident_details"
+          name="incident_details"
+          style="width: calc(100% - 22px)"
+          required
+        ></textarea>
+      </div>
+  
+      <div class="form-row">
+        <label for="suspect_details"
+          >Was the suspect of the report of the incident wanted/have or had any
+          charges on him/her? If so what?</label
+        >
+        <textarea
+          id="suspect_details"
+          name="suspect_details"
+          style="width: calc(100% - 22px)"
+          required
+        ></textarea>
+      </div>
+  
+      <div class="form-row">
+        <label for="arrest_history"
+          >Has anyone been arrested so far in relation to the incident?</label
+        >
+        <textarea
+          id="arrest_history"
+          name="arrest_history"
+          style="width: calc(100% - 22px)"
+          required
+        ></textarea>
+      </div>
+      <hr />
+      <label for="suspect_name">Suspect's Full Name:</label>
+      <input
+        type="text"
+        id="suspect_name"
+        class="form-control"
+        name="suspect_name"
+        placeholder="Full Name"
+      />
+      </div>
+  
+      <div class="form-group">
+        <label for="mediaUpload">Attach Evidence:</label>
+        <input
+          type="file"
+          class="form-control-file"
+          id="mediaUpload"
+          name="image"
+        />
+      </div>
+      <div class="form-group image-container">
+        <button
+          type="button"
+          id="cancelButton"
+          class="btn btn-danger"
+          style="display: none"
+        >
+          Cancel
+        </button>
+        <img
+          id="imagePreview"
+          src="#"
+          alt="Image preview"
+          style="display: none"
+        />
+        <video id="videoPreview" controls style="display: none"></video>
+      </div>
+      <hr />
+      <div class="form-row">
+        <button
+          type="button"
+          class="submit"
+          data-bs-toggle="modal"
+          data-bs-target="#certifyModal"
+        >
+          Submit
+        </button>
+        <a href="{{ url_for('users.sign_in') }}"
+          ><button type="button" class="cancel">Cancel</button></a
+        >
+      </div>
+  
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="certifyModal"
+        tabindex="-1"
+        aria-labelledby="certifyModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+              <h5 class="modal-title" id="certifyModalLabel">
+                Certify Information
+              </h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="certifyCheckbox"
+                  name="certify"
+                  required
+                />
+                <label class="form-check-label" for="certifyCheckbox">
+                  I certify that the provided information is true and correct
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="confirmSubmit">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  
+    <script>
+      document
+        .getElementById("confirmSubmit")
+        .addEventListener("click", function () {
+          var checkbox = document.getElementById("certifyCheckbox");
+          if (checkbox.checked) {
+            document.querySelector("form").submit();
+          } else {
+            alert("Please certify that the information is true and correct.");
+          }
+        });
+  
+      document
+        .getElementById("mediaUpload")
+        .addEventListener("change", function (event) {
+          var file = event.target.files[0];
+          var reader = new FileReader();
+          reader.onload = function () {
+            var mediaType = file.type.split("/")[0]; 
+            if (mediaType === "image") {
+              document.getElementById("imagePreview").src = reader.result;
+              document.getElementById("imagePreview").style.display = "block";
+              document.getElementById("videoPreview").style.display = "none";
+            } else if (mediaType === "video") {
+              document.getElementById("videoPreview").src = reader.result;
+              document.getElementById("videoPreview").style.display = "block";
+              document.getElementById("imagePreview").style.display = "none";
+            }
+            document.getElementById("cancelButton").style.display =
+              "inline-block";
+          };
+          reader.readAsDataURL(file);
+        });
+  
+      document
+        .getElementById("cancelButton")
+        .addEventListener("click", function () {
+          document.getElementById("mediaUpload").value = "";
+          document.getElementById("imagePreview").style.display = "none";
+          document.getElementById("videoPreview").style.display = "none";
+          document.getElementById("imagePreview").src = "#";
+          document.getElementById("videoPreview").src = "";
+          this.style.display = "none";
+        });
+        
+        function getCoordinates() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        // Send coordinates to the server
+                        fetch('/save-coordinates', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ latitude: latitude, longitude: longitude })
+                        }).then(response => {
+                            if (response.ok) {
+                                toastr.success('Location coordinates saved successfully.');
+                            } else {
+                                toastr.error('Failed to save location coordinates.');
+                            }
+                        }).catch(() => {
+                            toastr.error('An error occurred while saving location coordinates.');
+                        });
+                    },
+                    function (error) {
+                        if (error.code === error.PERMISSION_DENIED) {
+                            toastr.warning('Location access denied.');
+                        } else {
+                            toastr.error('An error occurred while retrieving location coordinates.');
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                toastr.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        
+        window.onload = function() {
+            setTimeout(getCoordinates, 1000); 
+        };
+    </script>
+  </body>
+  {% endblock %}
+  
