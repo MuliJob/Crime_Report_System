@@ -217,7 +217,7 @@
                 <td>{{ deadline.report_id }}</td>
                 <td>{{ deadline.description }}</td>
                 <td>{{ deadline.deadline }}</td>
-                <td>{{ deadline.remaining_time }}</td>
+                <td>{{ deadline.remaining_time  | safe }}</td>
                 <td>
                   <span
                     class="status {% if deadline.status == 'Unsolved' %} status-unsolved {% elif deadline.status == 'Recovered' %} status-recovered {% elif deadline.status == 'Under Investigation' %} status-under-investigation {% elif deadline.status == 'Solved' %} status-solved {% elif deadline.status == 'Cleared by Arrest' %} status-cleared-by-arrest {% elif deadline.status == 'Cold Case' %} status-cold-case {% elif deadline.status == 'Closed' %} status-closed {% elif deadline.status == 'Pending Prosecution' %} status-pending-prosecution {% elif deadline.status == 'Adjudicated' %} status-adjudicated {% endif %}"

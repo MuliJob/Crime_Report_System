@@ -135,22 +135,26 @@ def officerDashboard():
 
     upcoming_deadlines = CaseReport.query.filter_by(
         assigned_officer_id=officer_id
-    ).filter(
-        CaseReport.deadline >= datetime.utcnow()
     ).order_by(CaseReport.deadline).limit(5).all()
 
+    now = datetime.now()
+
     for case in upcoming_deadlines:
-    # Convert case.deadline to a datetime object if it's a string
         if isinstance(case.deadline, str):
-            case_deadline = datetime.strptime(case.deadline, '%Y-%m-%d')  # Adjust format as needed
+            case_deadline = datetime.strptime(case.deadline, '%Y-%m-%d')
         else:
             case_deadline = case.deadline
 
-        remaining = case_deadline - datetime.utcnow()
-        days = remaining.days
-        hours, remainder = divmod(remaining.seconds, 3600)
-        minutes, _ = divmod(remainder, 60)
-        case.remaining_time = f"{days}d {hours}h {minutes}m"
+        remaining = case_deadline - now
+
+        if remaining.total_seconds() <= 0:
+            days_overdue = abs(remaining.days)
+            case.remaining_time = f"Overdue by {days_overdue} day{'s' if days_overdue != 1 else ''}"
+        else:
+            days = remaining.days
+            hours, remainder = divmod(remaining.seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            case.remaining_time = f"{days}d {hours}h {minutes}m"
         
     case_stats = db.session.query(
         CaseReport.status, 
