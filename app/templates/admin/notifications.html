@@ -8,7 +8,7 @@
     <style>
       body {
         margin: 0;
-        padding: 50px;
+        padding: 70px;
       }
       .notification-container {
         max-width: 100%;
@@ -82,7 +82,7 @@
           <div class="notification-title">You</div>
           <div class="notification-description">{{ message.reply }}</div>
           <div class="notification-time">
-            {{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}
+            {{ message.date_received.strftime('%Y-%m-%d %H:%M') }}
           </div>
         </a>
       </div>

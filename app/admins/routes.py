@@ -14,7 +14,6 @@ from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
 from sqlalchemy.exc import SQLAlchemyError
-# from flask_mail import Message as FlaskMessage
 
 
 admins = Blueprint('admins', __name__)
@@ -509,12 +508,6 @@ def view_message(id):
                 db.session.commit()
                 
                 flash('Success, Reply sent', 'success')
-                
-                # Send email to the user
-                # if send_reply_email(message):
-                #     flash('Reply sent and email notification sent to the user.', 'success')
-                # else:
-                #     flash('Reply sent, but failed to send email notification.', 'warning')
             else:
                 flash('Failed to send reply.', 'danger')
             
@@ -526,41 +519,6 @@ def view_message(id):
         return redirect(url_for('admins.notifications'))
 
     return render_template('/admin/message_details.html', message=message)
-
-# sending email to sender when message is sent
-# def send_reply_email(message):
-#     try:
-#         user = User.query.get(message.sender_id)  # Assuming there's a user_id field in Message model
-#         if user and user.email:
-#             subject = f"Reply to your message: {message.subject}"
-#             body = f"""
-#             Dear {user.username},
-
-#             Your message has received a reply:
-
-#             Original Message: {message.content}
-
-#             Reply: {message.reply}
-
-#             If you have any further questions, please don't hesitate to contact us.
-
-#             Best regards,
-#             Admin Team
-#             """
-            
-#             email = FlaskMessage(subject,
-#                                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
-#                                  recipients=[user.email])
-#             email.body = body
-#             mail.send(email)
-#             current_app.logger.info(f"Reply email sent to {user.email} for message ID {message.id}")
-#             return True
-#         else:
-#             current_app.logger.warning(f"Could not send email for message ID {message.id}. User not found or no email address.")
-#             return False
-#     except Exception as e:
-#         current_app.logger.error(f"Failed to send reply email: {str(e)}")
-#         return False
 
 @admins.route('/admin/logout')
 @admin_required
