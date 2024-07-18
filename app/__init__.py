@@ -100,7 +100,6 @@ def send_assignment_email(officer, report):
                       recipients=[officer.officer_email])
         msg.body = body
         mail.send(msg)
-        flash('Email notification sent', 'success')
     except Exception as e:
         current_app.logger.error(f"Failed to send email: {str(e)}")
         flash('Failed to send email notification', 'warning')
