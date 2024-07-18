@@ -36,10 +36,14 @@
       /* top: 50px;  Adjust to move down */
       /* left: -100px;  Adjust to move left */
     }
+    .navbar-nav .nav-item.active .nav-link {
+      font-weight: bold;
+      color: white;
+    }
   </style>
 
   <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
       <a
         class="navbar-brand nav-link active"
         href="{{ url_for('main.home_page') }}"
@@ -54,44 +58,44 @@
         aria-expanded="false"
         aria-label="Toggle navigation"
       >
-        <span class="navbar-toggler-icon"></span>
+      <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         {% if current_user.is_authenticated %}
         <ul class="navbar-nav">
-          <li class="new-item active">
+          <li class="nav-item {% if request.endpoint == 'users.user_dashboard' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.user_dashboard') }}"
               >Dashboard</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'posts.report_crime' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('posts.report_crime') }}"
               >Report Crime</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'users.history' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.history') }}"
               >History</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'users.recovered' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.recovered') }}"
               >Recovered Items</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'users.download' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.download') }}"
               >Download</a
             >
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'users.notification' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.notification') }}"
-              ><i class="bi bi-bell-fill h5" style="color: white"></i
+              ><i class="bi bi-bell-fill h5" style="color: dark"></i
             ></a>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown {% if request.endpoint == 'users.settings' %}active{% endif %}">
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -149,17 +153,17 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'users.sign_up' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('users.sign_up') }}"
               >Register</a
             >
           </li>
-          <li>
+          <li class="nav-item {% if request.endpoint == 'posts.quick_report' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('posts.quick_report') }}"
               >Quick Report</a
             >
           </li>
-          <li>
+          <li class="nav-item {% if request.endpoint == 'main.about' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
           </li>
         </ul>
