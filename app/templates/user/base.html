@@ -40,6 +40,12 @@
       font-weight: bold;
       color: white;
     }
+    .navbar-brand-img {
+      height: 40px; 
+      width: auto; 
+      border-radius: 50%; 
+      object-fit: cover;
+    }
   </style>
 
   <body>
@@ -47,8 +53,8 @@
       <a
         class="navbar-brand nav-link active"
         href="{{ url_for('main.home_page') }}"
-        >E-Security <span class="sr-only"></span
-      ></a>
+        ><img src="{{ url_for('static', filename='img/logo1.png') }}" alt="E-Security" class="d-inline-block align-top navbar-brand-img">
+      </a>
       <button
         class="navbar-toggler"
         type="button"
