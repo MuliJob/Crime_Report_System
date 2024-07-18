@@ -140,13 +140,17 @@ def adminDashboard():
     crime_data = get_crime_data_by_month()
     crime_dist = get_daily_crime_data()
     user_count = User.query.count()
+    officer_count = Officers.query.count()
     crime_count = Crime.query.count()
+    
+    
+    total_user = user_count + officer_count
     
     recovered_count = Crime.query.filter_by(crime_status='Recovered').count()
     crimes = Crime.query.all()
     crime_locations = [crime.to_dict() for crime in crimes]
 
-    return render_template('admin/dashboard.html', user_count=user_count,
+    return render_template('admin/dashboard.html', user_count=total_user,
                            crime_count=crime_count, 
                            recovered_count=recovered_count, 
                            crime_data=crime_data,
