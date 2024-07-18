@@ -18,14 +18,33 @@ content %}
     padding: 40px;
     border-radius: 10px; /* Optional: adding some border-radius for better appearance */
   }
-   header{
-    padding: 20px;
+  .brand-img {
+    height: 50px; 
+    width: auto; 
+    border-radius: 50%; 
+    object-fit: cover;
   }
-</style>
 
-<header>
-  <h1 style="text-align: center">Welcome To E-Security</h1>
-</header>
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px; /* Adjust the margin as needed */
+  }
+
+  .header-container header h1 {
+    margin-top: 10px; /* Adjust the spacing between the image and header as needed */
+  }
+
+</style>
+<div class="header-container">
+  <img src="{{ url_for('static', filename='img/logo1.png') }}" alt="E-Security" class="d-inline-block align-top brand-img">
+  <br>
+  <header>
+    <h1>Welcome To E-Security</h1>
+  </header>
+</div>
 
 <div class="position-relative p-3 p-md-5 m-md-3 text-center">
   <main>
