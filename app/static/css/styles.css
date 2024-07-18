@@ -13,6 +13,7 @@ html,body {
 .my-login-page {
 	background-color: #ffffff;
 	font-size: 14px;
+  padding: 100px;
 }
 
 .my-login-page .brand {
@@ -37,7 +38,7 @@ html,body {
 .my-login-page .card {
 	border-color: transparent;
 	box-shadow: 0 4px 8px rgba(0,0,0,.05);
-	background-color: #f1f1f1;
+	background-color: whitesmoke;
 }
 
 .my-login-page .card.fat {
@@ -48,8 +49,16 @@ html,body {
 	margin-bottom: 30px;
 }
 
+.my-login-page .form-label {
+  text-align: left;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
 .my-login-page .form-control {
 	border-width: 2.3px;
+  margin-bottom: 10px;
 }
 
 .my-login-page .form-group label {

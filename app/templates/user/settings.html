@@ -1,9 +1,9 @@
 {% extends 'user/base.html' %} {% block title %} Settings {% endblock %} {%
 block content %}
 <style>
-  /* body {
-    background-color: #ececec;
-  } */
+ h2 {
+  padding: 20px;
+ }
 </style>
 {% with messages = get_flashed_messages(with_categories=true) %} {% if messages
 %} {% for category, message in messages %}

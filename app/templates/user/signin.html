@@ -22,28 +22,29 @@ content %}
           {% endfor %} {% endif%} {% endwith %}
           <div class="card fat">
             <div class="card-body">
-              <h4 class="card-title" align="center">User Login</h4>
+              <h5 class="card-title" align="center">User Login</h5>
               <form method="POST">
                 <div id="msg">{{ msg }}</div>
                 <div class="form-group">
-                  <label for="username">User Name</label>
+                  <label for="username" class="form-label">UserName</label>
                   <input
                     id="username"
                     type="username"
                     class="form-control"
                     name="username"
-                    value=""
+                    placeholder="Username"
                     required
                   />
                 </div>
                 <br />
                 <div class="form-group">
-                  <label for="password">Password </label>
+                  <label for="password" class="form-label">Password </label>
                   <input
                     id="password"
                     type="password"
                     class="form-control"
                     name="password"
+                    placeholder="Password"
                     required
                     data-eye
                   />
