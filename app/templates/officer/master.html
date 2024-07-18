@@ -33,7 +33,7 @@
       body {
         height: 100%;
         width: 100%;
-        padding-top: 20px;
+        padding-top: 40px;
         background-color: #ffffff;
       }
 
@@ -53,11 +53,15 @@
         /* top: 50px;  Adjust to move down */
         /* left: -100px;  Adjust to move left */
       }
+      .navbar-nav .new-item.active .nav-link {
+        font-weight: bold;
+        color: white;
+      }
     </style>
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
       <a
         class="navbar-brand nav-link active"
         href="{{ url_for('main.home_page') }}"
@@ -77,43 +81,43 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         {% if session.get('officer_username') %}
         <ul class="navbar-nav">
-          <li class="new-item active">
+          <li class="new-item {% if request.endpoint == 'officers.officerDashboard' %}active{% endif %}">
             <a
               class="nav-link"
               href="{{ url_for('officers.officerDashboard') }}"
               >Dashboard</a
             >
           </li>
-          <li class="new-item">
+          <li class="new-item {% if request.endpoint == 'officers.assignedCase' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('officers.assignedCase') }}"
               >Cases</a
             >
           </li>
-          <li class="new-item">
+          <li class="new-item {% if request.endpoint == 'officers.caseStatus' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('officers.caseStatus') }}"
               >Status</a
             >
           </li>
-          <li class="new-item">
+          <li class="new-item {% if request.endpoint == 'officers.settledCase' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('officers.settledCase') }}"
               >Completed</a
             >
           </li>
-          <li class="new-item">
+          <li class="new-item {% if request.endpoint == 'officers.officerReports' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('officers.officerReports') }}"
               >My Reports</a
             >
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
+          <li class="nav-item {% if request.endpoint == 'officers.officerNotification' %}active{% endif %}">
             <a
               class="nav-link"
               href="{{ url_for('officers.officerNotification') }}"
-              ><i class="bi bi-bell-fill h5" style="color: white"></i
+              ><i class="bi bi-bell-fill h5" style="color: dark"></i
             ></a>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown {% if request.endpoint == 'officers.officerSetting' %}active{% endif %}">
             <a
               class="nav-link dropdown-toggle"
               href="#"
