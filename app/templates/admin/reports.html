@@ -57,9 +57,10 @@
         <th scope="col">
           Date of Incident <i class="bi bi-arrow-down-up"></i>
         </th>
+        <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
         <th scope="col">Reporter <i class="bi bi-arrow-down-up"></i></th>
         <th scope="col">Location <i class="bi bi-arrow-down-up"></i></th>
-        <th scope="col">Time <i class="bi bi-arrow-down-up"></i></th>
+        <th scope="col">Status <i class="bi bi-arrow-down-up"></i></th>
         <th scope="col">Description <i class="bi bi-arrow-down-up"></i></th>
       </tr>
     </thead>
@@ -71,9 +72,10 @@
       >
         <td>{{ loop.index }}</td>
         <td>{{ crime.date_of_incident }}</td>
+        <td>{{ crime.time_of_incident }}</td>
         <td>{{ crime.issued_by }}</td>
         <td>{{ crime.incident_location }}</td>
-        <td>{{ crime.time_of_incident }}</td>
+        <td>{{ crime.crime_status }}</td>
         <td>{{ crime.incident_nature }}</td>
       </tr>
       {% endfor %}

@@ -1,6 +1,9 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
 <style>
+    .container {
+        padding: 20px;
+    }
     .three-dots-btn {
     background: none;
     border: none;
@@ -56,7 +59,7 @@
                 <td>{{ crime.issued_by }}</td>
                 <td>{{ crime.incident_location }}</td>
                 <td>{{ crime.time_of_incident }}</td>
-                <td>{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td>{{ crime.crime_status }}</td>
                 <td>
                     <div class="dropdown">

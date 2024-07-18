@@ -203,7 +203,7 @@
                     readonly>
 
                 <label for="date_received">Received On</label>
-                <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M:%S') }}"
+                <input type="text" id="date_received" name="date_received" value="{{ crime.date_crime_received.strftime('%Y-%m-%d %H:%M') }}"
                     readonly>
 
                 <label for="phonenumber">Phone Number</label>
@@ -272,7 +272,7 @@
             <div class="mb-3">
                 <label for="crime_type" class="form-label">Crime Type:</label>
                 <select class="form-select" id="crime_type" name="crime_type" required>
-                    <option value="">Select crime type</option>
+                    <option disabled selected>Select crime type</option>
                     <option value="robbery">Robbery</option>
                     <option value="assault">Assault</option>
                     <option value="burglary">Burglary</option>
@@ -308,7 +308,7 @@
             <div class="mb-3">
                 <label for="urgency" class="form-label">Priority:</label>
                 <select class="form-select" id="urgency" name="urgency" required>
-                    <option value="">Set priority</option>
+                    <option disabled selected>Set priority</option>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>

@@ -7,9 +7,8 @@
     <title>Notification Cards</title>
     <style>
       body {
-        background-color: #f0f0f0;
         margin: 0;
-        padding: 40px;
+        padding: 70px;
       }
       .notification-container {
         max-width: 100%;
@@ -83,7 +82,7 @@
           <div class="notification-title">You</div>
           <div class="notification-description">{{ message.reply }}</div>
           <div class="notification-time">
-            {{ message.date_received.strftime('%Y-%m-%d %H:%M:%S') }}
+            {{ message.date_received.strftime('%Y-%m-%d %H:%M') }}
           </div>
         </a>
       </div>

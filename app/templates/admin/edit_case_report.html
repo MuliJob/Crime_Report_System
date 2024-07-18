@@ -50,7 +50,7 @@
                 <div class="mb-3">
                     <label for="crime_type" class="form-label fw-bold">Crime Type:</label>
                     <select class="form-select" id="crime_type" name="crime_type" required>
-                        <option value="">Select crime type</option>
+                        <option disabled selected>Select crime type</option>
                         <option value="robbery" {% if report.crime_type == 'robbery' %}selected{% endif %}>Robbery</option>
                         <option value="assault" {% if report.crime_type == 'assault' %}selected{% endif %}>Assault</option>
                         <option value="burglary" {% if report.crime_type == 'burglary' %}selected{% endif %}>Burglary</option>
@@ -82,7 +82,7 @@
                 <div class="mb-3">
                     <label for="urgency" class="form-label fw-bold">Urgency Level:</label>
                     <select class="form-select" id="urgency" name="urgency" required>
-                        <option value="">Select priority</option>
+                        <option disabled selected>Select priority</option>
                         <option value="low" {% if report.urgency == 'low' %}selected{% endif %}>Low</option>
                         <option value="medium" {% if report.urgency == 'medium' %}selected{% endif %}>Medium</option>
                         <option value="high" {% if report.urgency == 'high' %}selected{% endif %}>High</option>

@@ -14,7 +14,6 @@ from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
 from sqlalchemy.exc import SQLAlchemyError
-# from flask_mail import Message as FlaskMessage
 
 
 admins = Blueprint('admins', __name__)
@@ -74,15 +73,18 @@ def get_daily_crime_data():
     crime_dist = {day: {'crimes': 0} for day in range(7)}
 
     crime_results = db.session.query(
-        extract('dow', Crime.date_crime_received).label('day'),
+        Crime.date_crime_received,
         func.count(Crime.crime_id).label('count')
     ).filter(
         Crime.date_crime_received >= start_of_week,
         Crime.date_crime_received <= end_of_week
-    ).group_by('day').all()
+    ).group_by(Crime.date_crime_received).all()
 
-    for day, count in crime_results:
-        crime_dist[day]['crimes'] = count
+    for date_crime_received, count in crime_results:
+        
+        date_crime_received = date_crime_received.astimezone(timezone)
+        day_of_week = date_crime_received.weekday()  
+        crime_dist[day_of_week]['crimes'] = count
 
     return crime_dist
 
@@ -140,13 +142,17 @@ def adminDashboard():
     crime_data = get_crime_data_by_month()
     crime_dist = get_daily_crime_data()
     user_count = User.query.count()
+    officer_count = Officers.query.count()
     crime_count = Crime.query.count()
+    
+    
+    total_user = user_count + officer_count
     
     recovered_count = Crime.query.filter_by(crime_status='Recovered').count()
     crimes = Crime.query.all()
     crime_locations = [crime.to_dict() for crime in crimes]
 
-    return render_template('admin/dashboard.html', user_count=user_count,
+    return render_template('admin/dashboard.html', user_count=total_user,
                            crime_count=crime_count, 
                            recovered_count=recovered_count, 
                            crime_data=crime_data,
@@ -505,12 +511,6 @@ def view_message(id):
                 db.session.commit()
                 
                 flash('Success, Reply sent', 'success')
-                
-                # Send email to the user
-                # if send_reply_email(message):
-                #     flash('Reply sent and email notification sent to the user.', 'success')
-                # else:
-                #     flash('Reply sent, but failed to send email notification.', 'warning')
             else:
                 flash('Failed to send reply.', 'danger')
             
@@ -522,41 +522,6 @@ def view_message(id):
         return redirect(url_for('admins.notifications'))
 
     return render_template('/admin/message_details.html', message=message)
-
-# sending email to sender when message is sent
-# def send_reply_email(message):
-#     try:
-#         user = User.query.get(message.sender_id)  # Assuming there's a user_id field in Message model
-#         if user and user.email:
-#             subject = f"Reply to your message: {message.subject}"
-#             body = f"""
-#             Dear {user.username},
-
-#             Your message has received a reply:
-
-#             Original Message: {message.content}
-
-#             Reply: {message.reply}
-
-#             If you have any further questions, please don't hesitate to contact us.
-
-#             Best regards,
-#             Admin Team
-#             """
-            
-#             email = FlaskMessage(subject,
-#                                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
-#                                  recipients=[user.email])
-#             email.body = body
-#             mail.send(email)
-#             current_app.logger.info(f"Reply email sent to {user.email} for message ID {message.id}")
-#             return True
-#         else:
-#             current_app.logger.warning(f"Could not send email for message ID {message.id}. User not found or no email address.")
-#             return False
-#     except Exception as e:
-#         current_app.logger.error(f"Failed to send reply email: {str(e)}")
-#         return False
 
 @admins.route('/admin/logout')
 @admin_required
