@@ -73,15 +73,18 @@ def get_daily_crime_data():
     crime_dist = {day: {'crimes': 0} for day in range(7)}
 
     crime_results = db.session.query(
-        extract('dow', Crime.date_crime_received).label('day'),
+        Crime.date_crime_received,
         func.count(Crime.crime_id).label('count')
     ).filter(
         Crime.date_crime_received >= start_of_week,
         Crime.date_crime_received <= end_of_week
-    ).group_by('day').all()
+    ).group_by(Crime.date_crime_received).all()
 
-    for day, count in crime_results:
-        crime_dist[day]['crimes'] = count
+    for date_crime_received, count in crime_results:
+        
+        date_crime_received = date_crime_received.astimezone(timezone)
+        day_of_week = date_crime_received.weekday()  
+        crime_dist[day_of_week]['crimes'] = count
 
     return crime_dist
 
