@@ -2,10 +2,12 @@
 content %}
 <style>
   body {
-    background-image: url("{{ url_for("static", filename="img/home.png") }}");
+    background-image: url("{{ url_for('static', filename='img/home.png') }}");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
     color: white; 
   }
   .transparent-section {
@@ -14,9 +16,9 @@ content %}
       0,
       0,
       0.5
-    ); /* Black background with 50% transparency */
+    ); 
     padding: 40px;
-    border-radius: 10px; /* Optional: adding some border-radius for better appearance */
+    border-radius: 10px;
   }
   .brand-img {
     height: 50px; 
@@ -30,11 +32,11 @@ content %}
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-top: 20px; /* Adjust the margin as needed */
+    margin-top: 20px; 
   }
 
   .header-container header h1 {
-    margin-top: 10px; /* Adjust the spacing between the image and header as needed */
+    margin-top: 10px; 
   }
 
 </style>
