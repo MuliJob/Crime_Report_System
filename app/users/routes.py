@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
 from app.posts.models import Crime, Message
-from app import db
+from app import db, send_reset_email
 from app.config import NEWS_API
 from requests.exceptions import RequestException
 import requests
@@ -34,7 +34,46 @@ def sign_in():
             flash('Username does not exist.', category='danger')
     
     return render_template('user/signin.html')
+
+@users.route("/users/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            send_reset_email(user)
+            flash('An email has been sent with instructions to reset your password.', 'info')
+            return redirect(url_for('users.sign_in'))
+        else:
+            flash('Email does not exist', 'danger')
+    return render_template('user/reset_request.html')
+
+@users.route("/users/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('users.reset_request'))
     
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template('user/reset_token.html')
+        
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('user/reset_token.html')
+        
+        hashed_password = generate_password_hash(password)
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! Please log in', 'success')
+        return redirect(url_for('users.sign_in'))
+    
+    return render_template('user/reset_token.html')
 
 @users.route('/users/signup', methods=['GET', 'POST'])
 def sign_up():
@@ -308,6 +347,3 @@ def notification():
         
         return redirect(url_for('users.notification'))
     return render_template('user/notification.html', user_message=user_message)
-
-
-

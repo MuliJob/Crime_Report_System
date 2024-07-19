@@ -128,6 +128,9 @@
               ><i class="bi bi-bell-fill h5" style="color: dark"></i
             ></a>
           </li>
+          <li class="nav-item">
+            <p class="nav-link">{{ session.get('admin_name') }}</p>
+          </li>
           <li class="nav-item dropdown {% if request.endpoint == 'admins.adminChangePassword' %}active{% endif %}">
             <a
               class="nav-link dropdown-toggle"

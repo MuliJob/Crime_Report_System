@@ -1,4 +1,4 @@
-from flask import Flask, current_app, flash
+from flask import Flask, current_app, flash, url_for
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -133,6 +133,48 @@ def send_status_update_email(crime):
             current_app.logger.warning(f"Could not send email for crime ID {crime.crime_id}. User not found or no email address.")
     except Exception as e:
         current_app.logger.error(f"Failed to send status update email: {str(e)}")
+        
+#sending user reset email
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('users.reset_token', token=token, _external=True)}
+
+    If you did not make this request then simply ignore this email and no changes will be made.
+    Link expires after 30 minutes.
+    '''
+    mail.send(msg)
+    
+#sending admin reset email
+def send_admin_reset_email(admin):
+    token = admin.get_admin_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[admin.admin_email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('admins.resetToken', token=token, _external=True)}
+
+    If you did not make this request then simply ignore this email and no changes will be made.
+    Link expires after 30 minutes.
+    '''
+    mail.send(msg)
+    
+#sending officer reset email
+def send_officer_reset_email(officer):
+    token = officer.get_officer_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[officer.officer_email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('officers.resetToken', token=token, _external=True)}
+
+    If you did not make this request then simply ignore this email and no changes will be made.
+    Link expires after 30 minutes.
+    '''
+    mail.send(msg)
 
 # from app.officers.models import Officers
 from app.users.routes import users

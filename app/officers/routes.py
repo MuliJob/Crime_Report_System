@@ -3,7 +3,7 @@ from functools import wraps
 from flask import Blueprint, Response, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import logout_user
 from sqlalchemy import func, or_
-from app import db
+from app import db, send_officer_reset_email
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app.officers.models import CaseReport, Officers
@@ -42,6 +42,46 @@ def officerLogin():
             flash('Username does not exist.', category='danger')
     
   return render_template('officer/login.html')
+
+@officers.route("/officer/reset-password", methods=['GET', 'POST'])
+def resetRequest():
+    if request.method == 'POST':
+        officer_email = request.form.get('officer_email')
+        officer = Officers.query.filter_by(officer_email=officer_email).first()
+        if officer:
+            send_officer_reset_email(officer)
+            flash('An email has been sent with instructions to reset your password.', 'info')
+            return redirect(url_for('officers.officerLogin'))
+        else:
+            flash('Email does not exist', 'danger')
+    return render_template('officer/officer-reset-request.html', title='Request Password Reset')
+
+@officers.route("/officer/reset-password/<token>", methods=['GET', 'POST'])
+def resetToken(token):
+    officer = Officers.verify_officer_reset_token(token)
+    if officer is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('officers.resetRequest'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template('officer/officer-reset-token.html')
+        
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('officer/officer-reset-token.html')
+        
+        hashed_password = generate_password_hash(password)
+        officer.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! Please log in', 'success')
+        return redirect(url_for('officers.officerLogin'))
+    
+    return render_template('officer/officer-reset-token.html', title='Reset Password')
 
 @officers.route('/officer/register', methods=['GET', 'POST'])
 def officerRegister():
