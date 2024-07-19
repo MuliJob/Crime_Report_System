@@ -7,7 +7,7 @@ import folium
 from sqlalchemy import and_, desc, extract, func, or_
 from app.admins.models import Admin 
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db, send_assignment_email, send_status_update_email
+from app import db, send_admin_reset_email, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
 from app.posts.models import Crime, Message
 from app.users.models import User
@@ -133,6 +133,46 @@ def adminIndex():
     else:   
         return render_template('admin/index.html', 
         title='Admin Login')
+
+@admins.route("/admin/reset-password", methods=['GET', 'POST'])
+def resetRequest():
+    if request.method == 'POST':
+        admin_email = request.form.get('admin_email')
+        admin = Admin.query.filter_by(admin_email=admin_email).first()
+        if admin:
+            send_admin_reset_email(admin)
+            flash('An email has been sent with instructions to reset your password.', 'info')
+            return redirect(url_for('admins.adminIndex'))
+        else:
+            flash('Email does not exist', 'danger')
+    return render_template('admin/admin-reset-request.html', title='Request Password Reset')
+
+@admins.route("/admin/reset-password/<token>", methods=['GET', 'POST'])
+def resetToken(token):
+    admin = Admin.verify_admin_reset_token(token)
+    if admin is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('admins.resetRequest'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template('admin/admin-reset-token.html')
+        
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('admin/admin-reset-token.html')
+        
+        hashed_password = generate_password_hash(password)
+        admin.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! Please log in', 'success')
+        return redirect(url_for('admins.adminIndex'))
+    
+    return render_template('admin/admin-reset-token.html', title='Reset Password')
 
 @admins.route('/admin/dashboard')
 @admin_required

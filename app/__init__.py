@@ -134,7 +134,7 @@ def send_status_update_email(crime):
     except Exception as e:
         current_app.logger.error(f"Failed to send status update email: {str(e)}")
         
-#sending reset email
+#sending user reset email
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request',
@@ -142,6 +142,20 @@ def send_reset_email(user):
                   recipients=[user.email])
     msg.body = f'''To reset your password, visit the following link:
     {url_for('users.reset_token', token=token, _external=True)}
+
+    If you did not make this request then simply ignore this email and no changes will be made.
+    Link expires after 30 minutes.
+    '''
+    mail.send(msg)
+    
+#sending admin reset email
+def send_admin_reset_email(admin):
+    token = admin.get_admin_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[admin.admin_email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('admins.resetToken', token=token, _external=True)}
 
     If you did not make this request then simply ignore this email and no changes will be made.
     Link expires after 30 minutes.
