@@ -159,7 +159,12 @@
             </ul>
           </li>
         </ul>
-
+        {% else %}
+        <ul class="navbar-nav">
+        <li class="nav-item {% if request.endpoint == 'main.about' %}active{% endif %}">
+          <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
+        </li>
+        </ul>
         {% endif %}
       </div>
     </nav>
