@@ -1,0 +1,63 @@
+{% extends "user/base.html" %} {% block title %} SignIn {% endblock %} {% block
+  content %}
+  <body class="my-login-page">
+    <section class="h-100">
+      <div>
+        <div class="row justify-content-md-center h-100">
+          <div class="card-wrapper">
+            {% with messages = get_flashed_messages(with_categories=true) %} {% if
+            messages %} {% for category, message in messages%}
+            <div
+              class="alert alert-{{ category }} alert-dismissible fade show"
+              role="alert"
+            >
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+              {{ message }}
+            </div>
+            {% endfor %} {% endif%} {% endwith %}
+            <div class="card fat">
+              <div class="card-body">
+                <h5 class="card-title" align="center">Reset Password Request</h5>
+                <form method="POST">
+                  <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input
+                      id="email"
+                      type="email"
+                      class="form-control"
+                      name="email"
+                      placeholder="Enter Email"
+                      required
+                    />
+                  </div>
+                  <div class="form-group m-0" align="center">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-block w-100 btn-sm px-3 py-2"
+                      href="{{ url_for('users.reset_request') }}"
+                    >
+                      <i class="bi bi-box-arrow-in-right"></i>
+                      Request Password Reset
+                    </button>
+                  </div>
+                  <br>
+                  <div>
+                    <p style="text-align: left;">
+                      <a href="{{ url_for('users.sign_in') }}"><i class="bi bi-arrow-left-circle h4" style="color: black;"></i></a>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+  {% endblock %}
+  
