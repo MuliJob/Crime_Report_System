@@ -1,3 +1,5 @@
+from flask import current_app
+from itsdangerous import Serializer
 import pytz
 from datetime import datetime
 from app import db
@@ -16,6 +18,19 @@ class Officers(db.Model, UserMixin):
     station = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(128), nullable=False)
     assignments = db.relationship('CaseReport', back_populates='assigned_officer', lazy=True)
+    
+    def get_officer_reset_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'officer_id': self.officer_id}, salt='officer-password-reset-salt')
+
+    @staticmethod
+    def verify_officer_reset_token(token, expires_sec=1800):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            officer_id = s.loads(token, salt='officer-password-reset-salt', max_age=expires_sec)['officer_id']
+        except:
+            return None
+        return Officers.query.get(officer_id)
 
     def to_dict(self):
         return {

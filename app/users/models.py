@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     messages = db.relationship('Message', backref='sender', lazy=True)
     
 
-    def get_reset_token(self, expires_sec=1800):
+    def get_reset_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'user_id': self.id}, salt='password-reset-salt')
 

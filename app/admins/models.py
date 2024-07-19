@@ -10,15 +10,15 @@ class Admin(db.Model, UserMixin):
   password = db.Column(db.String(255), nullable=False)
   admin_email = db.Column(db.String(120), unique=True, nullable=False)
   
-  def get_admin_reset_token(self, expires_sec=1800):
+  def get_admin_reset_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'admin_id': self.id}, salt='password-reset-salt')
+        return s.dumps({'admin_id': self.id}, salt='admin-password-reset-salt')
 
   @staticmethod
   def verify_admin_reset_token(token, expires_sec=1800):
       s = Serializer(current_app.config['SECRET_KEY'])
       try:
-          admin_id = s.loads(token, salt='password-reset-salt', max_age=expires_sec)['admin_id']
+          admin_id = s.loads(token, salt='admin-password-reset-salt', max_age=expires_sec)['admin_id']
       except:
           return None
       return Admin.query.get(admin_id)

@@ -161,6 +161,20 @@ def send_admin_reset_email(admin):
     Link expires after 30 minutes.
     '''
     mail.send(msg)
+    
+#sending officer reset email
+def send_officer_reset_email(officer):
+    token = officer.get_officer_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[officer.officer_email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('officers.resetToken', token=token, _external=True)}
+
+    If you did not make this request then simply ignore this email and no changes will be made.
+    Link expires after 30 minutes.
+    '''
+    mail.send(msg)
 
 # from app.officers.models import Officers
 from app.users.routes import users
