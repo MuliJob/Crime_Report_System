@@ -1,5 +1,7 @@
+from flask import current_app
 from app import db
 from flask_login import UserMixin
+from itsdangerous import Serializer
 
 
 class User(db.Model, UserMixin):
@@ -10,6 +12,21 @@ class User(db.Model, UserMixin):
     crimes = db.relationship('Crime', backref='reporter', lazy=True)
     users = db.relationship('Register', backref='user', uselist=False)
     messages = db.relationship('Message', backref='sender', lazy=True)
+    
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'user_id': self.id}, salt='password-reset-salt')
+
+    @staticmethod
+    def verify_reset_token(token, expires_sec=1800):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, salt='password-reset-salt', max_age=expires_sec)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
+    
 
 
 class Register(db.Model, UserMixin):

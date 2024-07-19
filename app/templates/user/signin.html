@@ -26,7 +26,7 @@ content %}
               <form method="POST">
                 <div id="msg">{{ msg }}</div>
                 <div class="form-group">
-                  <label for="username" class="form-label">UserName</label>
+                  <label for="username" class="form-label">Username</label>
                   <input
                     id="username"
                     type="username"
@@ -49,11 +49,13 @@ content %}
                     data-eye
                   />
                 </div>
-                <br />
+                <p style="text-align: left;">
+                  <a href="{{ url_for('users.reset_request') }}">Forgot Password?</a>
+                </p>
                 <div class="form-group m-0" align="center">
                   <button
                     type="submit"
-                    class="btn btn-primary btn-block w-100"
+                    class="btn btn-primary btn-block w-100 btn-sm px-3 py-2"
                     href="{{ url_for('users.user_dashboard') }}"
                   >
 										<i class="bi bi-box-arrow-in-right"></i>
