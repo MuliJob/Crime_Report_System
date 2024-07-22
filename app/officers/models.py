@@ -65,6 +65,7 @@ class CaseReport(db.Model, UserMixin):
     filename = db.Column(db.Text, nullable=True)
     mimetype = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), default=current_time())
+    assigned_at = db.Column(db.DateTime(timezone=True), default=current_time())
     assigned_officer_id = db.Column(db.Integer, db.ForeignKey('officers.officer_id'))
     assigned_officer = db.relationship('Officers', back_populates='assignments')
 

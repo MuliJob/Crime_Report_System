@@ -290,11 +290,11 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="date" class="form-label">Date of Crime:</label>
-                    <input type="date" class="form-control" id="date" name="date" required>
+                    <input type="date" class="form-control" id="date" name="date" value="{{  crime.date_of_incident }}" required>
                 </div>
                 <div class="col-md-6">
                     <label for="time" class="form-label">Time of Crime:</label>
-                    <input type="time" class="form-control" id="time" name="time" required>
+                    <input type="time" class="form-control" id="time" name="time" value="{{ crime.time_of_incident }}" required>
                 </div>
             </div>
             <div class="mb-3">
@@ -329,7 +329,7 @@
     {% endfor %}
         
     <script>
-
+        
     </script>
 </body>
 {% endblock content %}
