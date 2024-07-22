@@ -179,17 +179,6 @@
               readonly
             />
           </div>
-          <div class="form-group evidence-container">
-            <label for="mediaUpload">Attached Evidence:</label>
-            {% if report.media %}
-                <img src="{{ url_for('officers.download_image', report_id=report.report_id) }}" alt="{{ report.filename }}" class="img-fluid">
-                <a href="{{ url_for('officers.download_image', report_id=report.report_id) }}" class="btn btn-primary download-button" download>
-                    <i class="bi bi-download"></i> Download
-                </a>
-            {% else %}
-                <p>No attached evidence.</p>
-            {% endif %}
-        </div>
         </div>
       </form>
     </div>
@@ -204,6 +193,17 @@
       method="POST"
       enctype="multipart/form-data"
     >
+    <div class="form-group evidence-container">
+      <label for="mediaUpload">Attached Evidence:</label>
+      {% if report.media %}
+          <img src="{{ url_for('officers.download_image', report_id=report.report_id) }}" alt="{{ report.filename }}" class="img-fluid">
+          <a href="{{ url_for('officers.download_image', report_id=report.report_id) }}" class="btn btn-primary download-button" download>
+              <i class="bi bi-download"></i> Download
+          </a>
+      {% else %}
+          <p>No attached evidence.</p>
+      {% endif %}
+    </div>
       <div class="form-group">
         <label for="mediaUpload">Attach Evidence:</label>
         <input
@@ -313,7 +313,7 @@
       <title>Officer Report</title>
       <style>
         body {
-          line-height: 1.6;
+          line-height: 0.1;
           padding: 20px;
           max-width: 800px;
           margin: 0 auto;

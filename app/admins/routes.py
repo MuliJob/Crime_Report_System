@@ -1,6 +1,6 @@
 from typing import List, Tuple
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, Response, current_app, render_template, redirect, request, flash, session, url_for
 from flask_login import logout_user
 import folium
@@ -201,7 +201,6 @@ def adminDashboard():
                            crime_locations=crime_locations,
                            crime_dist=crime_dist)
 
-# change admin password
 @admins.route('/admin/change-admin-password',methods=["POST","GET"])
 @admin_required
 def adminChangePassword():
@@ -443,11 +442,13 @@ def edit_case_report(report_id):
             new_officer_id = int(assigned_officer_id)
             if new_officer_id != report.assigned_officer_id:
                 report.assigned_officer_id = new_officer_id
+                report.assigned_at = datetime.now(timezone.utc)
                 assigned_officer = Officers.query.get(new_officer_id)
                 if assigned_officer:
                     send_assignment_email(assigned_officer, report)
         else:
             report.assigned_officer_id = None
+            report.assigned_at = None
 
         try:
             db.session.commit()
