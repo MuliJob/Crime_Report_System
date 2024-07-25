@@ -89,6 +89,7 @@ def officerRegister():
         return redirect('/officer/officer-dashboard')
   if request.method == 'POST':
         username = request.form.get('username')
+        phonenumber = request.form.get('phoneNumber')
         officer_email = request.form.get('officer_email')
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
@@ -100,22 +101,28 @@ def officerRegister():
 
         officer = Officers.query.filter_by(username=username).first()
         email = Officers.query.filter_by(officer_email=officer_email).first()
+        new_phonenumber = Officers.query.filter_by(phonenumber=phonenumber).first()
 
         if officer:
-          flash('Username already exists.', category='danger')
+          flash('Username already exists.', category='warning')
+        elif len(phonenumber) < 10 or len(phonenumber) > 10:
+            flash('Invalid phone number', category='warning')
+        elif new_phonenumber:
+            flash('Phone number already exists', category='warning')
         elif email:
-          flash('Email already exists.', category='danger')
+          flash('Email already exists.', category='warning')
         elif len(username) < 2:
-            flash('Username must be more than 1 characters.', category='danger')
+            flash('Username must be more than 1 characters.', category='warning')
         elif len(officer_email) < 4:
-            flash('Email must be more than 4 characters.', category='danger')
+            flash('Email must be more than 4 characters.', category='warning')
         elif password1 != password2:
-            flash('Password don\'t match.', category='danger')
-        elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='danger')
+            flash('Password don\'t match.', category='warning')
+        elif len(password1) < 8:
+            flash('Password must be at least 8 characters.', category='warning')
         else:
             # add officer to database
             new_officer = Officers(username=username, 
+                                phonenumber=phonenumber,
                                 officer_email=officer_email, 
                                 first_name=first_name,
                                 last_name=last_name,
