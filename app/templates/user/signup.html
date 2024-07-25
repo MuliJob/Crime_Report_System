@@ -80,16 +80,16 @@ content %}
                     class="btn btn-primary btn-block w-100 btn-sm px-3 py-2"
                     href="{{ url_for('users.register') }}"
                   >
-									<i class="bi bi-person-plus"></i>
+									<i class="bi bi-person-add"></i>
                     Register
                   </button>
                 </div>
-                <div class="mt-4 text-center">
-                  Already have an account?
-                  <a href="{{ url_for('users.sign_in') }}">Login</a>
-                </div>
               </form>
             </div>
+          </div>
+          <div class="mt-4 text-center">
+            Already have an account?
+            <a href="{{ url_for('users.sign_in') }}">Login</a>
           </div>
         </div>
       </div>

@@ -191,6 +191,7 @@
     {% endfor %} {% endif%} {% endwith %}
     <h1>Police Crime Report Form</h1>
     <form method="POST" id="crimeReportForm" enctype="multipart/form-data">
+      <h4 style="text-align: center; font-weight: bold;">HOTLINE: 0112345678</h4>
       <p style="text-align: center">
         To report a crime or incident, please provide the following information's
       </p>
@@ -211,6 +212,7 @@
             id="phonenumber"
             class="form-control"
             name="phonenumber"
+            placeholder="Phone number"
             required
           />
         </div>
@@ -259,41 +261,6 @@
           style="width: calc(100% - 22px)"
           required
         ></textarea>
-      </div>
-  
-      <div class="form-row">
-        <label for="suspect_details"
-          >Was the suspect of the report of the incident wanted/have or had any
-          charges on him/her? If so what?</label
-        >
-        <textarea
-          id="suspect_details"
-          name="suspect_details"
-          style="width: calc(100% - 22px)"
-          required
-        ></textarea>
-      </div>
-  
-      <div class="form-row">
-        <label for="arrest_history"
-          >Has anyone been arrested so far in relation to the incident?</label
-        >
-        <textarea
-          id="arrest_history"
-          name="arrest_history"
-          style="width: calc(100% - 22px)"
-          required
-        ></textarea>
-      </div>
-      <hr />
-      <label for="suspect_name">Suspect's Full Name:</label>
-      <input
-        type="text"
-        id="suspect_name"
-        class="form-control"
-        name="suspect_name"
-        placeholder="Full Name"
-      />
       </div>
       <input type="hidden" id="latitude" name="latitude">
       <input type="hidden" id="longitude" name="longitude">

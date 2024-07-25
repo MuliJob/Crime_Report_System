@@ -150,9 +150,6 @@ def quick_report():
         incident_location = request.form.get('incident_location')
         incident_nature = request.form.get('incident_nature')
         incident_details = request.form.get('incident_details')
-        suspect_details = request.form.get('suspect_details')
-        arrest_history = request.form.get('arrest_history')
-        suspect_name = request.form.get('suspect_name')
         image = request.files['image']
 
 
@@ -182,9 +179,6 @@ def quick_report():
                                     incident_location=incident_location,
                                     incident_nature=incident_nature, 
                                     incident_details=incident_details,
-                                    suspect_details=suspect_details, 
-                                    arrest_history=arrest_history,
-                                    suspect_name=suspect_name,
                                     latitude=latitude,
                                     longitude=longitude,
                                     crime_file_upload=image.read(),

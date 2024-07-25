@@ -90,17 +90,17 @@ def sign_up():
         email_address = User.query.filter_by(email=email).first()
 
         if user:
-          flash('Username already exists.', category='danger')
+          flash('Username already exists.', category='warning')
         elif email_address:
-          flash('Email already exists.', category='danger')
+          flash('Email already exists.', category='warning')
         elif len(username) < 2:
-            flash('Username must be more than 1 characters.', category='danger')
+            flash('Username must be more than 1 characters.', category='warning')
         elif len(email) < 4:
-            flash('Email must be more than 4 characters.', category='danger')
+            flash('Email must be more than 4 characters.', category='warning')
         elif password1 != password2:
-            flash('Password don\'t match.', category='danger')
+            flash('Password don\'t match.', category='warning')
         elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='danger')
+            flash('Password must be at least 7 characters.', category='warning')
         else:
             # add user to database
             new_user = User(username=username, 
@@ -111,7 +111,7 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash('Account created!', category='success')
+            flash('Success. Account created!', category='success')
             return redirect(url_for('users.register'))
     
     return render_template('user/signup.html')
@@ -130,13 +130,21 @@ def register():
         phonenumber = request.form.get('phonenumber')
         residence = request.form.get('residence')
         gender = request.form.get('gender')
+        
+        new_idno = Register.query.filter_by(idno=idno).first()
+        
+        new_phonenumber = Register.query.filter_by(phonenumber=phonenumber).first()
 
         if len(idno) < 8 or len(idno) > 8:
-            flash('Identification Number must be equal to 8 characters.', category='danger')
+            flash('Identification Number must be equal to 8 characters.', category='warning')
+        elif new_idno:
+            flash('Identification number already exist', category='warning')
         elif len(fullname) < 4:
-            flash('Full Name must be more than 4 characters.', category='danger')
+            flash('Full Name must be more than 4 characters.', category='warning')
         elif len(phonenumber) < 10 or len(phonenumber) > 10:
-            flash('Invalid Phone number', category='danger')
+            flash('Invalid Phone number', category='warning')
+        elif new_phonenumber:
+            flash('Phone number already exists', category='warning')        
         else:
             personal_details = Register(idno=idno, 
                                     fullname=fullname, 

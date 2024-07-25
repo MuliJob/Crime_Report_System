@@ -72,6 +72,24 @@ def send_admin_email(subject, body):
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
         return False
+
+def send_status_admin_email(subject, body):
+    try:
+        admin = Admin.query.first()
+        if not admin:
+            print("Admin email not found")
+            return False
+        
+        msg = Message(subject,
+                      recipients=[admin.admin_email])  # Admin's email address
+        msg.body = body
+        mail.send(msg)
+        print("Email send successful")
+        return True
+    
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        return False
     
 # sending email when officer is assigned
 def send_assignment_email(officer, report):
