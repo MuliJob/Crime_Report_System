@@ -3,7 +3,7 @@ from functools import wraps
 from flask import Blueprint, Response, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import logout_user
 from sqlalchemy import func, or_
-from app import db, send_officer_reset_email
+from app import db, send_officer_reset_email, send_status_admin_email
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app.officers.models import CaseReport, Officers
@@ -350,15 +350,21 @@ def updateCaseStatus(report_id):
         if case_status:
             case.status = case_status
             db.session.commit()
-            flash(f'Success. Case status updated to {case_status}.', 'success')
+            subject = f"Case Status Update"
+            body = f"""
+                The status of the case report (Crime: {case.crime_type}) has been updated.
+                New Status: {case.status}
+            """
+            if send_status_admin_email(subject, body):
+                flash(f'Success. Case status updated to {case_status}.', 'success')
+            else:
+                flash("Failed to send email notification.", "warning")
         else:
             flash('Failed to update case status.', 'danger')
     except:
         current_app.logger.error("Database error:")
-        
         flash("An error occurred. Please try again later.", "danger")
         
-        return redirect(url_for('officers.caseStatus'))
     return redirect(url_for('officers.caseStatus'))
 
 @officers.route('/officer/settled-cases')
