@@ -35,15 +35,12 @@ def report_crime():
         filename = secure_filename(image.filename)
         mimetype = image.mimetype
 
-        user_phonenumber = Crime.query.filter_by(phonenumber=phonenumber).first()
 
         
         if date_of_incident == '':
             flash('Date when incident occurred cannot be empty', category='warning')
         elif len(phonenumber) < 10 or len(phonenumber) > 10:
             flash('Invalid Phone number', category='warning')
-        elif user_phonenumber:
-            flash('Phone number already exists', category='warning')
         elif time_of_incident == '':
             flash('Time when incident occurred cannot be empty', category='warning')
         elif incident_location == '':
@@ -156,14 +153,10 @@ def quick_report():
         filename = secure_filename(image.filename)
         mimetype = image.mimetype
 
-        user_phonenumber = Crime.query.filter_by(phonenumber=phonenumber).first()
-        
         if date_of_incident == '':
             flash('Date when incident occurred cannot be empty', category='warning')
         elif len(phonenumber) < 10 or len(phonenumber) > 10:
             flash('Invalid Phone number', category='warning')
-        elif user_phonenumber:
-            flash('Phone number already exists', category='warning')
         elif time_of_incident == '':
             flash('Time when incident occurred cannot be empty', category='warning')
         elif incident_location == '':
