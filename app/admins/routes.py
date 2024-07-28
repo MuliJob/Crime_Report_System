@@ -5,7 +5,7 @@ from flask import Blueprint, Response, current_app, render_template, redirect, r
 from flask_login import logout_user
 import folium
 from sqlalchemy import and_, desc, extract, func, or_
-from app.admins.models import Admin 
+from app.admins.models import Admin, Alert 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, send_admin_reset_email, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
@@ -14,6 +14,7 @@ from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.utils import secure_filename
 
 
 admins = Blueprint('admins', __name__)
@@ -460,7 +461,38 @@ def edit_case_report(report_id):
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
 
-    
+@admins.route('/admin/alerts', methods=['GET', 'POST'])
+@admin_required
+def upload_photo():
+    administrator = session.get('admin_id')
+    alerts = Alert.query.all()
+    if request.method == 'POST':
+        description = request.form.get('description')
+        photo = request.files['photo']
+
+        filename = secure_filename(photo.filename)
+        mimetype = photo.mimetype
+        
+        photos = Alert(description=description,
+                       data=photo.read(),
+                       filename=filename,
+                       mimetype=mimetype,
+                       admin_id=administrator)
+        try:
+            db.session.add(photos)
+            db.session.commit()
+            flash('Success. Alert uploaded', 'success')
+        except Exception as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            flash("An error occurred when creating report. Please try again later.", "danger")
+        
+    return render_template('admin/admin-alerts.html', alerts=alerts)
+
+# @admins.route('/admin/delete/<int:id>', methods=['GET', 'POST'])
+# @admin_required
+# def delete_photo(id):
+   
+#     return redirect(url_for('upload_photo'))
 
 @admins.route('/admin/analytics')
 @admin_required

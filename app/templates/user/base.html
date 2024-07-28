@@ -110,7 +110,7 @@
             ></a>
           </li>
           <li class="nav-item">
-            <p class="nav-link">{{ session.get('username') }}</p>
+            <p class="nav-link">Welcome, {{ session.get('username') }}</p>
           </li>
           <li class="nav-item dropdown {% if request.endpoint == 'users.settings' %}active{% endif %}">
             <a

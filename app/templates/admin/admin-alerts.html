@@ -1,0 +1,59 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload Form</title>
+    <style>
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .uploaded-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload Photo</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="photo" id="photoInput" required>
+        <br><br>
+        <textarea name="description" placeholder="Enter description" required></textarea>
+        <br><br>
+        <img id="imagePreview" class="preview-image" src="" alt="Image preview" style="display:none;">
+        <br><br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Uploaded Photos</h2>
+    <div id="uploadedPhotos">
+        {% for alert in alerts %}
+            <div class="uploaded-item">
+                <p>{{ alert.filename }}</p>
+                <p>{{ alert.description }}</p>
+                
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        
+    </script>
+</body>
+</html>
+{% endblock content %}
