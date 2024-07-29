@@ -497,6 +497,45 @@ def upload_photo():
 @admins.route('/admin/analytics')
 @admin_required
 def analytics():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+
+    crime_type_data = db.session.query(CaseReport.crime_type, func.count(CaseReport.report_id).label('count')).\
+        filter(CaseReport.date >= thirty_days_ago).\
+        group_by(CaseReport.crime_type).\
+        order_by(desc('count')).all()
+    crime_type_analysis = dict(crime_type_data)
+
+    top_crime_locations = db.session.query(CaseReport.location, func.count(CaseReport.report_id).label('count')).\
+        filter(CaseReport.date >= thirty_days_ago).\
+        group_by(CaseReport.location).\
+        order_by(desc('count')).limit(5).all()
+
+    top_crimes_by_location = {}
+    for location, _ in top_crime_locations:
+        top_crime = db.session.query(CaseReport.crime_type, func.count(CaseReport.report_id).label('count')).\
+            filter(and_(CaseReport.location == location, CaseReport.date >= thirty_days_ago)).\
+            group_by(CaseReport.crime_type).\
+            order_by(desc('count')).first()
+        top_crimes_by_location[location] = top_crime
+
+    crime_trend = db.session.query(func.date(Crime.date_crime_received).label('date'), func.count(Crime.crime_id).label('count')).\
+        filter(Crime.date_crime_received >= thirty_days_ago).\
+        group_by(func.date(Crime.date_crime_received)).\
+        order_by('date_of_incident').all()
+
+    crimes_by_day = db.session.query(func.strftime('%w', Crime.date_crime_received).label('day_of_week'), 
+                                     func.count(Crime.crime_id).label('count')).\
+        filter(Crime.date_crime_received >= thirty_days_ago).\
+        group_by('day_of_week').\
+        order_by('day_of_week').all()
+
+    subq = db.session.query(CaseReport.report_id, CaseReport.date, func.lag(CaseReport.crime_type).over(order_by=CaseReport.date).label('prev_crime')).\
+        subquery()
+    correlated_crimes = db.session.query(CaseReport.crime_type, subq.c.prev_crime, func.count().label('count')).\
+        join(subq, CaseReport.report_id == subq.c.report_id).\
+        filter(and_(CaseReport.crime_type != subq.c.prev_crime, CaseReport.date >= thirty_days_ago)).\
+        group_by(CaseReport.crime_type, subq.c.prev_crime).\
+        order_by(desc('count')).limit(3).all()
     try:
         coordinates = get_coordinates()
         
@@ -527,7 +566,13 @@ def analytics():
                                title='Analytics Dashboard',
                                crime_labels=crime_labels,
                                crime_counts=crime_counts,
-                               map_html=map_html)
+                               map_html=map_html,
+                               crime_type_analysis=crime_type_analysis,
+                                top_crime_locations=top_crime_locations,
+                                top_crimes_by_location=top_crimes_by_location,
+                                crime_trend=crime_trend,
+                                crimes_by_day=crimes_by_day,
+                                correlated_crimes=correlated_crimes)
     
     except SQLAlchemyError as e:
         current_app.logger.error(f"Database error in analytics: {str(e)}")
