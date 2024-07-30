@@ -81,7 +81,7 @@ def send_status_admin_email(subject, body):
             return False
         
         msg = Message(subject,
-                      recipients=[admin.admin_email])  # Admin's email address
+                      recipients=[admin.admin_email])  
         msg.body = body
         mail.send(msg)
         print("Email send successful")

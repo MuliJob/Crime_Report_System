@@ -15,6 +15,12 @@
     background-color: #f8f9fa;
     border-color: #e9ecef;
   }
+  .printer-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: black;
+  }
 </style>
 <div class="container mt-5">
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -35,7 +41,10 @@
   <h2 class="text-center mb-0">Report Details</h2>
   <div class="card shadow" style="max-width: 650px; margin: auto">
     <div class="card-body">
-      <form>
+      <form method="POST, GET">
+        <div class="ms-auto">
+          <button class="printer-button" onclick="window.print()"><i class="bi bi-printer h4"></i></button> 
+       </div>
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="crime_type" class="form-label">Crime Type:</label>
@@ -76,6 +85,16 @@
               class="form-control"
               id="time"
               value="{{ settled_report.time }}"
+              readonly
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="text" class="form-label">Status:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="time"
+              value="{{ settled_report.status }}"
               readonly
             />
           </div>
