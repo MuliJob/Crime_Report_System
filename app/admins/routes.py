@@ -5,7 +5,7 @@ from flask import Blueprint, Response, current_app, render_template, redirect, r
 from flask_login import logout_user
 import folium
 from sqlalchemy import and_, desc, extract, func, or_
-from app.admins.models import Admin 
+from app.admins.models import Admin, Alert 
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, send_admin_reset_email, send_assignment_email, send_status_update_email
 from app.officers.models import CaseReport, Officers
@@ -14,6 +14,7 @@ from app.users.models import User
 from functools import wraps
 from folium.plugins import HeatMap
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.utils import secure_filename
 
 
 admins = Blueprint('admins', __name__)
@@ -460,11 +461,81 @@ def edit_case_report(report_id):
 
     return render_template('admin/edit_case_report.html', report=report, officers=officers)
 
-    
+@admins.route('/admin/alerts', methods=['GET', 'POST'])
+@admin_required
+def upload_photo():
+    administrator = session.get('admin_id')
+    alerts = Alert.query.all()
+    if request.method == 'POST':
+        description = request.form.get('description')
+        photo = request.files['photo']
+
+        filename = secure_filename(photo.filename)
+        mimetype = photo.mimetype
+        
+        photos = Alert(description=description,
+                       data=photo.read(),
+                       filename=filename,
+                       mimetype=mimetype,
+                       admin_id=administrator)
+        try:
+            db.session.add(photos)
+            db.session.commit()
+            flash('Success. Alert uploaded', 'success')
+        except Exception as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            flash("An error occurred when creating report. Please try again later.", "danger")
+        
+    return render_template('admin/admin-alerts.html', alerts=alerts)
+
+# @admins.route('/admin/delete/<int:id>', methods=['GET', 'POST'])
+# @admin_required
+# def delete_photo(id):
+   
+#     return redirect(url_for('upload_photo'))
 
 @admins.route('/admin/analytics')
 @admin_required
 def analytics():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+
+    crime_type_data = db.session.query(CaseReport.crime_type, func.count(CaseReport.report_id).label('count')).\
+        filter(CaseReport.date >= thirty_days_ago).\
+        group_by(CaseReport.crime_type).\
+        order_by(desc('count')).all()
+    crime_type_analysis = dict(crime_type_data)
+
+    top_crime_locations = db.session.query(CaseReport.location, func.count(CaseReport.report_id).label('count')).\
+        filter(CaseReport.date >= thirty_days_ago).\
+        group_by(CaseReport.location).\
+        order_by(desc('count')).limit(5).all()
+
+    top_crimes_by_location = {}
+    for location, _ in top_crime_locations:
+        top_crime = db.session.query(CaseReport.crime_type, func.count(CaseReport.report_id).label('count')).\
+            filter(and_(CaseReport.location == location, CaseReport.date >= thirty_days_ago)).\
+            group_by(CaseReport.crime_type).\
+            order_by(desc('count')).first()
+        top_crimes_by_location[location] = top_crime
+
+    crime_trend = db.session.query(func.date(Crime.date_crime_received).label('date'), func.count(Crime.crime_id).label('count')).\
+        filter(Crime.date_crime_received >= thirty_days_ago).\
+        group_by(func.date(Crime.date_crime_received)).\
+        order_by('date_of_incident').all()
+
+    crimes_by_day = db.session.query(func.strftime('%w', Crime.date_crime_received).label('day_of_week'), 
+                                     func.count(Crime.crime_id).label('count')).\
+        filter(Crime.date_crime_received >= thirty_days_ago).\
+        group_by('day_of_week').\
+        order_by('day_of_week').all()
+
+    subq = db.session.query(CaseReport.report_id, CaseReport.date, func.lag(CaseReport.crime_type).over(order_by=CaseReport.date).label('prev_crime')).\
+        subquery()
+    correlated_crimes = db.session.query(CaseReport.crime_type, subq.c.prev_crime, func.count().label('count')).\
+        join(subq, CaseReport.report_id == subq.c.report_id).\
+        filter(and_(CaseReport.crime_type != subq.c.prev_crime, CaseReport.date >= thirty_days_ago)).\
+        group_by(CaseReport.crime_type, subq.c.prev_crime).\
+        order_by(desc('count')).limit(3).all()
     try:
         coordinates = get_coordinates()
         
@@ -495,7 +566,13 @@ def analytics():
                                title='Analytics Dashboard',
                                crime_labels=crime_labels,
                                crime_counts=crime_counts,
-                               map_html=map_html)
+                               map_html=map_html,
+                               crime_type_analysis=crime_type_analysis,
+                                top_crime_locations=top_crime_locations,
+                                top_crimes_by_location=top_crimes_by_location,
+                                crime_trend=crime_trend,
+                                crimes_by_day=crimes_by_day,
+                                correlated_crimes=correlated_crimes)
     
     except SQLAlchemyError as e:
         current_app.logger.error(f"Database error in analytics: {str(e)}")

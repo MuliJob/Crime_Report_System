@@ -1,4 +1,4 @@
-from flask import Flask, current_app, flash, url_for
+from flask import Flask, current_app, flash, logging, url_for
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -81,7 +81,7 @@ def send_status_admin_email(subject, body):
             return False
         
         msg = Message(subject,
-                      recipients=[admin.admin_email])  # Admin's email address
+                      recipients=[admin.admin_email])  
         msg.body = body
         mail.send(msg)
         print("Email send successful")
@@ -151,6 +151,30 @@ def send_status_update_email(crime):
             current_app.logger.warning(f"Could not send email for crime ID {crime.crime_id}. User not found or no email address.")
     except Exception as e:
         current_app.logger.error(f"Failed to send status update email: {str(e)}")
+        
+#sending greeting email
+def send_confirmation_email(user):
+    subject = "Welcome to Our App!"
+    recipients = [user.email]
+    body = f"""
+    Hello {user.username},
+
+    Thank you for registering with our app. We're excited to have you on board!
+
+    Best regards,
+    The E-Security Team
+    """
+
+    msg = Message(subject=subject, 
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'], 
+                  recipients=recipients, 
+                  body=body)
+    
+    try:
+        mail.send(msg)
+        print(f"Confirmation email sent successfully to {user.email}")
+    except Exception as e:
+        print(f"Failed to send confirmation email to {user.email}. Error: {str(e)}")
         
 #sending user reset email
 def send_reset_email(user):

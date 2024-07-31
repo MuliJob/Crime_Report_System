@@ -116,6 +116,11 @@
               >Case Reports</a
             >
           </li>
+          <!-- <li class="new-item {% if request.endpoint == 'admins.upload_photo' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admins.upload_photo') }}"
+              >Alerts</a
+            >
+          </li> -->
           <li class="new-item {% if request.endpoint == 'admins.analytics' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('admins.analytics') }}"
               >Analytics</a
@@ -129,7 +134,7 @@
             ></a>
           </li>
           <li class="nav-item">
-            <p class="nav-link">{{ session.get('admin_name') }}</p>
+            <p class="nav-link">Welcome, {{ session.get('admin_name') }}</p>
           </li>
           <li class="nav-item dropdown {% if request.endpoint == 'admins.adminChangePassword' %}active{% endif %}">
             <a

@@ -1,0 +1,292 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Upload Form</title>
+    <style>
+        body {
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 50px;
+        }
+        form {
+            background-color: #f9f9f9da;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 5px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        .uploaded-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-messages li {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .uploaded-item td {
+            vertical-align: top;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    
+        .image-container {
+            position: relative;
+            max-width: 50%;
+            height: auto;
+        }
+    
+        #imagePreview,
+        #videoPreview {
+            max-width: 100%;
+            height: auto;
+        }
+    
+        #cancelButton {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #modalImage {
+            width: 100%;
+            height: auto;
+        }
+
+        .uploaded-item {
+            cursor: pointer;
+        }
+
+        .uploaded-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages%}
+    <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+    >
+        <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+        ></button>
+        {{ message }}
+    </div>
+    {% endfor %} {% endif%} {% endwith %}
+    <h2>Upload Alert</h2>
+    <form method="POST, GET" enctype="multipart/form-data">
+        <label for="">Choose an image for the alert</label>
+        <br>
+        <input type="file" name="photo" id="mediaUpload" required>
+        <div class="form-group image-container">
+            <button
+              type="button"
+              id="cancelButton"
+              class="btn btn-danger"
+              style="display: none"
+            >
+              Cancel
+            </button>
+            <img
+              id="imagePreview"
+              src="#"
+              alt="Image preview"
+              style="display: none"
+            />
+            <video id="videoPreview" controls style="display: none"></video>
+          </div>
+        <label for="">Description</label>
+        <textarea name="description" placeholder="Enter description" required></textarea>
+        
+        <button type="submit">Upload</button>
+    </form>
+    
+    <h2>Uploaded Alerts</h2>
+    <table id="uploadedPhotos">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alert in alerts %}
+                <tr class="uploaded-item">
+                    <td><strong>{{ alert.filename }}</strong></td>
+                    <td>{{ alert.description }}</td>
+                </tr>
+                <!-- <div id="imageModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <img id="modalImage" src="{{ url_for('admins.imageDisplay', id=alert.id)}}" alt="{{ alert.filename }}" class="img-fluid">
+                    </div>
+                </div> -->
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document
+        .getElementById("mediaUpload")
+        .addEventListener("change", function (event) {
+          var file = event.target.files[0];
+          var reader = new FileReader();
+          reader.onload = function () {
+            var mediaType = file.type.split("/")[0]; 
+            if (mediaType === "image") {
+              document.getElementById("imagePreview").src = reader.result;
+              document.getElementById("imagePreview").style.display = "block";
+              document.getElementById("videoPreview").style.display = "none";
+            } else if (mediaType === "video") {
+              document.getElementById("videoPreview").src = reader.result;
+              document.getElementById("videoPreview").style.display = "block";
+              document.getElementById("imagePreview").style.display = "none";
+            }
+            document.getElementById("cancelButton").style.display =
+              "inline-block";
+          };
+          reader.readAsDataURL(file);
+        });
+  
+      document
+        .getElementById("cancelButton")
+        .addEventListener("click", function () {
+          document.getElementById("mediaUpload").value = "";
+          document.getElementById("imagePreview").style.display = "none";
+          document.getElementById("videoPreview").style.display = "none";
+          document.getElementById("imagePreview").src = "#";
+          document.getElementById("videoPreview").src = "";
+          this.style.display = "none";
+        });
+    </script>
+</body>
+</html>
+{% endblock content %}

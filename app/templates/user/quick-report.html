@@ -195,7 +195,6 @@
       <p style="text-align: center">
         To report a crime or incident, please provide the following information's
       </p>
-      <hr />
       <div class="form-row">
         <div class="form-column">
           <label for="date_of_incident">Date when incident occurred:</label>
@@ -447,7 +446,7 @@
         function showError(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    alert("User denied the request for Geolocation.");
+                    alert("You denied the request for Geolocation.");
                     break;
                 case error.POSITION_UNAVAILABLE:
                     alert("Location information is unavailable.");
