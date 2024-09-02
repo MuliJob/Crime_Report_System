@@ -1,5 +1,5 @@
 virtual/
 *.pyc
-instance/system.db
+instance/
 app/config.py
 .vscode
