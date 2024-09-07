@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/munyoki/Desktop/SENIOR_PROJECT/crime_reporting_system/virtual"
+VIRTUAL_ENV="/home/muli/Desktop/Crime_Report_System/virtual"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
