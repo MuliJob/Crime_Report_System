@@ -2,7 +2,7 @@ from flask import Flask, current_app, flash, logging, url_for
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from os import environ 
+import os
 from flask_session import Session
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
@@ -15,9 +15,10 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
+
 app = Flask(__name__, instance_relative_config=True)
-app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 app.config["SESSION_PERMANENT"]=False
 app.config['SESSION_TYPE']='filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -27,9 +28,9 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = environ.get('MAIL_PASSWORD') 
-app.config['MAIL_DEFAULT_SENDER'] = environ.get('MAIL_DEFAULT_SENDER')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') 
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 
 mail = Mail(app)
 metadata = MetaData(naming_convention=convention)
