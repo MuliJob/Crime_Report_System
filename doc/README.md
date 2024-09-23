@@ -133,9 +133,3 @@ For cases where a user needs the P3 form it can be downloaded under Downloads se
 Under settings users can change password and update profile
 
 ![alt text](image-21.png)
-
-## TECHNOLOGIES
-
-Python(Flask)
-Javascript
-CSS
