@@ -1,5 +1,5 @@
 virtual/
 *.pyc
 instance/
-app/config.py
+config.py
 .vscode
