@@ -5,7 +5,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from app.users.models import User, Register
 from app.posts.models import Crime, Message
 from app import db, send_confirmation_email, send_reset_email
-from app.config import NEWS_API
+from os import environ
 from requests.exceptions import RequestException
 import requests
 
@@ -187,6 +187,7 @@ def save_coordinates():
 @users.route('/users/dashboard', methods=['GET', 'POST'])
 @login_required
 def user_dashboard(): 
+    news_api = environ.get('NEWS_API')
     user_id = session.get('user_id')
     latitude = session.get('latitude')
     longitude = session.get('longitude')
@@ -197,7 +198,7 @@ def user_dashboard():
         if user:
             login_user(user)   
 
-            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={NEWS_API}'
+            url = f'https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey={news_api}'
 
             try:
                 response = requests.get(url)
