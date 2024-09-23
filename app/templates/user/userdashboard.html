@@ -149,7 +149,7 @@ Dashboard
   <div class="top-column card">
       <h3 class="card-title">What You Can Report</h3>
       <div class="title-line"></div>
-      <img src="https://www.cid.go.ke/images/criminal-investigation-security-services.jpg" alt="Image 1" class="top-image">
+      <img src="{{ url_for('static', filename='img/istockphoto-1175722292-612x612.jpg') }}" alt="Image 1" class="top-image">
       <a href="">Terrorism</a>
       <a href="">Cyber Crime</a>
       <a href="">Land Fraud</a>
@@ -159,7 +159,7 @@ Dashboard
   <div class="top-column card">
       <h3 class="card-title">Our Services</h3>
       <div class="title-line"></div>
-      <img src="https://www.cid.go.ke/images/photo-0581.jpg" alt="Image 2" class="top-image">
+      <img src="{{ url_for ('static', filename='img/istockphoto-1169378328-612x612.jpg') }}" alt="Image 2" class="top-image">
       <a href="{{ url_for('posts.report_crime') }}">Crime Reporting</a>
       <a href="">Recovering Stolen Items</a>
       <a href="">Investigating Crimes Reported</a>
@@ -167,7 +167,7 @@ Dashboard
   <div class="top-column card">
       <h3 class="card-title">Reporting Crime</h3>
       <div class="title-line"></div>
-      <img src="https://www.cid.go.ke/images/special_agent_adam_deem_of_air_force_office_of_special_investigation_detachment_219.jpg" alt="Image 3" class="top-image">
+      <img src="{{ url_for('static', filename='img/istockphoto-1147468022-612x612.jpg') }}" alt="Image 3" class="top-image">
       <a href="{{ url_for('posts.report_crime') }}">Report Crime Online</a>
       <a href="{{ url_for('posts.contact_us') }}">Contact Us</a>
   </div>
@@ -240,7 +240,7 @@ Dashboard
 
         
         window.onload = function() {
-            setTimeout(getCoordinates, 500); 
+            setTimeout(getCoordinates, 200); 
         };
 </script>
 </body>
